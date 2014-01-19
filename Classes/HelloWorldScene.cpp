@@ -84,3 +84,5 @@ void HelloWorld::menuCloseCallback(Object* pSender)
     exit(0);
 #endif
 }
+
+//¨q(¡ä¨Œ`)¨q(¡ä¨Œ`)¨s
