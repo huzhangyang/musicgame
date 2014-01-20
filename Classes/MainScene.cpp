@@ -1,17 +1,18 @@
 #include "MainScene.h"
+#include "cocostudio/CocoStudio.h"  
 
 USING_NS_CC;
+USING_NS_CC_EXT;
 
 Scene* MainScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();//创建带物理引擎的世界
-	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);//打开调试开关
+	//scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);//打开调试开关
 	auto layer = MainScene::create();
 	layer->setPhyWorld(scene->getPhysicsWorld());
 	scene->addChild(layer);
 	return scene;
 }
-
 
 void MainScene::addNewSpriteAtPosition(Point p)
 {
@@ -22,6 +23,7 @@ void MainScene::addNewSpriteAtPosition(Point p)
 	sp->setPosition(p);
 	this->addChild(sp);
 }
+
 void MainScene::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
 {
 	for (auto touch : touches)
@@ -30,6 +32,7 @@ void MainScene::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
 		addNewSpriteAtPosition(location);
 	}
 }
+
 void MainScene::onEnter()
 {
 	Layer::onEnter();
@@ -53,7 +56,7 @@ void MainScene::onEnter()
 		}
 		return true;
 	};
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener, 10); //第二个参数是优先级，10是随意写的  
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener, 10);
 }
 
 bool MainScene::init()
@@ -70,13 +73,15 @@ bool MainScene::init()
 	auto edgeSp = Sprite::create();
 	auto body = PhysicsBody::createEdgeBox(visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 1);
 	edgeSp->setPosition(Point(visibleSize.width / 2, visibleSize.height / 2));
-	edgeSp->setPhysicsBody(body); 
-	this->addChild(edgeSp); 
+	edgeSp->setPhysicsBody(body);
+	this->addChild(edgeSp);
 	edgeSp->setTag(0);
 	setTouchEnabled(true);
+
+	auto node = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("FightScene.json");
+	addChild(node);
 	return true;
 }
-
 
 void MainScene::menuCloseCallback(Object* pSender)
 {
