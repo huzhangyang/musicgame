@@ -29,7 +29,7 @@ void MainScene::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
 	for (auto touch : touches)
 	{
 		auto location = touch->getLocation();
-		addNewSpriteAtPosition(location);
+		//addNewSpriteAtPosition(location);
 	}
 }
 
@@ -78,7 +78,7 @@ bool MainScene::init()
 	edgeSp->setTag(0);
 	setTouchEnabled(true);
 
-	auto node = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("FightScene.json");
+	auto node = cocostudio::GUIReader::getInstance()->widgetFromJsonFile("practice1_1/practice1_1.json");
 	addChild(node);
 	return true;
 }
@@ -96,7 +96,7 @@ void MainScene::menuCloseCallback(Object* pSender)
 		m_world->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
 	}
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-	exit(0);
-#endif
+	#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+		exit(0);
+	#endif
 }
