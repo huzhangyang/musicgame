@@ -1,4 +1,5 @@
 #include "AppDelegate.h"
+#include "IntroScene.h"
 #include "MainScene.h"
 
 USING_NS_CC;
@@ -17,7 +18,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setOpenGLView(eglView);
     director->setDisplayStats(true);
     director->setAnimationInterval(1.0 / 60);
-	auto scene = MainScene::createScene();
+	auto scene = IntroScene::createScene();
     director->runWithScene(scene);
     return true;
 }
