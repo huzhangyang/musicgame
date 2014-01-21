@@ -13,13 +13,8 @@ public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
 	void menuCloseCallback(Object* pSender);
-	CREATE_FUNC(MainScene);// implement the "static create()" method manually
-	void addNewSpriteAtPosition(Point p);
-	void setPhyWorld(PhysicsWorld* world){ m_world = world; }
-	virtual void onEnter() override;
-	virtual void onTouchesEnded(const std::vector<Touch*>& touches, Event *unused_event)override;
+	CREATE_FUNC(MainScene);
 private:
-	PhysicsWorld* m_world;
 };
 
 #endif 
