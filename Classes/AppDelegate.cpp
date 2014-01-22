@@ -1,6 +1,5 @@
 #include "AppDelegate.h"
 #include "IntroScene.h"
-#include "MainScene.h"
 
 USING_NS_CC;
 

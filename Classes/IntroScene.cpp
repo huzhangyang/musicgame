@@ -1,9 +1,5 @@
 #include "IntroScene.h"
 #include "MainScene.h"
-#include "cocostudio/CocoStudio.h"  
-
-USING_NS_CC;
-USING_NS_CC_EXT;
 
 Scene* IntroScene::createScene()
 {

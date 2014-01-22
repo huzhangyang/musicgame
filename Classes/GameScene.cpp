@@ -1,8 +1,4 @@
 #include "GameScene.h"
-#include "cocostudio/CocoStudio.h"  
-
-USING_NS_CC;
-USING_NS_CC_EXT;
 
 Scene* GameScene::createScene()
 {

@@ -1,11 +1,13 @@
 #ifndef __MAIN_SCENE_H__
 #define __MAIN_SCENE_H__
 
+#include "Resources.h"
+#include "CocosGUI.h"  
+#include "cocostudio/CocoStudio.h"  
 #include "cocos2d.h"
-#include "cocos-ext.h"
 
 USING_NS_CC;
-USING_NS_CC_EXT;
+using namespace gui;
 
 class MainScene : public cocos2d::Layer
 {
@@ -14,6 +16,8 @@ public:
 	virtual bool init();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(MainScene);
+
+	void touchEvent(Object* obj, gui::TouchEventType eventType);
 private:
 };
 

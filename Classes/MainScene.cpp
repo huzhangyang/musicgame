@@ -1,8 +1,5 @@
 #include "MainScene.h"
-#include "cocostudio/CocoStudio.h"  
-
-USING_NS_CC;
-USING_NS_CC_EXT;
+#include "GameScene.h"
 
 Scene* MainScene::createScene()
 {
@@ -23,9 +20,11 @@ bool MainScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	auto node =cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("draftm.json");
-	//auto node = cocostudio::GUIReader::getInstance()->widgetFromJsonFile("mainscene/practice1_1/practice1_1.json");
-	addChild(node);
+	auto mainScene = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("draftm.json");
+	addChild(mainScene);
+
+	auto shelf = dynamic_cast<Button*>(mainScene->getChildByTag(MAINSCENE_SHELF));
+	shelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	return true;
 }
 
@@ -33,7 +32,23 @@ void MainScene::menuCloseCallback(Object* pSender)
 {
 	Director::getInstance()->end();
 
-	#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-		exit(0);
-	#endif
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+	exit(0);
+#endif
 }
+
+void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
+{
+	auto button = dynamic_cast<Button*>(obj);
+	int tag = button->getTag();
+	switch (eventType)
+	{
+	case TouchEventType::TOUCH_EVENT_ENDED:
+		if (tag == MAINSCENE_SHELF)
+		{
+			auto scene = GameScene::createScene();
+			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
+		}
+	}
+}
+

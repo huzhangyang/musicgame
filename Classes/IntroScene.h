@@ -2,10 +2,8 @@
 #define __INTRO_SCENE_H__
 
 #include "cocos2d.h"
-#include "cocos-ext.h"
 
 USING_NS_CC;
-USING_NS_CC_EXT;
 
 class IntroScene : public cocos2d::Layer
 {
