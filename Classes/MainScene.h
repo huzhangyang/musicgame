@@ -5,8 +5,10 @@
 #include "CocosGUI.h"  
 #include "cocostudio/CocoStudio.h"  
 #include "cocos2d.h"
+#include "cocos-ext.h"
 
 USING_NS_CC;
+USING_NS_CC_EXT;
 using namespace gui;
 
 class MainScene : public cocos2d::Layer

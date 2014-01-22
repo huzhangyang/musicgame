@@ -20,7 +20,7 @@ bool IntroScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	auto sprite = Sprite::create("intro.jpg");
+	auto sprite = Sprite::create("intro.png");
 	sprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	addChild(sprite);
 	sprite->runAction(Sequence::create(DelayTime::create(2), CallFunc::create(this, callfunc_selector(IntroScene::toggleStart)),NULL));

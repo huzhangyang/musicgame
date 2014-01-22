@@ -3,6 +3,7 @@
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::createWithPhysics();//创建带物理引擎的世界
+	scene->getPhysicsWorld()->setGravity(Vect(0,-980));
 	//scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);//打开调试开关
 	auto layer = GameScene::create();
 	layer->setPhyWorld(scene->getPhysicsWorld());

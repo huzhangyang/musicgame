@@ -20,11 +20,22 @@ bool MainScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	auto mainScene = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("draftm.json");
-	addChild(mainScene);
+	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("draftm.json");
+	addChild(sceneNode);
+	auto child = sceneNode->getChildByTag(10004);
+	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
+	auto layer = (Layer*)reader->getNode();
 
-	auto shelf = dynamic_cast<Button*>(mainScene->getChildByTag(MAINSCENE_SHELF));
-	shelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	//auto shelf = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_SHELF));
+	//shelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	//auto ink = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_INK));
+	//ink->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto option = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_OPTION));
+	option->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto help = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_HELP));
+	//help->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto exit = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_EXIT));
+	exit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	return true;
 }
 
@@ -49,6 +60,26 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 		}
+		else if (tag == MAINSCENE_INK)
+		{
+			auto scene = GameScene::createScene();
+			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
+		}
+		else if(tag == MAINSCENE_OPTION)
+		{
+			auto scene = GameScene::createScene();
+			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
+		}
+		else if (tag == MAINSCENE_HELP)
+		{
+			auto scene = GameScene::createScene();
+			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
+		}
+		else if (tag == MAINSCENE_EXIT)
+		{
+			Director::getInstance()->popScene();
+		}
+		break;
 	}
 }
 
