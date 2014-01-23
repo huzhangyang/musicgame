@@ -26,14 +26,14 @@ bool MainScene::init()
 	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
 	auto layer = (Layer*)reader->getNode();
 
-	//auto shelf = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_SHELF));
-	//shelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	//auto ink = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_INK));
-	//ink->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto shelf = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_SHELF));
+	shelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto ink = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_INK));
+	ink->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto option = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_OPTION));
 	option->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto help = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_HELP));
-	//help->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	help->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto exit = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_EXIT));
 	exit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	return true;
@@ -62,18 +62,12 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		}
 		else if (tag == MAINSCENE_INK)
 		{
-			auto scene = GameScene::createScene();
-			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 		}
 		else if(tag == MAINSCENE_OPTION)
 		{
-			auto scene = GameScene::createScene();
-			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 		}
 		else if (tag == MAINSCENE_HELP)
 		{
-			auto scene = GameScene::createScene();
-			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 		}
 		else if (tag == MAINSCENE_EXIT)
 		{
