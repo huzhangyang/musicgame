@@ -20,7 +20,7 @@ bool MainScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("draftm.json");
+	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
 	auto child = sceneNode->getChildByTag(10004);
 	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
