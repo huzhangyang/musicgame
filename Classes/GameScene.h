@@ -17,7 +17,8 @@ public:
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
 	void addNewNote(Point p);
-	
+	void GameScene::addRandomNote(float dt);
+	void removeNote(float dt);
 private:
 };
 
