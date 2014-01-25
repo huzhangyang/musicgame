@@ -20,12 +20,12 @@ bool MainScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("bg.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
 	auto child = sceneNode->getChildByTag(10004);
 	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
 	auto layer = (Layer*)reader->getNode();
-
 	auto shelf = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_SHELF));
 	shelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto ink = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_INK));
@@ -37,6 +37,11 @@ bool MainScene::init()
 	auto exit = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_EXIT));
 	exit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	return true;
+}
+
+void MainScene::onEnterTransitionDidFinish()
+{
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("bg.mp3");
 }
 
 void MainScene::menuCloseCallback(Object* pSender)
@@ -57,6 +62,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == MAINSCENE_SHELF)
 		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic("bg.mp3");
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 		}
