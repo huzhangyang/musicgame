@@ -45,7 +45,7 @@
     "_width": 1280
   },
   "Triggers": null,
-  "Version": "1.2.0.0",
+  "Version": "1.2.0.1",
   "components": [
     {
       "__type": "ComSceneSurrogate:#EditorCommon.JsonModel.Component",
@@ -59,11 +59,11 @@
       "name": "CCBackgroundAudio",
       "file": null,
       "fileData": {
-        "path": "bg.mp3",
+        "path": null,
         "plistFile": null,
         "resourceType": 0
       },
-      "loop": 1
+      "loop": 0
     }
   ]
 }
