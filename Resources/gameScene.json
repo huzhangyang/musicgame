@@ -32,7 +32,7 @@
           "name": "GUIComponent",
           "file": null,
           "fileData": {
-            "path": "gameSceneUI_1/gameSceneUI_1.json",
+            "path": "gameSceneUI/gameSceneUI.json",
             "plistFile": null,
             "resourceType": 0
           }
