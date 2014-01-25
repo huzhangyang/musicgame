@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "cocos-ext.h"
+#include "SimpleAudioEngine.h" 
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -12,11 +13,11 @@ class GameScene : public cocos2d::Layer
 public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
+	virtual void onEnterTransitionDidFinish();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
-	void addNewSpriteAtPosition(Point p);
-	virtual void onEnter() override;
-	virtual void onTouchesEnded(const std::vector<Touch*>& touches, Event *unused_event)override;
+	void addNewNote(Point p);
+	
 private:
 };
 

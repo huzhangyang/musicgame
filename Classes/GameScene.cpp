@@ -1,33 +1,38 @@
 #include "GameScene.h"
 
+static int notecount;
+
+const int POS_X1 = 270;
+const int POS_X2 = 420;
+const int POS_X3 = 570;
+const int POS_X4 = 720;
+const int POS_X5 = 870;
+const int POS_X6 = 1020;
+const int POS_Y1 = 105;
+const int POS_Y2 = 200;
+const int POS_Y3 = 295;
+const int POS_Y4 = 390;
+const int POS_Y5 = 485;
+
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::create();
 	auto layer = GameScene::create();
 	scene->addChild(layer);
+
+	notecount = 0;//¼ÇÂ¼Òô·ûÊý
+
 	return scene;
 }
 
-void GameScene::addNewSpriteAtPosition(Point p)
+void GameScene::addNewNote(Point p)
 {
-	auto sp = Sprite::create("1.png");
-	sp->setTag(1);
-	sp->setPosition(p);
-	this->addChild(sp);
-}
-
-void GameScene::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
-{
-	for (auto touch : touches)
-	{
-		auto location = touch->getLocation();
-		addNewSpriteAtPosition(location);
-	}
-}
-
-void GameScene::onEnter()
-{
-	Layer::onEnter();
+	auto note = Sprite::create("1.png");
+	note->setTag(++notecount);
+	note->setPosition(p);
+	this->addChild(note);
+	note->runAction(DelayTime::create(1));
+	//note->removeFromParent();
 }
 
 bool GameScene::init()
@@ -41,8 +46,18 @@ bool GameScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("test.mp3");
+	auto sprite = Sprite::create("gameSceneBackground.png");
+	sprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	addChild(sprite);
 	return true;
+}
+
+void GameScene::onEnterTransitionDidFinish()
+{
+	Layer::onEnterTransitionDidFinish();
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("test.mp3");
+	addNewNote(Point(POS_X1, POS_Y1));
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
