@@ -16,7 +16,7 @@
       "classname": "CCNode",
       "name": null,
       "canedit": true,
-      "objecttag": 10003,
+      "objecttag": 10004,
       "rotation": 0,
       "scalex": 1,
       "scaley": 1,
@@ -41,7 +41,7 @@
     }
   ],
   "CanvasSize": {
-    "_height": 760,
+    "_height": 720,
     "_width": 1280
   },
   "Triggers": null,
