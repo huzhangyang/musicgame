@@ -94,9 +94,11 @@ bool GameScene::init()
 
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("test.mp3");
-	auto sprite = Sprite::create("gameSceneBackground.png");
-	sprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	addChild(sprite);
+	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
+	addChild(sceneNode);
+	auto child = sceneNode->getChildByTag(10003);
+	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
+	auto layer = (Layer*)reader->getNode();
 	return true;
 }
 

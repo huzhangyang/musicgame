@@ -2,11 +2,10 @@
 #define __GAME_SCENE_H__
 
 #include "cocos2d.h"
-#include "cocos-ext.h"
 #include "SimpleAudioEngine.h" 
+#include "cocostudio/CocoStudio.h"  
 
 USING_NS_CC;
-USING_NS_CC_EXT;
 
 class GameScene : public cocos2d::Layer
 {
