@@ -15,11 +15,9 @@ public:
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
 	void addNewSpriteAtPosition(Point p);
-	void setPhyWorld(PhysicsWorld* world){ m_world = world; }
 	virtual void onEnter() override;
 	virtual void onTouchesEnded(const std::vector<Touch*>& touches, Event *unused_event)override;
 private:
-	PhysicsWorld* m_world;
 };
 
 #endif 
