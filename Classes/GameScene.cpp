@@ -2,17 +2,17 @@
 
 static int notecount;
 
-const int POS_X1 = 270;
-const int POS_X2 = 420;
-const int POS_X3 = 570;
-const int POS_X4 = 720;
-const int POS_X5 = 870;
-const int POS_X6 = 1020;
-const int POS_Y1 = 485;
-const int POS_Y2 = 390;
-const int POS_Y3 = 295;
+const int POS_X1 = 260;
+const int POS_X2 = 410;
+const int POS_X3 = 560;
+const int POS_X4 = 710;
+const int POS_X5 = 860;
+const int POS_X6 = 1010;
+const int POS_Y1 = 470;
+const int POS_Y2 = 380;
+const int POS_Y3 = 290;
 const int POS_Y4 = 200;
-const int POS_Y5 = 105;
+const int POS_Y5 = 110;
 
 Scene* GameScene::createScene()
 {
@@ -27,11 +27,12 @@ Scene* GameScene::createScene()
 
 void GameScene::addNewNote(Point p)
 {
-	auto note = Sprite::create("1.png");
+	auto note = Sprite::create("note.png");
+	note->setZOrder(1);
 	note->setTag(++notecount);
 	note->setPosition(p);
 	note->scheduleOnce(schedule_selector(GameScene::removeNote), 0.8);
-	this->addChild(note);
+	addChild(note);
 }
 
 void GameScene::addRandomNote(float dt)
@@ -94,15 +95,19 @@ bool GameScene::init()
 
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("test.mp3");
-	auto sprite = Sprite::create("gameSceneBackground.png");
-	sprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	addChild(sprite);
+	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
+	sceneNode->setZOrder(0);
+	addChild(sceneNode);
+	auto child = sceneNode->getChildByTag(10004);
+	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
+	auto layer = (Layer*)reader->getNode();
 	return true;
 }
 
 void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
+	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("test.mp3");
 	this->schedule(schedule_selector(GameScene::addRandomNote), 0.6);
 }
