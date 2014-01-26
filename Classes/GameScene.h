@@ -1,11 +1,14 @@
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
 
+#include "Resources.h"
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h" 
 #include "cocostudio/CocoStudio.h"  
+#include "CocosGUI.h"  
 
 USING_NS_CC;
+using namespace gui;
 
 class GameScene : public cocos2d::Layer
 {
@@ -16,8 +19,9 @@ public:
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
 	void addNewNote(Point p);
-	void GameScene::addRandomNote(float dt);
+	void addRandomNote(float dt);
 	void removeNote(float dt);
+	void touchEvent(Object* obj, gui::TouchEventType eventType);
 private:
 };
 

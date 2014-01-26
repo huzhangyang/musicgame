@@ -44,6 +44,11 @@ void MainScene::onEnterTransitionDidFinish()
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("bg.mp3");
 }
 
+void MainScene::onExit()
+{
+	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
+}
+
 void MainScene::menuCloseCallback(Object* pSender)
 {
 	Director::getInstance()->end();
@@ -62,7 +67,6 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == MAINSCENE_SHELF)
 		{
-			CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic("bg.mp3");
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 		}

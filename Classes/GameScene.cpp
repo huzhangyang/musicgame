@@ -2,6 +2,7 @@
 
 static int notecount;
 
+const double BPM = 91.97;
 const int POS_X1 = 260;
 const int POS_X2 = 410;
 const int POS_X3 = 560;
@@ -27,11 +28,12 @@ Scene* GameScene::createScene()
 
 void GameScene::addNewNote(Point p)
 {
-	auto note = Sprite::create("note.png");
+	auto note = Sprite::create("gameSceneUI/note.png");
+	//note->setEventDispatcher()
 	note->setZOrder(1);
 	note->setTag(++notecount);
 	note->setPosition(p);
-	note->scheduleOnce(schedule_selector(GameScene::removeNote), 0.8);
+	note->scheduleOnce(schedule_selector(GameScene::removeNote), 1.2);
 	addChild(note);
 }
 
@@ -101,6 +103,9 @@ bool GameScene::init()
 	auto child = sceneNode->getChildByTag(10004);
 	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
 	auto layer = (Layer*)reader->getNode();
+
+	auto pause = dynamic_cast<Button*>(layer->getChildByTag(GAMESCENE_PAUSE));
+	pause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	return true;
 }
 
@@ -109,7 +114,7 @@ void GameScene::onEnterTransitionDidFinish()
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("test.mp3");
-	this->schedule(schedule_selector(GameScene::addRandomNote), 0.6);
+	this->schedule(schedule_selector(GameScene::addRandomNote), 60/BPM);
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -119,4 +124,22 @@ void GameScene::menuCloseCallback(Object* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 	exit(0);
 #endif
+}
+
+void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
+{
+	auto button = dynamic_cast<Button*>(obj);
+	int tag = button->getTag();
+	switch (eventType)
+	{
+	case TouchEventType::TOUCH_EVENT_ENDED:
+		if (tag == GAMESCENE_PAUSE)
+		{
+			if (CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+				CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+			else
+				CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+		}
+		break;
+	}
 }
