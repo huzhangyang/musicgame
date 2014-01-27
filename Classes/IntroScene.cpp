@@ -30,7 +30,7 @@ bool IntroScene::init()
 void IntroScene::toggleStart()
 {
 	auto scene = MainScene::createScene();
-	Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
+	Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 }
 
 void IntroScene::menuCloseCallback(Object* pSender)

@@ -16,6 +16,7 @@ public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
 	virtual void onEnterTransitionDidFinish();
+	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
 	void addNewNote(Point p);

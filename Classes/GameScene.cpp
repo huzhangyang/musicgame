@@ -1,8 +1,9 @@
 #include "GameScene.h"
 
 static int notecount;
+Array* notearray;
 
-const double BPM = 91.97;
+const float BPM = 91.97;
 const int POS_X1 = 260;
 const int POS_X2 = 410;
 const int POS_X3 = 560;
@@ -20,20 +21,23 @@ Scene* GameScene::createScene()
 	auto scene = Scene::create();
 	auto layer = GameScene::create();
 	scene->addChild(layer);
-
-	notecount = 0;//¼ÇÂ¼Òô·ûÊý
-
+	notearray = Array::create();
+	notearray->retain();
+	notecount = 0;//¼ÇÂ¼Òô·û
 	return scene;
 }
 
 void GameScene::addNewNote(Point p)
 {
 	auto note = Sprite::create("gameSceneUI/note.png");
-	//note->setEventDispatcher()
 	note->setZOrder(1);
 	note->setTag(++notecount);
 	note->setPosition(p);
 	note->scheduleOnce(schedule_selector(GameScene::removeNote), 1.2);
+	notearray->addObject(note);
+	auto noteListener = EventListenerTouchOneByOne::create();
+	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 	addChild(note);
 }
 
@@ -114,7 +118,7 @@ void GameScene::onEnterTransitionDidFinish()
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("test.mp3");
-	this->schedule(schedule_selector(GameScene::addRandomNote), 60/BPM);
+	this->schedule(schedule_selector(GameScene::addRandomNote), 60 / BPM);
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -143,3 +147,20 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		break;
 	}
 }
+
+bool GameScene::onTouchBegan(Touch *touch, Event  *event)
+{
+	ActionInterval* action = RotateBy::create(0.4f, 360);
+	auto target = static_cast<Sprite*>(event->getCurrentTarget());
+	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+	Size s = target->getContentSize();
+	Rect rect = Rect(0, 0, s.width, s.height);
+	if (rect.containsPoint(locationInNode))
+	{
+		target->runAction(action);
+		return true;
+	}
+	else
+		return false;
+};
+

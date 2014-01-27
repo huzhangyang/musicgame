@@ -68,7 +68,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		if (tag == MAINSCENE_SHELF)
 		{
 			auto scene = GameScene::createScene();
-			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		}
 		else if (tag == MAINSCENE_INK)
 		{
