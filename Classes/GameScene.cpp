@@ -1,9 +1,7 @@
 #include "GameScene.h"
+#include "MainScene.h"
+#include "Note.h"
 
-static int notecount;
-Array* notearray;
-
-const float BPM = 91.97;
 const int POS_X1 = 260;
 const int POS_X2 = 410;
 const int POS_X3 = 560;
@@ -16,24 +14,27 @@ const int POS_Y3 = 290;
 const int POS_Y4 = 200;
 const int POS_Y5 = 110;
 
+int notecount;
+Array* notearray;
+
+const float BPM = 91.97;
+
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::create();
 	auto layer = GameScene::create();
 	scene->addChild(layer);
+
 	notearray = Array::create();
 	notearray->retain();
-	notecount = 0;//记录音符
+	notecount = 0;//音符总数
+
 	return scene;
 }
 
 void GameScene::addNewNote(Point p)
 {
-	auto note = Sprite::create("gameSceneUI/note.png");
-	note->setZOrder(1);
-	note->setTag(++notecount);
-	note->setPosition(p);
-	note->scheduleOnce(schedule_selector(GameScene::removeNote), 1.2);
+	auto note = Note::createAtPoint(p,notecount++);
 	notearray->addObject(note);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
@@ -46,6 +47,8 @@ void GameScene::addRandomNote(float dt)
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
 	{
 		this->unschedule(schedule_selector(GameScene::addRandomNote));
+		auto scene = MainScene::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 	}
 	int randomX = CCRANDOM_0_1() * 5 + 1;
 	int randomY = CCRANDOM_0_1() * 5 + 1;
@@ -84,10 +87,6 @@ void GameScene::addRandomNote(float dt)
 	}
 }
 
-void GameScene::removeNote(float dt)
-{
-	this->removeFromParentAndCleanup(true);
-}
 
 bool GameScene::init()
 {
@@ -139,10 +138,16 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == GAMESCENE_PAUSE)
 		{
-			if (CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+			if (!Director::getInstance()->isPaused())
+			{
+				Director::getInstance()->pause();
 				CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
-			else
+			}
+			else//否则  
+			{
+				Director::getInstance()->resume();
 				CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+			}
 		}
 		break;
 	}
@@ -150,17 +155,18 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 
 bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 {
-	ActionInterval* action = RotateBy::create(0.4f, 360);
-	auto target = static_cast<Sprite*>(event->getCurrentTarget());
+	ActionInterval* action = ScaleTo::create(0.2f, 0);
+	auto target = static_cast<Note*>(event->getCurrentTarget());
 	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 	Size s = target->getContentSize();
 	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode))
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
 	{
 		target->runAction(action);
+		target->scheduleOnce(schedule_selector(Note::removeSelf), 0.2f);
 		return true;
 	}
 	else
 		return false;
-};
+}
 
