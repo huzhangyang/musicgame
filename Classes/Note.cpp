@@ -1,6 +1,6 @@
 #include "Note.h"
 
-const float LIFESPAN = 1.0;
+const int LIFESPAN = 60;//×ÜÖ¡Êý
 const int POS_X1 = 260;
 const int POS_X2 = 410;
 const int POS_X3 = 560;
@@ -13,7 +13,7 @@ const int POS_Y3 = 290;
 const int POS_Y4 = 200;
 const int POS_Y5 = 110;
 
-Note* Note::createAtPoint(Point p,int tag)
+Note* Note::createAtPoint(Point p, int tag)
 {
 	Note *note = new Note();
 	if (note && note->initWithFile("gameSceneUI/note.png"))
@@ -21,7 +21,9 @@ Note* Note::createAtPoint(Point p,int tag)
 		note->setZOrder(1);
 		note->setTag(tag);
 		note->setPosition(p);
-		note->scheduleOnce(schedule_selector(Note::removeSelf), LIFESPAN);
+		note->life = LIFESPAN;
+		note->touched = false;
+		note->scheduleUpdate();
 		note->autorelease();
 		return note;
 	}
@@ -31,5 +33,29 @@ Note* Note::createAtPoint(Point p,int tag)
 
 void Note::removeSelf(float dt)
 {
+	if (touched==false)
+		log("%s", "miss");
 	this->removeFromParentAndCleanup(true);
+}
+
+void Note::update(float dt)
+{
+	life--;
+	if (life <= 0)
+	{
+		if (touched == false)
+			log("%s", "miss");
+		this->removeFromParentAndCleanup(true);
+	}
+		
+}
+
+int Note::getLife()
+{ 
+	return life; 
+}
+
+void Note::setTouched()
+{
+	touched = true;
 }

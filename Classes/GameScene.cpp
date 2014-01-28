@@ -34,7 +34,7 @@ Scene* GameScene::createScene()
 
 void GameScene::addNewNote(Point p)
 {
-	auto note = Note::createAtPoint(p,notecount++);
+	auto note = Note::createAtPoint(p, notecount++);
 	notearray->addObject(note);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
@@ -155,18 +155,26 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 
 bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 {
-	ActionInterval* action = ScaleTo::create(0.2f, 0);
 	auto target = static_cast<Note*>(event->getCurrentTarget());
 	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 	Size s = target->getContentSize();
 	Rect rect = Rect(0, 0, s.width, s.height);
 	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
 	{
+		target->setTouched();
+		float life = target->getLife() / 60.0;
+		if (life >= 0.6 || life <= 0.3)
+			log("%f %s", life, "good");
+		else
+			log("%f %s", life, "perfect");
+		ActionInterval* action = RotateBy::create(life, 360);
 		target->runAction(action);
-		target->scheduleOnce(schedule_selector(Note::removeSelf), 0.2f);
 		return true;
 	}
 	else
+	{
 		return false;
+	}
+		
 }
 
