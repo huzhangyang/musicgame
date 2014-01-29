@@ -14,8 +14,10 @@ const int POS_Y3 = 290;
 const int POS_Y4 = 200;
 const int POS_Y5 = 110;
 
-int notecount;
+int allnotes,combo,hit,perfect;
 Array* notearray;
+LabelBMFont* labelCond;
+LabelBMFont* labelCombo;
 
 const float BPM = 91.97;
 
@@ -27,19 +29,23 @@ Scene* GameScene::createScene()
 
 	notearray = Array::create();
 	notearray->retain();
-	notecount = 0;//音符总数
+	allnotes = 0;//音符总数
+	combo = 0;//连击数
+	hit = 0;//击中数
+	perfect = 0;//完美数
 
 	return scene;
 }
 
 void GameScene::addNewNote(Point p)
 {
-	auto note = Note::createAtPoint(p, notecount++);
+	auto note = Note::createAtPoint(p, allnotes++);
 	notearray->addObject(note);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
 	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 	addChild(note);
+	//note->runAction(Sequence::create(FadeIn::create(0.7), FadeOut::create(0.3)));
 }
 
 void GameScene::addRandomNote(float dt)
@@ -50,7 +56,7 @@ void GameScene::addRandomNote(float dt)
 		auto scene = MainScene::createScene();
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 	}
-	int randomX = CCRANDOM_0_1() * 5 + 1;
+	int randomX = CCRANDOM_0_1() * 6 + 1;
 	int randomY = CCRANDOM_0_1() * 5 + 1;
 	switch (10 * randomX + randomY)
 	{
@@ -109,6 +115,14 @@ bool GameScene::init()
 
 	auto pause = dynamic_cast<Button*>(layer->getChildByTag(GAMESCENE_PAUSE));
 	pause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	labelCond = LabelBMFont::create("", "微软雅黑", 36);
+	labelCond->setColor(Color3B(75, 92, 196));
+	labelCond->setPosition(1180, 300);
+	addChild(labelCond);
+	labelCombo = LabelBMFont::create("", "微软雅黑", 36);
+	labelCombo->setColor(Color3B(75, 92, 196));
+	labelCombo->setPosition(1180, 250);
+	addChild(labelCombo);
 	return true;
 }
 
@@ -164,10 +178,11 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		target->setTouched();
 		float life = target->getLife() / 60.0;
 		if (life >= 0.6 || life <= 0.3)
-			log("%f %s", life, "good");
+			setCondition(1);
 		else
-			log("%f %s", life, "perfect");
+			setCondition(2);
 		ActionInterval* action = RotateBy::create(life, 360);
+		target->stopAllActions();
 		target->runAction(action);
 		return true;
 	}
@@ -175,6 +190,35 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	{
 		return false;
 	}
-		
+
+}
+
+void GameScene::setCondition(int cond)
+{
+	char buffer[20];
+	if (cond == 0)
+	{
+		combo = 0;
+		labelCond->setString("MISS!");
+		//labelCombo->setString("");
+	}
+	else if (cond == 1)
+	{
+		combo++;
+		hit++;
+		labelCond->setString("GOOD!!");
+		//labelCombo->setString(itoa(combo,buffer,10));
+	}	
+	else
+	{
+		combo++;
+		hit++;
+		perfect++;
+		labelCond->setString("PERFECT!!!");
+		//labelCombo->setString(itoa(combo, buffer, 10));
+	}	
+	ActionInterval* action = FadeOut::create(1);
+	labelCond->runAction(action);
+	//labelCombo->runAction(action);
 }
 

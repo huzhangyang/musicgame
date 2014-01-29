@@ -1,4 +1,5 @@
 #include "Note.h"
+#include "GameScene.h"
 
 const int LIFESPAN = 60;//×ÜÖ¡Êý
 const int POS_X1 = 260;
@@ -31,23 +32,15 @@ Note* Note::createAtPoint(Point p, int tag)
 	return NULL;
 }
 
-void Note::removeSelf(float dt)
-{
-	if (touched==false)
-		log("%s", "miss");
-	this->removeFromParentAndCleanup(true);
-}
-
 void Note::update(float dt)
 {
 	life--;
 	if (life <= 0)
 	{
 		if (touched == false)
-			log("%s", "miss");
+			GameScene::setCondition(0);
 		this->removeFromParentAndCleanup(true);
 	}
-		
 }
 
 int Note::getLife()

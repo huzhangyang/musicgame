@@ -21,6 +21,7 @@ public:
 	CREATE_FUNC(GameScene);
 	void addNewNote(Point p);
 	void addRandomNote(float dt);
+	static void setCondition(int cond);
 	void touchEvent(Object* obj, gui::TouchEventType eventType);
 private:
 	
