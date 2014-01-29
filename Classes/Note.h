@@ -13,6 +13,7 @@ public:
 	void update(float dt);
 	int getLife();
 	void setTouched();
+	bool isTouched();
 private:
 	int type;//0为普通音符，1为长按音符，2为滑动音符
 	int life;//剩余帧数

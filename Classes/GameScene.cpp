@@ -14,10 +14,10 @@ const int POS_Y3 = 290;
 const int POS_Y4 = 200;
 const int POS_Y5 = 110;
 
-int allnotes,combo,hit,perfect;
+int allnotes, combo, hit, perfect, maxcombo;
 Array* notearray;
-LabelBMFont* labelCond;
-LabelBMFont* labelCombo;
+LabelTTF* labelCond;
+LabelTTF* labelCombo;
 
 const float BPM = 91.97;
 
@@ -33,6 +33,7 @@ Scene* GameScene::createScene()
 	combo = 0;//连击数
 	hit = 0;//击中数
 	perfect = 0;//完美数
+	maxcombo = 0;
 
 	return scene;
 }
@@ -45,7 +46,6 @@ void GameScene::addNewNote(Point p)
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
 	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 	addChild(note);
-	//note->runAction(Sequence::create(FadeIn::create(0.7), FadeOut::create(0.3)));
 }
 
 void GameScene::addRandomNote(float dt)
@@ -53,6 +53,12 @@ void GameScene::addRandomNote(float dt)
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
 	{
 		this->unschedule(schedule_selector(GameScene::addRandomNote));
+
+		if (maxcombo == 0)
+			maxcombo = allnotes;
+		log("%d %d %d", allnotes, hit, perfect);
+		log("%.2f%s", (double)perfect / allnotes*0.1 + (double)(hit - perfect) / allnotes*0.6 + (double)maxcombo / allnotes*0.3, "%");//简易结算
+
 		auto scene = MainScene::createScene();
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 	}
@@ -115,11 +121,11 @@ bool GameScene::init()
 
 	auto pause = dynamic_cast<Button*>(layer->getChildByTag(GAMESCENE_PAUSE));
 	pause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	labelCond = LabelBMFont::create("", "微软雅黑", 36);
+	labelCond = LabelTTF::create("", "微软雅黑", 36);
 	labelCond->setColor(Color3B(75, 92, 196));
 	labelCond->setPosition(1180, 300);
 	addChild(labelCond);
-	labelCombo = LabelBMFont::create("", "微软雅黑", 36);
+	labelCombo = LabelTTF::create("", "微软雅黑", 36);
 	labelCombo->setColor(Color3B(75, 92, 196));
 	labelCombo->setPosition(1180, 250);
 	addChild(labelCombo);
@@ -173,11 +179,11 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 	Size s = target->getContentSize();
 	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isTouched())
 	{
 		target->setTouched();
 		float life = target->getLife() / 60.0;
-		if (life >= 0.6 || life <= 0.3)
+		if (life >= 2 / 3.0 || life <= 1 / 3.0)
 			setCondition(1);
 		else
 			setCondition(2);
@@ -198,27 +204,29 @@ void GameScene::setCondition(int cond)
 	char buffer[20];
 	if (cond == 0)
 	{
+		if (maxcombo < combo)
+			maxcombo = combo;
 		combo = 0;
 		labelCond->setString("MISS!");
-		//labelCombo->setString("");
+		labelCombo->setString("");
 	}
 	else if (cond == 1)
 	{
 		combo++;
 		hit++;
 		labelCond->setString("GOOD!!");
-		//labelCombo->setString(itoa(combo,buffer,10));
-	}	
+		labelCombo->setString(_itoa(combo, buffer, 10));
+	}
 	else
 	{
 		combo++;
 		hit++;
 		perfect++;
 		labelCond->setString("PERFECT!!!");
-		//labelCombo->setString(itoa(combo, buffer, 10));
-	}	
+		labelCombo->setString(_itoa(combo, buffer, 10));
+	}
 	ActionInterval* action = FadeOut::create(1);
 	labelCond->runAction(action);
-	//labelCombo->runAction(action);
+	//labelCombo->runAction(action);//这个加入了以后运行效率好低啊，labelTTF果然还是权宜之计
 }
 
