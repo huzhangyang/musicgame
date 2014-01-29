@@ -111,7 +111,7 @@ bool GameScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("test.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/test.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	sceneNode->setZOrder(0);
 	addChild(sceneNode);
@@ -136,7 +136,7 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("test.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/test.mp3");
 	this->schedule(schedule_selector(GameScene::addRandomNote), 60 / BPM);
 }
 
@@ -227,6 +227,6 @@ void GameScene::setCondition(int cond)
 	}
 	ActionInterval* action = FadeOut::create(1);
 	labelCond->runAction(action);
-	//labelCombo->runAction(action);//这个加入了以后运行效率好低啊，labelTTF果然还是权宜之计
+	//labelCombo->runAction(action);
 }
 
