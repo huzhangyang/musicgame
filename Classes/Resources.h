@@ -8,6 +8,7 @@ const int MAINSCENE_HELP = 8;
 const int MAINSCENE_EXIT = 9;
 
 const int GAMESCENE_PAUSE = 5;
-const int GAMESCENE_INFO = 6;
-const int GAMESCENE_BAR = 7;
+const int GAMESCENE_INFO = 7;
+const int GAMESCENE_NUMBER = 8;
+const int GAMESCENE_JUDGE = 9;
 #endif 
