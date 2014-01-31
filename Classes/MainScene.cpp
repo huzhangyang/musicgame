@@ -23,19 +23,19 @@ bool MainScene::init()
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/bg.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
-	auto child = sceneNode->getChildByTag(10004);
-	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
-	auto layer = (Layer*)reader->getNode();
-	auto shelf = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_SHELF));
-	shelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	auto ink = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_INK));
-	ink->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	auto option = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_OPTION));
-	option->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	auto help = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_HELP));
-	help->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	auto exit = dynamic_cast<Button*>(layer->getChildByTag(MAINSCENE_EXIT));
-	exit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto UINode = sceneNode->getChildByTag(10004);
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
+	auto UIlayer = UIComponent->getNode();
+	auto objectShelf = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_SHELF));
+	objectShelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto objectInk = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_INK));
+	objectInk->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto buttonOption = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_OPTION));
+	buttonOption->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto buttonHelp = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_HELP));
+	buttonHelp->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto buttonExit = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_EXIT));
+	buttonExit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	return true;
 }
 

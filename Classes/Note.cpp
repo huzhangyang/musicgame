@@ -25,7 +25,7 @@ Note* Note::createAtPoint(Point p, int tag)
 		note->life = LIFESPAN;
 		note->touched = false;
 		note->scheduleUpdate();
-		note->setScale(3);
+		note->setScale(2.5);
 		note->runAction(ScaleTo::create(1, 0));
 		note->autorelease();
 		return note;

@@ -13,13 +13,12 @@ const int POS_Y2 = 380;
 const int POS_Y3 = 290;
 const int POS_Y4 = 200;
 const int POS_Y5 = 110;
+const float BPM = 91.97;
 
 int allnotes, combo, hit, perfect, maxcombo;
-Array* notearray;
-LabelTTF* labelCond;
-LabelTTF* labelCombo;
-
-const float BPM = 91.97;
+TextBMFont* labelInfo;
+TextBMFont* labelCombo;
+TextBMFont* labelJudge;
 
 Scene* GameScene::createScene()
 {
@@ -27,13 +26,11 @@ Scene* GameScene::createScene()
 	auto layer = GameScene::create();
 	scene->addChild(layer);
 
-	notearray = Array::create();
-	notearray->retain();
 	allnotes = 0;//音符总数
 	combo = 0;//连击数
 	hit = 0;//击中数
 	perfect = 0;//完美数
-	maxcombo = 0;
+	maxcombo = 0;//最大连击数
 
 	return scene;
 }
@@ -41,7 +38,6 @@ Scene* GameScene::createScene()
 void GameScene::addNewNote(Point p)
 {
 	auto note = Note::createAtPoint(p, allnotes++);
-	notearray->addObject(note);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
 	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
@@ -115,20 +111,15 @@ bool GameScene::init()
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	sceneNode->setZOrder(0);
 	addChild(sceneNode);
-	auto child = sceneNode->getChildByTag(10004);
-	auto reader = (cocostudio::ComRender*)child->getComponent("GUIComponent");
-	auto layer = (Layer*)reader->getNode();
-
-	auto pause = dynamic_cast<Button*>(layer->getChildByTag(GAMESCENE_PAUSE));
-	pause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	labelCond = LabelTTF::create("", "微软雅黑", 36);
-	labelCond->setColor(Color3B(75, 92, 196));
-	labelCond->setPosition(1180, 300);
-	addChild(labelCond);
-	labelCombo = LabelTTF::create("", "微软雅黑", 36);
-	labelCombo->setColor(Color3B(75, 92, 196));
-	labelCombo->setPosition(1180, 250);
-	addChild(labelCombo);
+	auto UINode = sceneNode->getChildByTag(10004);
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
+	auto UIlayer = UIComponent->getNode();
+	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
+	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	auto x=UIlayer->getChildByTag(GAMESCENE_INFO);
+	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
+	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
+	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
 	return true;
 }
 
@@ -183,7 +174,7 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	{
 		target->setTouched();
 		float life = target->getLife() / 60.0;
-		if (life >= 2 / 3.0 || life <= 1 / 3.0)
+		if (life >= 2 / 2.5 || life <= 1 / 2.5)
 			setCondition(1);
 		else
 			setCondition(2);
@@ -207,26 +198,26 @@ void GameScene::setCondition(int cond)
 		if (maxcombo < combo)
 			maxcombo = combo;
 		combo = 0;
-		labelCond->setString("MISS!");
-		labelCombo->setString("");
+		labelJudge->setText("MISS!");
+		labelCombo->setText("");
 	}
 	else if (cond == 1)
 	{
 		combo++;
 		hit++;
-		labelCond->setString("GOOD!!");
-		labelCombo->setString(_itoa(combo, buffer, 10));
+		labelJudge->setText("GOOD!!");
+		labelCombo->setText(_itoa(combo, buffer, 10));
 	}
 	else
 	{
 		combo++;
 		hit++;
 		perfect++;
-		labelCond->setString("PERFECT!!!");
-		labelCombo->setString(_itoa(combo, buffer, 10));
+		labelJudge->setText("PERFECT!!!");
+		labelCombo->setText(_itoa(combo, buffer, 10));
 	}
 	ActionInterval* action = FadeOut::create(1);
-	labelCond->runAction(action);
-	//labelCombo->runAction(action);
+	labelJudge->runAction(action);
+	//labelCombo->runAction(action);//为毛每次加了这个都会很卡
 }
 
