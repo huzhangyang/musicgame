@@ -19,12 +19,12 @@ public:
 	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
-	void addNewNote(Point p);
+	void addNewNote(int posX, int posY, int type);
 	void addRandomNote(float dt);
 	static void setCondition(int cond);
 	void touchEvent(Object* obj, gui::TouchEventType eventType);
 private:
-	
+
 };
 
 #endif 

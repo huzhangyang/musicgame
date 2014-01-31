@@ -8,10 +8,13 @@ USING_NS_CC;
 class Note : public cocos2d::Sprite
 {
 public:
-	static Note* createAtPoint(Point p, int tag);
-	void removeSelf(float dt);
+	static Note* createNote(int posX,int posY,int type);
 	void update(float dt);
+	void initNote(int posX, int posY, int type);
+
+	void setLife(int life);
 	int getLife();
+	int getType();
 	void setTouched();
 	bool isTouched();
 private:

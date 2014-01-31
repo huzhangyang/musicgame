@@ -1,7 +1,8 @@
 #include "Note.h"
 #include "GameScene.h"
 
-const int LIFESPAN = 60;//总帧数
+const int LIFESPAN = 60;//总生命帧数
+
 const int POS_X1 = 260;
 const int POS_X2 = 410;
 const int POS_X3 = 560;
@@ -14,24 +15,47 @@ const int POS_Y3 = 290;
 const int POS_Y4 = 200;
 const int POS_Y5 = 110;
 
-Note* Note::createAtPoint(Point p, int tag)
+Note* Note::createNote(int posX, int posY, int type)
 {
 	Note *note = new Note();
 	if (note && note->initWithFile("gameSceneUI/note.png"))
 	{
-		note->setZOrder(1);
-		note->setTag(tag);
-		note->setPosition(p);
-		note->life = LIFESPAN;
-		note->touched = false;
+		note->initNote(posX,posY,type);
 		note->scheduleUpdate();
-		note->setScale(2.5);
 		note->runAction(ScaleTo::create(1, 0));
 		note->autorelease();
 		return note;
 	}
 	CC_SAFE_DELETE(note);
 	return NULL;
+}
+
+void Note::initNote(int posX, int posY, int type)
+{
+	this->setZOrder(1);
+	this->type = type;
+	this->life = LIFESPAN;
+	this->touched = false;
+	this->setScale(2.5);
+	switch (posX)
+	{
+	case 1:this->setPositionX(POS_X1); break;
+	case 2:this->setPositionX(POS_X2); break;
+	case 3:this->setPositionX(POS_X3); break;
+	case 4:this->setPositionX(POS_X4); break;
+	case 5:this->setPositionX(POS_X5); break;
+	case 6:this->setPositionX(POS_X6); break;
+	default: break;
+	}
+	switch (posY)
+	{
+	case 1:this->setPositionY(POS_Y1); break;
+	case 2:this->setPositionY(POS_Y2); break;
+	case 3:this->setPositionY(POS_Y3); break;
+	case 4:this->setPositionY(POS_Y4); break;
+	case 5:this->setPositionY(POS_Y5); break;
+	default: break;
+	}
 }
 
 void Note::update(float dt)
@@ -45,17 +69,27 @@ void Note::update(float dt)
 	}
 }
 
+void Note::setLife(int life)
+{
+	this->life = life;
+}
+
 int Note::getLife()
 { 
-	return life; 
+	return this->life;
+}
+
+int Note::getType()
+{
+	return this->type;
 }
 
 void Note::setTouched()
 {
-	touched = true;
+	this->touched = true;
 }
 
 bool Note::isTouched()
 {
-	return touched;
+	return this->touched;
 }
