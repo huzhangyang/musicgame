@@ -73,7 +73,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == MAINSCENE_INK)
 		{
 		}
-		else if(tag == MAINSCENE_OPTION)
+		else if (tag == MAINSCENE_OPTION)
 		{
 		}
 		else if (tag == MAINSCENE_HELP)

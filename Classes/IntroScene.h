@@ -12,7 +12,7 @@ public:
 	virtual bool init();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(IntroScene);
-	void IntroScene::toggleStart();
+	void IntroScene::gotoMainScene(float dt);
 private:
 };
 

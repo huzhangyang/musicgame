@@ -23,8 +23,6 @@ public:
 	void addRandomNote(float dt);
 	static void setCondition(int cond);
 	void touchEvent(Object* obj, gui::TouchEventType eventType);
-private:
-
 };
 
 #endif 

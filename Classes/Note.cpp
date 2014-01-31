@@ -15,12 +15,20 @@ const int POS_Y3 = 290;
 const int POS_Y4 = 200;
 const int POS_Y5 = 110;
 
+Note::Note()
+{
+}
+
+Note::~Note()
+{
+}
+
 Note* Note::createNote(int posX, int posY, int type)
 {
 	Note *note = new Note();
 	if (note && note->initWithFile("gameSceneUI/note.png"))
 	{
-		note->initNote(posX,posY,type);
+		note->initNote(posX, posY, type);
 		note->scheduleUpdate();
 		note->runAction(ScaleTo::create(1, 0));
 		note->autorelease();
@@ -75,7 +83,7 @@ void Note::setLife(int life)
 }
 
 int Note::getLife()
-{ 
+{
 	return this->life;
 }
 

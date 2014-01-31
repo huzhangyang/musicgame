@@ -23,11 +23,11 @@ bool IntroScene::init()
 	auto sprite = Sprite::create("intro.png");
 	sprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	addChild(sprite);
-	sprite->runAction(Sequence::create(DelayTime::create(2), CallFunc::create(this, callfunc_selector(IntroScene::toggleStart)),NULL));
+	sprite->scheduleOnce(schedule_selector(IntroScene::gotoMainScene), 2);
 	return true;
 }
 
-void IntroScene::toggleStart()
+void IntroScene::gotoMainScene(float dt)
 {
 	auto scene = MainScene::createScene();
 	Director::getInstance()->replaceScene(TransitionFade::create(2, scene));

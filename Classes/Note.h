@@ -8,7 +8,9 @@ USING_NS_CC;
 class Note : public cocos2d::Sprite
 {
 public:
-	static Note* createNote(int posX,int posY,int type);
+	Note();
+	virtual ~Note();
+	static Note* createNote(int posX, int posY, int type);
 	void update(float dt);
 	void initNote(int posX, int posY, int type);
 
