@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>HelloCpp</name>
+	<name>MusicGame</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -44,7 +44,7 @@
 		<link>
 			<name>Classes</name>
 			<type>2</type>
-			<locationURI>COCOS2DX/projects/HelloCpp/Classes</locationURI>
+			<locationURI>COCOS2DX/projects/MusicGame/Classes</locationURI>
 		</link>
 		<link>
 			<name>cocos2dx</name>
