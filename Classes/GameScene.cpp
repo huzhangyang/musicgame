@@ -43,10 +43,10 @@ void GameScene::addRandomNote(float dt)
 
 		if (counterMaxcombo == 0)
 			counterMaxcombo = counterAll;//全程无miss
-		double completePercent = (double)counterPerfect / counterAll * 0.7;
-		completePercent += (double)counterGood / counterAll * 0.6;
-		completePercent += (double)counterMaxcombo / counterAll * 0.3;
-		log("%d %d %d %d", counterAll, counterPerfect, counterGood, counterMiss);
+		double completePercent = (double)counterPerfect / (double)counterAll * 0.7;
+		completePercent += (double)counterGood / (double)counterAll * 0.6;
+		completePercent += (double)counterMaxcombo / (double)counterAll * 0.3;
+		log("%d %d %d %d %d", counterAll, counterPerfect, counterGood, counterMiss, counterMaxcombo);
 		log("%.2f%s", completePercent, "%");//简易结算
 
 		auto scene = MainScene::createScene();
@@ -163,21 +163,21 @@ void GameScene::setCondition(int cond)
 			counterMaxcombo = counterCombo;
 		counterCombo = 0;
 		counterMiss++;
-		labelJudge->setText("MISS!");
+		labelJudge->setText("Miss!");
 		labelCombo->setText("");
 	}
 	else if (cond == 1)
 	{
 		counterCombo++;
 		counterGood++;
-		labelJudge->setText("GOOD!!");
+		labelJudge->setText("Good!");
 		labelCombo->setText(_itoa(counterCombo, buffer, 10));
 	}
 	else
 	{
 		counterCombo++;
 		counterPerfect++;
-		labelJudge->setText("PERFECT!!!");
+		labelJudge->setText("Perfect!");
 		labelCombo->setText(_itoa(counterCombo, buffer, 10));
 	}
 	labelJudge->setScale(1.25);

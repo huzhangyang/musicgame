@@ -3,12 +3,12 @@
 
 const int LIFESPAN = 60;//×ÜÉúÃüÖ¡Êý
 
-const int POS_X1 = 260;
-const int POS_X2 = 410;
-const int POS_X3 = 560;
-const int POS_X4 = 710;
-const int POS_X5 = 860;
-const int POS_X6 = 1010;
+const int POS_X1 = 200;
+const int POS_X2 = 350;
+const int POS_X3 = 500;
+const int POS_X4 = 650;
+const int POS_X5 = 800;
+const int POS_X6 = 950;
 const int POS_Y1 = 470;
 const int POS_Y2 = 380;
 const int POS_Y3 = 290;
