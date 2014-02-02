@@ -40,7 +40,6 @@ Note* Note::createNote(int posX, int posY, int type)
 
 void Note::initNote(int posX, int posY, int type)
 {
-	this->setZOrder(1);
 	this->type = type;
 	this->life = LIFESPAN;
 	this->touched = false;
@@ -72,7 +71,7 @@ void Note::update(float dt)
 	if (life <= 0)
 	{
 		if (touched == false)
-			GameScene::setCondition(0);
+			GameScene::judgeNote(0);
 		this->removeFromParentAndCleanup(true);
 	}
 }
