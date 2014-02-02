@@ -2,12 +2,9 @@
 #include "MainScene.h"
 #include "Note.h"
 
-const float BPM = 91.97;
-
+int framecounter;
 int counterAll, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
-TextBMFont* labelInfo;
-TextBMFont* labelCombo;
-TextBMFont* labelJudge;
+TextBMFont *labelInfo, *labelCombo, *labelJudge;
 
 Scene* GameScene::createScene()
 {
@@ -15,6 +12,7 @@ Scene* GameScene::createScene()
 	auto layer = GameScene::create();
 	scene->addChild(layer);
 
+	framecounter;//帧数计数器
 	counterAll = 0;//音符总数
 	counterPerfect = 0;//完美数
 	counterGood = 0;//普通击中数
@@ -35,23 +33,8 @@ void GameScene::addNewNote(int posX, int posY, int type)
 	addChild(note);
 }
 
-void GameScene::addRandomNote(float dt)
+void GameScene::addRandomNote()
 {
-	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
-	{
-		this->unschedule(schedule_selector(GameScene::addRandomNote));
-
-		if (counterMaxcombo == 0)
-			counterMaxcombo = counterAll;//全程无miss
-		double completePercent = (double)counterPerfect / counterAll * 0.7;
-		completePercent += (double)counterGood / counterAll * 0.6;
-		completePercent += (double)counterMaxcombo / counterAll * 0.3;
-		log("%d %d %d %d", counterAll, counterPerfect, counterGood, counterMiss);
-		log("%.2f%s", completePercent, "%");//简易结算
-
-		auto scene = MainScene::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
-	}
 	int randomX = CCRANDOM_0_1() * 6 + 1;
 	int randomY = CCRANDOM_0_1() * 5 + 1;
 	addNewNote(randomX, randomY, 0);
@@ -71,14 +54,13 @@ bool GameScene::init()
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/test.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
-	sceneNode->setZOrder(0);
+	sceneNode->setLocalZOrder(-1);
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10004);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
 	auto UIlayer = UIComponent->getNode();
 	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
 	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	auto x = UIlayer->getChildByTag(GAMESCENE_INFO);
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
@@ -92,7 +74,7 @@ void GameScene::onEnterTransitionDidFinish()
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/test.mp3");
-	this->schedule(schedule_selector(GameScene::addRandomNote), 60 / BPM);
+	this->scheduleUpdate();
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -102,6 +84,29 @@ void GameScene::menuCloseCallback(Object* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 	exit(0);
 #endif
+}
+
+void GameScene::update(float dt)
+{
+	framecounter++;
+	if (framecounter % 60 == 0)
+	{
+		addRandomNote();
+	}
+	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+	{
+		this->unscheduleUpdate();
+		if (counterMaxcombo == 0)
+			counterMaxcombo = counterAll;//全程无miss
+		double completePercent = (double)counterPerfect / (double)counterAll * 0.7;
+		completePercent += (double)counterGood / (double)counterAll * 0.6;
+		completePercent += (double)counterMaxcombo / (double)counterAll * 0.3;
+		log("%d %d %d %d %d", counterAll, counterPerfect, counterGood, counterMiss, counterMaxcombo);
+		log("%.2f%s", completePercent, "%");//简易结算
+
+		auto scene = MainScene::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+	}
 }
 
 void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
@@ -139,9 +144,9 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		target->setTouched();
 		float life = target->getLife() / 60.0;
 		if (life >= 2 / 2.5 || life <= 1 / 2.5)
-			setCondition(1);
+			judgeNote(1);
 		else
-			setCondition(2);
+			judgeNote(2);
 		target->stopAllActions();
 		target->setLife(20);
 		target->runAction(RotateBy::create(1 / 3.0, 360));
@@ -154,30 +159,30 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 
 }
 
-void GameScene::setCondition(int cond)
+void GameScene::judgeNote(int judge)
 {
 	char buffer[20];
-	if (cond == 0)
+	if (judge == 0)
 	{
 		if (counterMaxcombo < counterCombo)
 			counterMaxcombo = counterCombo;
 		counterCombo = 0;
 		counterMiss++;
-		labelJudge->setText("MISS!");
+		labelJudge->setText("Miss!");
 		labelCombo->setText("");
 	}
-	else if (cond == 1)
+	else if (judge == 1)
 	{
 		counterCombo++;
 		counterGood++;
-		labelJudge->setText("GOOD!!");
+		labelJudge->setText("Good!");
 		labelCombo->setText(_itoa(counterCombo, buffer, 10));
 	}
-	else
+	else if (judge == 2)
 	{
 		counterCombo++;
 		counterPerfect++;
-		labelJudge->setText("PERFECT!!!");
+		labelJudge->setText("Perfect!");
 		labelCombo->setText(_itoa(counterCombo, buffer, 10));
 	}
 	labelJudge->setScale(1.25);

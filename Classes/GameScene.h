@@ -16,12 +16,14 @@ public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
 	virtual void onEnterTransitionDidFinish();
-	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
+	static void judgeNote(int judge);
+private:
+	void update(float dt);
 	void addNewNote(int posX, int posY, int type);
-	void addRandomNote(float dt);
-	static void setCondition(int cond);
+	void addRandomNote();
+	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void touchEvent(Object* obj, gui::TouchEventType eventType);
 };
 
