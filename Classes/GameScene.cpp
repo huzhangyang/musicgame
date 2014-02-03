@@ -1,5 +1,5 @@
 #include "GameScene.h"
-#include "MainScene.h"
+#include "ClearScene.h"
 #include "Note.h"
 
 int framecounter;
@@ -34,7 +34,7 @@ bool GameScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/test.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/game.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	sceneNode->setLocalZOrder(-1);
 	addChild(sceneNode);
@@ -55,7 +55,7 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/test.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3");
 	this->scheduleUpdate();
 }
 
@@ -88,7 +88,7 @@ void GameScene::update(float dt)
 		log("%d %d %d %d %d", counterAll, counterPerfect, counterGood, counterMiss, counterMaxcombo);
 		log("%.2f%s", completePercent, "%");//¼òÒ×½áËã
 
-		auto scene = MainScene::createScene();
+		auto scene = ClearScene::createScene();
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 	}
 }
