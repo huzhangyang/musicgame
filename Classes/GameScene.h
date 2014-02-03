@@ -1,7 +1,6 @@
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
 
-#include "Resources.h"
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h" 
 #include "cocostudio/CocoStudio.h"  

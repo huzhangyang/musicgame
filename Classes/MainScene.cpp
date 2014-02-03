@@ -1,3 +1,4 @@
+#include "Global.h"
 #include "MainScene.h"
 #include "GameScene.h"
 

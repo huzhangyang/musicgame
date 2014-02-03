@@ -1,7 +1,6 @@
 #ifndef __CLEAR_SCENE_H__
 #define __CLEAR_SCENE_H__
 
-#include "Resources.h"
 #include "CocosGUI.h"  
 #include "cocostudio/CocoStudio.h"  
 #include "cocos2d.h"
@@ -20,7 +19,7 @@ public:
 	virtual void onEnterTransitionDidFinish();
 	virtual void onExit();
 	void menuCloseCallback(Object* pSender);
-	CREATE_FUNC(MainScene);
+	CREATE_FUNC(ClearScene);
 private:
 	void touchEvent(Object* obj, gui::TouchEventType eventType);
 };

@@ -30,6 +30,9 @@
     <ClCompile Include="..\Classes\Note.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\ClearScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -50,7 +53,10 @@
     <ClInclude Include="..\Classes\Note.h">
       <Filter>Classes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Resources.h">
+    <ClInclude Include="..\Classes\ClearScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Global.h">
       <Filter>Classes</Filter>
     </ClInclude>
   </ItemGroup>

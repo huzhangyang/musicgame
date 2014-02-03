@@ -1,9 +1,11 @@
+#include "Global.h"
 #include "GameScene.h"
 #include "ClearScene.h"
 #include "Note.h"
 
 int framecounter;
-int counterAll, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
+int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
+
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
 
 Scene* GameScene::createScene()
@@ -13,7 +15,7 @@ Scene* GameScene::createScene()
 	scene->addChild(layer);
 
 	framecounter;//帧数计数器
-	counterAll = 0;//音符总数
+	counterTotal = 0;//音符总数
 	counterPerfect = 0;//完美数
 	counterGood = 0;//普通击中数
 	counterMiss = 0;//错过数
@@ -80,14 +82,6 @@ void GameScene::update(float dt)
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
 	{
 		this->unscheduleUpdate();
-		if (counterMaxcombo == 0)
-			counterMaxcombo = counterAll;//全程无miss
-		double completePercent = (double)counterPerfect / (double)counterAll * 0.7;
-		completePercent += (double)counterGood / (double)counterAll * 0.6;
-		completePercent += (double)counterMaxcombo / (double)counterAll * 0.3;
-		log("%d %d %d %d %d", counterAll, counterPerfect, counterGood, counterMiss, counterMaxcombo);
-		log("%.2f%s", completePercent, "%");//简易结算
-
 		auto scene = ClearScene::createScene();
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 	}
@@ -102,7 +96,9 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == GAMESCENE_PAUSE)
 		{
-			if (!Director::getInstance()->isPaused())
+			auto scene = ClearScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			/*if (!Director::getInstance()->isPaused())
 			{
 				Director::getInstance()->pause();
 				CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
@@ -111,7 +107,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			{
 				Director::getInstance()->resume();
 				CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
-			}
+			}*/
 		}
 		break;
 	}
@@ -119,7 +115,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 
 void GameScene::addNewNote(int posX, int posY, int type)
 {
-	counterAll++;
+	counterTotal++;
 	auto note = Note::createNote(posX, posY, type);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);

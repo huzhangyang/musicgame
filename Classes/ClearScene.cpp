@@ -1,3 +1,4 @@
+#include "Global.h"
 #include "ClearScene.h"
 #include "MainScene.h"
 #include "GameScene.h"
@@ -5,7 +6,7 @@
 Scene* ClearScene::createScene()
 {
 	auto scene = Scene::create();
-	auto layer = MainScene::create();
+	auto layer = ClearScene::create();
 	scene->addChild(layer);
 	return scene;
 }
@@ -24,9 +25,31 @@ bool ClearScene::init()
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/clear.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("clearScene.json");
 	addChild(sceneNode);
-	auto UINode = sceneNode->getChildByTag(10004);
+	auto UINode = sceneNode->getChildByTag(10003);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
 	auto UIlayer = UIComponent->getNode();
+	auto buttonRetry = dynamic_cast<Button*>(UIlayer->getChildByTag(CLEARSCENE_RETRY));
+	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
+	auto buttonReturn = dynamic_cast<Button*>(UIlayer->getChildByTag(CLEARSCENE_RETURN));
+	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
+	char buffer[20];
+	auto labelPerfect = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_PNO));
+	labelPerfect->setText(_itoa(counterPerfect, buffer, 10));
+	auto labelGood = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_GNO));
+	labelGood->setText(_itoa(counterGood, buffer, 10));
+	auto labelMiss = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_MNO));
+	labelMiss->setText(_itoa(counterMiss, buffer, 10));
+	auto labelTotal = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
+	labelTotal->setText(_itoa(counterTotal, buffer, 10));
+	auto labelMaxCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
+	if (counterMaxcombo == 0)
+		counterMaxcombo = counterTotal;//È«³ÌÎÞmiss
+	labelMaxCombo->setText(_itoa(counterMaxcombo, buffer, 10));
+	auto labelComplete = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_COMPLETE));
+	double completePercent = (double)counterPerfect / (double)counterTotal * 0.7;
+	completePercent += (double)counterGood / (double)counterTotal * 0.6;
+	completePercent += (double)counterMaxcombo / (double)counterTotal * 0.3;
+	labelComplete->setText(strcat(_gcvt(completePercent * 100, 10, buffer), "% Complete"));
 	return true;
 }
 
@@ -56,22 +79,15 @@ void ClearScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	switch (eventType)
 	{
 	case TouchEventType::TOUCH_EVENT_ENDED:
-		if (tag == MAINSCENE_SHELF)
+		if (tag == CLEARSCENE_RETRY)
 		{
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		}
-		else if (tag == MAINSCENE_INK)
+		else if (tag == CLEARSCENE_RETURN)
 		{
-		}
-		else if (tag == MAINSCENE_OPTION)
-		{
-		}
-		else if (tag == MAINSCENE_HELP)
-		{
-		}
-		else if (tag == MAINSCENE_EXIT)
-		{
+			auto scene = MainScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		}
 		break;
 	}
