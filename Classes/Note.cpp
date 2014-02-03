@@ -23,12 +23,12 @@ Note::~Note()
 {
 }
 
-Note* Note::createNote(int posX, int posY, int type)
+Note* Note::createNote(int type, int pos, int des)
 {
 	Note *note = new Note();
 	if (note)
 	{
-		note->initNote(posX, posY, type);
+		note->initNote(type, pos, des);
 		note->scheduleUpdate();
 		note->autorelease();
 		return note;
@@ -37,7 +37,7 @@ Note* Note::createNote(int posX, int posY, int type)
 	return NULL;
 }
 
-void Note::initNote(int posX, int posY, int type)
+void Note::initNote(int type, int pos, int des)
 {
 	this->type = type;
 	switch (type)
@@ -62,8 +62,8 @@ void Note::initNote(int posX, int posY, int type)
 	this->life = lifeSpan;
 	this->lifeTouched = 0;
 	this->touched = false;
-	this->touchEnded = false;
-	switch (posX)
+	this->missed = true;
+	switch (pos / 10)
 	{
 	case 1:this->setPositionX(POS_X1); break;
 	case 2:this->setPositionX(POS_X2); break;
@@ -73,7 +73,7 @@ void Note::initNote(int posX, int posY, int type)
 	case 6:this->setPositionX(POS_X6); break;
 	default: break;
 	}
-	switch (posY)
+	switch (pos % 10)
 	{
 	case 1:this->setPositionY(POS_Y1); break;
 	case 2:this->setPositionY(POS_Y2); break;
@@ -94,21 +94,22 @@ void Note::update(float dt)
 	life--;
 	if (life <= 0)
 	{
-		if (!isTouched() || (type != 0 && !isTouchEnded()))
+		if (missed)
 			GameScene::judgeNote(0);
 		this->removeFromParentAndCleanup(true);
 	}
-	else if (isTouched() && type == 1)
+	else if (isTouched())
 	{
 		lifeTouched++;
 	}
 }
 
 int Note::getType(){ return this->type; }
+int Note::getDest(){ return this->dest; }
 int Note::getLife(){ return this->life; }
 int Note::getLifeSpan(){ return this->lifeSpan; }
 int Note::getLifeTouched(){ return this->lifeTouched; }
 void Note::setTouched(){ this->touched = true; }
 bool Note::isTouched(){ return this->touched; }
-void Note::setTouchEnded(){ this->touchEnded = true; }
-bool Note::isTouchEnded(){ return this->touchEnded; }
+void Note::setNotMissed(){ this->missed = false; }
+bool Note::isMissed(){ return this->missed; }

@@ -20,7 +20,8 @@ public:
 	static void judgeNote(int judge);
 private:
 	void update(float dt);
-	void addNewNote(int posX, int posY, int type);
+	void addNewNote(int type, int pos, int des);
+	void addArrow(int pos, int des);
 	void addRandomNote(int type);
 	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void onTouchMoved(Touch *pTouch, Event  *pEvent);
