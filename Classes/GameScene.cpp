@@ -7,6 +7,7 @@ int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
+EventListenerTouchOneByOne *noteListener;
 
 Scene* GameScene::createScene()
 {
@@ -50,6 +51,13 @@ bool GameScene::init()
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
 	labelJudge->setScale(0);
 	labelCombo->setOpacity(0);
+
+	noteListener = EventListenerTouchOneByOne::create();
+	noteListener->setSwallowTouches(true);
+	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+	noteListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
+	noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
+
 	return true;
 }
 
@@ -100,13 +108,13 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 			/*if (!Director::getInstance()->isPaused())
 			{
-				Director::getInstance()->pause();
-				CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+			Director::getInstance()->pause();
+			CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 			}
 			else
 			{
-				Director::getInstance()->resume();
-				CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+			Director::getInstance()->resume();
+			CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
 			}*/
 		}
 		break;
@@ -117,10 +125,6 @@ void GameScene::addNewNote(int posX, int posY, int type)
 {
 	counterTotal++;
 	auto note = Note::createNote(posX, posY, type);
-	auto noteListener = EventListenerTouchOneByOne::create();
-	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-	noteListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
-	noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
 	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 	addChild(note);
 }
@@ -148,6 +152,7 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 				judgeNote(1);
 			else
 				judgeNote(2);
+			target->stopAllActions();
 			target->runAction(FadeOut::create(0.2));
 		}
 		else if (target->getType() == 1 || target->getType() == 2)
@@ -178,6 +183,7 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	{
 		target->setTouchEnded();
 		target->setScale(1);
+		target->stopAllActions();
 		target->runAction(FadeOut::create(0.2));
 		if (target->getType() == 1)
 		{
@@ -194,7 +200,7 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 }
 void GameScene::judgeNote(int judge)
 {
-	char buffer[20];
+	char buffer[64];
 	if (judge == 0)
 	{
 		if (counterMaxcombo < counterCombo)

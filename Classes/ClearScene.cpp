@@ -32,7 +32,7 @@ bool ClearScene::init()
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	auto buttonReturn = dynamic_cast<Button*>(UIlayer->getChildByTag(CLEARSCENE_RETURN));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
-	char buffer[20];
+	char buffer[64];
 	auto labelPerfect = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_PNO));
 	labelPerfect->setText(_itoa(counterPerfect, buffer, 10));
 	auto labelGood = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_GNO));
@@ -49,7 +49,7 @@ bool ClearScene::init()
 	double completePercent = (double)counterPerfect / (double)counterTotal * 0.7;
 	completePercent += (double)counterGood / (double)counterTotal * 0.6;
 	completePercent += (double)counterMaxcombo / (double)counterTotal * 0.3;
-	labelComplete->setText(strcat(_gcvt(completePercent * 100, 10, buffer), "% Complete"));
+	labelComplete->setText(strcat(_gcvt(completePercent * 100, 4, buffer), "% Complete"));
 	return true;
 }
 
