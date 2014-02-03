@@ -23,24 +23,6 @@ Scene* GameScene::createScene()
 	return scene;
 }
 
-void GameScene::addNewNote(int posX, int posY, int type)
-{
-	counterAll++;
-	auto note = Note::createNote(posX, posY, type);
-	auto noteListener = EventListenerTouchOneByOne::create();
-	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
-	addChild(note);
-}
-
-void GameScene::addRandomNote()
-{
-	int randomX = CCRANDOM_0_1() * 6 + 1;
-	int randomY = CCRANDOM_0_1() * 5 + 1;
-	addNewNote(randomX, randomY, 0);
-}
-
-
 bool GameScene::init()
 {
 	//super init
@@ -89,9 +71,11 @@ void GameScene::menuCloseCallback(Object* pSender)
 void GameScene::update(float dt)
 {
 	framecounter++;
-	if (framecounter % 60 == 0)
+	switch (framecounter % 180)
 	{
-		addRandomNote();
+	case 0:addRandomNote(2); break;
+	case 60:addRandomNote(1); break;
+	case 120:addRandomNote(0); break;
 	}
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
 	{
@@ -133,6 +117,25 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	}
 }
 
+void GameScene::addNewNote(int posX, int posY, int type)
+{
+	counterAll++;
+	auto note = Note::createNote(posX, posY, type);
+	auto noteListener = EventListenerTouchOneByOne::create();
+	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+	noteListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
+	noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
+	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
+	addChild(note);
+}
+
+void GameScene::addRandomNote(int type)
+{
+	int randomX = CCRANDOM_0_1() * 6 + 1;
+	int randomY = CCRANDOM_0_1() * 5 + 1;
+	addNewNote(randomX, randomY, type);
+}
+
 bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
@@ -142,23 +145,57 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isTouched())
 	{
 		target->setTouched();
-		float life = target->getLife() / 60.0;
-		if (life >= 2 / 2.5 || life <= 1 / 2.5)
-			judgeNote(1);
-		else
-			judgeNote(2);
-		target->stopAllActions();
-		target->setLife(20);
-		target->runAction(RotateBy::create(1 / 3.0, 360));
-		return true;
+		if (target->getType() == 0)
+		{
+			float lifePercent = (float)target->getLife() / (float)target->getLifeSpan();
+			if (lifePercent >= 0.8 || lifePercent <= 0.4)
+				judgeNote(1);
+			else
+				judgeNote(2);
+			target->runAction(FadeOut::create(0.2));
+		}
+		else if (target->getType() == 1 || target->getType() == 2)
+		{
+			target->setScale(1.25);
+		}
 	}
-	else
-	{
-		return false;
-	}
-
+	return true;
 }
-
+void GameScene::onTouchMoved(Touch *touch, Event  *event)
+{
+	auto target = static_cast<Note*>(event->getCurrentTarget());
+	if (!Director::getInstance()->isPaused())
+	{
+		if (target->getType() == 2)
+		{
+			target->setPosition(touch->getLocation());
+		}
+	}
+}
+void GameScene::onTouchEnded(Touch *touch, Event  *event)
+{
+	auto target = static_cast<Note*>(event->getCurrentTarget());
+	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+	Size s = target->getContentSize();
+	Rect rect = Rect(0, 0, s.width, s.height);
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
+	{
+		target->setTouchEnded();
+		target->setScale(1);
+		target->runAction(FadeOut::create(0.2));
+		if (target->getType() == 1)
+		{
+			float lifePercent = (float)target->getLifeTouched() / (float)target->getLifeSpan();
+			if (lifePercent >= 0.8 || lifePercent <= 0.4)
+				judgeNote(1);
+			else
+				judgeNote(2);
+		}
+		else if (target->getType() == 2)
+		{
+		}
+	}
+}
 void GameScene::judgeNote(int judge)
 {
 	char buffer[20];

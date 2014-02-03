@@ -3,12 +3,12 @@
 
 const int LIFESPAN = 60;//×ÜÉúÃüÖ¡Êý
 
-const int POS_X1 = 200;
-const int POS_X2 = 350;
-const int POS_X3 = 500;
-const int POS_X4 = 650;
-const int POS_X5 = 800;
-const int POS_X6 = 950;
+const int POS_X1 = 270;
+const int POS_X2 = 420;
+const int POS_X3 = 570;
+const int POS_X4 = 720;
+const int POS_X5 = 870;
+const int POS_X6 = 1020;
 const int POS_Y1 = 470;
 const int POS_Y2 = 380;
 const int POS_Y3 = 290;
@@ -26,11 +26,10 @@ Note::~Note()
 Note* Note::createNote(int posX, int posY, int type)
 {
 	Note *note = new Note();
-	if (note && note->initWithFile("gameSceneUI/note.png"))
+	if (note)
 	{
 		note->initNote(posX, posY, type);
 		note->scheduleUpdate();
-		note->runAction(ScaleTo::create(1, 0));
 		note->autorelease();
 		return note;
 	}
@@ -41,9 +40,29 @@ Note* Note::createNote(int posX, int posY, int type)
 void Note::initNote(int posX, int posY, int type)
 {
 	this->type = type;
-	this->life = LIFESPAN;
+	switch (type)
+	{
+	case 0:
+		this->initWithFile("gameSceneUI/note0.png");
+		this->lifeSpan = LIFESPAN;
+		this->setScale(2.5);
+		this->runAction(ScaleTo::create(lifeSpan / 60.0, 0));
+		break;
+	case 1:
+		this->initWithFile("gameSceneUI/note1.png");
+		this->lifeSpan = 180;
+		this->runAction(RotateBy::create(lifeSpan / 60.0, 360));
+		break;
+	case 2:
+		this->initWithFile("gameSceneUI/note2.png");
+		this->lifeSpan = 180;
+		this->runAction(RotateBy::create(lifeSpan / 60.0, 360));
+		break;
+	}
+	this->life = lifeSpan;
+	this->lifeTouched = 0;
 	this->touched = false;
-	this->setScale(2.5);
+	this->touchEnded = false;
 	switch (posX)
 	{
 	case 1:this->setPositionX(POS_X1); break;
@@ -65,38 +84,31 @@ void Note::initNote(int posX, int posY, int type)
 	}
 }
 
+void Note::removeNote(float dt)
+{
+	this->removeFromParentAndCleanup(true);
+}
+
 void Note::update(float dt)
 {
 	life--;
 	if (life <= 0)
 	{
-		if (touched == false)
+		if (!isTouched() || (type != 0 && !isTouchEnded()))
 			GameScene::judgeNote(0);
 		this->removeFromParentAndCleanup(true);
 	}
+	else if (isTouched() && type == 1)
+	{
+		lifeTouched++;
+	}
 }
 
-void Note::setLife(int life)
-{
-	this->life = life;
-}
-
-int Note::getLife()
-{
-	return this->life;
-}
-
-int Note::getType()
-{
-	return this->type;
-}
-
-void Note::setTouched()
-{
-	this->touched = true;
-}
-
-bool Note::isTouched()
-{
-	return this->touched;
-}
+int Note::getType(){ return this->type; }
+int Note::getLife(){ return this->life; }
+int Note::getLifeSpan(){ return this->lifeSpan; }
+int Note::getLifeTouched(){ return this->lifeTouched; }
+void Note::setTouched(){ this->touched = true; }
+bool Note::isTouched(){ return this->touched; }
+void Note::setTouchEnded(){ this->touchEnded = true; }
+bool Note::isTouchEnded(){ return this->touchEnded; }
