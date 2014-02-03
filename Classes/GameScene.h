@@ -22,8 +22,10 @@ public:
 private:
 	void update(float dt);
 	void addNewNote(int posX, int posY, int type);
-	void addRandomNote();
+	void addRandomNote(int type);
 	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
+	void onTouchMoved(Touch *pTouch, Event  *pEvent);
+	void onTouchEnded(Touch *pTouch, Event  *pEvent);
 	void touchEvent(Object* obj, gui::TouchEventType eventType);
 };
 
