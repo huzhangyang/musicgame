@@ -1,3 +1,4 @@
+#include "Global.h"
 #include "MainScene.h"
 #include "GameScene.h"
 
@@ -20,7 +21,7 @@ bool MainScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/bg.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/main.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10004);
@@ -41,7 +42,7 @@ bool MainScene::init()
 
 void MainScene::onEnterTransitionDidFinish()
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/bg.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/main.mp3");
 }
 
 void MainScene::onExit()

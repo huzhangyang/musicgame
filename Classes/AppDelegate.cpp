@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "GameScene.h"
+#include "IntroScene.h"
 
 AppDelegate::AppDelegate()
 {
@@ -15,7 +15,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	director->setOpenGLView(eglView);
 	director->setDisplayStats(true);
 	director->setAnimationInterval(1.0 / 60);
-	auto scene = GameScene::createScene();
+	auto scene = IntroScene::createScene();
 	director->runWithScene(scene);
 	return true;
 }

@@ -1,7 +1,6 @@
 #ifndef __MAIN_SCENE_H__
 #define __MAIN_SCENE_H__
 
-#include "Resources.h"
 #include "CocosGUI.h"  
 #include "cocostudio/CocoStudio.h"  
 #include "cocos2d.h"
