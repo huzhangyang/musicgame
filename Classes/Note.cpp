@@ -82,6 +82,25 @@ void Note::initNote(int type, int pos, int des)
 	case 5:this->setPositionY(POS_Y5); break;
 	default: break;
 	}
+	switch (des / 10)
+	{
+	case 1:this->destX = POS_X1; break;
+	case 2:this->destX = POS_X2; break;
+	case 3:this->destX = POS_X3; break;
+	case 4:this->destX = POS_X4; break;
+	case 5:this->destX = POS_X5; break;
+	case 6:this->destX = POS_X6; break;
+	default: break;
+	}
+	switch (des % 10)
+	{
+	case 1:this->destY = POS_Y1; break;
+	case 2:this->destY = POS_Y2; break;
+	case 3:this->destY = POS_Y3; break;
+	case 4:this->destY = POS_Y4; break;
+	case 5:this->destY = POS_Y5; break;
+	default: break;
+	}
 }
 
 void Note::removeNote(float dt)
@@ -105,7 +124,8 @@ void Note::update(float dt)
 }
 
 int Note::getType(){ return this->type; }
-int Note::getDest(){ return this->dest; }
+int Note::getDestX(){ return this->destX; }
+int Note::getDestY(){ return this->destY; }
 int Note::getLife(){ return this->life; }
 int Note::getLifeSpan(){ return this->lifeSpan; }
 int Note::getLifeTouched(){ return this->lifeTouched; }

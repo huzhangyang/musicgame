@@ -3,18 +3,6 @@
 #include "ClearScene.h"
 #include "Note.h"
 
-const int POS_X1 = 270;
-const int POS_X2 = 420;
-const int POS_X3 = 570;
-const int POS_X4 = 720;
-const int POS_X5 = 870;
-const int POS_X6 = 1020;
-const int POS_Y1 = 470;
-const int POS_Y2 = 380;
-const int POS_Y3 = 290;
-const int POS_Y4 = 200;
-const int POS_Y5 = 110;
-
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
@@ -134,61 +122,23 @@ void GameScene::addNewNote(int type, int pos, int des)
 	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 	addChild(note);
 	if (note->getType() == 2)
-		addArrow(pos, des);
+		addArrow(note->getPositionX(), note->getPositionY(), note->getDestX(), note->getDestY());
 }
 
-void GameScene::addArrow(int pos, int des)
+void GameScene::addArrow(int posX, int posY, int desX, int desY)
 {
 	auto arrow = Sprite::create("gameSceneUI/arrow.png");
 	auto dest = Sprite::create("gameSceneUI/note.png");
-	int X, Y;
-	switch (pos / 10)
-	{
-	case 1:X = POS_X1; break;
-	case 2:X = POS_X2; break;
-	case 3:X = POS_X3; break;
-	case 4:X = POS_X4; break;
-	case 5:X = POS_X5; break;
-	case 6:X = POS_X6; break;
-	default: break;
-	}
-	switch (des / 10)
-	{
-	case 1:X += POS_X1; dest->setPositionX(POS_X1); break;
-	case 2:X += POS_X2; dest->setPositionX(POS_X2); break;
-	case 3:X += POS_X3; dest->setPositionX(POS_X3); break;
-	case 4:X += POS_X4; dest->setPositionX(POS_X4); break;
-	case 5:X += POS_X5; dest->setPositionX(POS_X5); break;
-	case 6:X += POS_X6; dest->setPositionX(POS_X6); break;
-	default: break;
-	}
-	switch (pos % 10)
-	{
-	case 1:Y = POS_Y1; break;
-	case 2:Y = POS_Y2; break;
-	case 3:Y = POS_Y3; break;
-	case 4:Y = POS_Y4; break;
-	case 5:Y = POS_Y5; break;
-	default: break;
-	}
-	switch (des % 10)
-	{
-	case 1:Y += POS_Y1; dest->setPositionY(POS_Y1); break;
-	case 2:Y += POS_Y2; dest->setPositionY(POS_Y2); break;
-	case 3:Y += POS_Y3; dest->setPositionY(POS_Y3); break;
-	case 4:Y += POS_Y4; dest->setPositionY(POS_Y4); break;
-	case 5:Y += POS_Y5; dest->setPositionY(POS_Y5); break;
-	default: break;
-	}
-	arrow->setPosition(X / 2, Y / 2);
-	if (des / 10 > pos / 10 && des % 10 == pos % 10);
-	else if (des / 10 > pos / 10 && des % 10 > pos % 10)arrow->setRotation(45);
-	else if (des / 10 == pos / 10 && des % 10 > pos % 10)arrow->setRotation(90);
-	else if (des / 10 < pos / 10 && des % 10 > pos % 10)arrow->setRotation(135);
-	else if (des / 10 < pos / 10 && des % 10 == pos % 10)arrow->setRotation(180);
-	else if (des / 10 < pos / 10 && des % 10 < pos % 10)arrow->setRotation(225);
-	else if (des / 10 == pos / 10 && des % 10 < pos % 10)arrow->setRotation(270);
-	else if (des / 10 > pos / 10 && des % 10 < pos % 10)arrow->setRotation(315);
+	arrow->setPosition(posX / 2 + desX / 2, posY / 2 + desY / 2);
+	dest->setPosition(desX, desY);
+	if (desX > posX && desY == posY);
+	else if (desX > posX && desY > posY)arrow->setRotation(45);
+	else if (desX == posX && desY > posY)arrow->setRotation(90);
+	else if (desX < posX && desY > posY)arrow->setRotation(135);
+	else if (desX < posX && desY == posY)arrow->setRotation(180);
+	else if (desX < posX && desY < posY)arrow->setRotation(225);
+	else if (desX == posX && desY < posY)arrow->setRotation(270);
+	else if (desX > posX && desY < posY)arrow->setRotation(315);
 	dest->runAction(FadeOut::create(3));
 	arrow->runAction(FadeOut::create(3));
 	this->addChild(arrow);
@@ -232,31 +182,10 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 void GameScene::onTouchMoved(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	int X, Y;
-	switch (target->getDest() / 10)
-	{
-	case 1:X = POS_X1; break;
-	case 2:X = POS_X2; break;
-	case 3:X = POS_X3; break;
-	case 4:X = POS_X4; break;
-	case 5:X = POS_X5; break;
-	case 6:X = POS_X6; break;
-	default: break;
-	}
-	switch (target->getDest() % 10)
-	{
-	case 1:Y = POS_X1; break;
-	case 2:Y = POS_X2; break;
-	case 3:Y = POS_X3; break;
-	case 4:Y = POS_X4; break;
-	case 5:Y = POS_X5; break;
-	default: break;
-	}
-
 	if (!Director::getInstance()->isPaused() && target->getType() == 2)
 	{
 		target->setPosition(touch->getLocation());
-		//要制作出轨迹呀！
+		//要制作出轨迹呀！使用基本图形绘制？
 	}
 }
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
@@ -265,17 +194,34 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 	Size s = target->getContentSize();
 	Rect rect = Rect(0, 0, s.width, s.height);
-	target->setScale(1);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->getType() == 1)
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
 	{
-		target->setNotMissed();
 		target->stopAllActions();
 		target->runAction(FadeOut::create(0.2));
-		float lifePercent = (float)target->getLifeTouched() / (float)target->getLifeSpan();
-		if (lifePercent >= 0.8 || lifePercent <= 0.4)
-			judgeNote(1);
+		target->setScale(1);
+		if (target->getType() == 1)
+		{
+			target->setNotMissed();
+			float lifePercent = (float)target->getLifeTouched() / (float)target->getLifeSpan();
+			if (lifePercent >= 0.8 || lifePercent <= 0.4)
+				judgeNote(1);
+			else
+				judgeNote(2);
+		}
 		else
-			judgeNote(2);
+		{
+			Point dest = Point(target->getDestX(), target->getDestY());
+			Rect rect2 = Rect(target->getPositionX() - s.width / 2, target->getPositionY() - s.height / 2, s.width, s.height);
+			if (rect2.containsPoint(dest))
+			{
+				target->setNotMissed();
+				float lifePercent = (float)target->getLifeTouched() / (float)target->getLifeSpan();
+				if (lifePercent >= 0.8 || lifePercent <= 0.4)
+					judgeNote(1);
+				else
+					judgeNote(2);
+			}
+		}
 	}
 }
 void GameScene::judgeNote(int judge)

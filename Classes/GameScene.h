@@ -21,7 +21,7 @@ public:
 private:
 	void update(float dt);
 	void addNewNote(int type, int pos, int des);
-	void addArrow(int pos, int des);
+	void addArrow(int posX, int posY, int desX, int desY);
 	void addRandomNote(int type);
 	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void onTouchMoved(Touch *pTouch, Event  *pEvent);
