@@ -3,6 +3,8 @@
 #include "ClearScene.h"
 #include "Note.h"
 
+const float TIME_DISAPPEAR = 0.2;//消失特效时间
+
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
@@ -165,17 +167,17 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		target->setTouched();
 		if (target->getType() == 0)
 		{
-			target->setNotMissed();
 			target->stopAllActions();
-			target->runAction(FadeOut::create(0.2));
-			float lifePercent = (float)target->getLife() / (float)target->getLifeSpan();
-			if (lifePercent >= 0.8 || lifePercent <= 0.4)
-				judgeNote(1);
-			else
-				judgeNote(2);
+			target->unscheduleUpdate();
+			target->scheduleOnce(schedule_selector(Note::removeNote), TIME_DISAPPEAR);
+			target->runAction(FadeOut::create(TIME_DISAPPEAR));//点击后消失特效
+			target->judge();
 		}
 		else
+		{
 			target->setScale(1.25);
+			target->runAction(RotateBy::create(target->getLifeSpan() / 60.0, 360));
+		}
 	}
 	return true;
 }
@@ -196,32 +198,12 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	Rect rect = Rect(0, 0, s.width, s.height);
 	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
 	{
-		target->stopAllActions();
-		target->runAction(FadeOut::create(0.2));
 		target->setScale(1);
-		if (target->getType() == 1)
-		{
-			target->setNotMissed();
-			float lifePercent = (float)target->getLifeTouched() / (float)target->getLifeSpan();
-			if (lifePercent >= 0.8 || lifePercent <= 0.4)
-				judgeNote(1);
-			else
-				judgeNote(2);
-		}
-		else
-		{
-			Point dest = Point(target->getDestX(), target->getDestY());
-			Rect rect2 = Rect(target->getPositionX() - s.width / 2, target->getPositionY() - s.height / 2, s.width, s.height);
-			if (rect2.containsPoint(dest))
-			{
-				target->setNotMissed();
-				float lifePercent = (float)target->getLifeTouched() / (float)target->getLifeSpan();
-				if (lifePercent >= 0.8 || lifePercent <= 0.4)
-					judgeNote(1);
-				else
-					judgeNote(2);
-			}
-		}
+		target->stopAllActions();
+		target->unscheduleUpdate();
+		target->scheduleOnce(schedule_selector(Note::removeNote), TIME_DISAPPEAR);
+		target->runAction(FadeOut::create(TIME_DISAPPEAR));//点击后消失特效
+		target->judge();
 	}
 }
 void GameScene::judgeNote(int judge)

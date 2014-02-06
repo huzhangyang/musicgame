@@ -1,7 +1,9 @@
 #include "Note.h"
 #include "GameScene.h"
 
-const int LIFESPAN = 60;//总生命帧数
+const int TIME_PRELOAD = 60;//用于反应的时间
+const float PERCENT1 = 0.8;//GOOD和PERFECT前分界线
+const float PERCENT2 = 0.4;//GOOD和PERFECT后分界线
 
 const int POS_X1 = 270;
 const int POS_X2 = 420;
@@ -40,29 +42,26 @@ Note* Note::createNote(int type, int pos, int des)
 void Note::initNote(int type, int pos, int des)
 {
 	this->type = type;
+	this->life = TIME_PRELOAD;
+	this->lifeTouched = 0;
+	this->touched = false;
+	this->setScale(0.5);
+	this->runAction(ScaleTo::create(life / 180.0, 1));//出现时的动画
 	switch (type)
 	{
 	case 0:
 		this->initWithFile("gameSceneUI/note0.png");
-		this->lifeSpan = LIFESPAN;
-		this->setScale(2.5);
-		this->runAction(ScaleTo::create(lifeSpan / 60.0, 0));
+		this->lifeSpan = 0;
 		break;
 	case 1:
 		this->initWithFile("gameSceneUI/note1.png");
-		this->lifeSpan = 180;
-		this->runAction(RotateBy::create(lifeSpan / 60.0, 360));
+		this->lifeSpan = 120;
 		break;
 	case 2:
 		this->initWithFile("gameSceneUI/note2.png");
-		this->lifeSpan = 180;
-		this->runAction(RotateBy::create(lifeSpan / 60.0, 360));
+		this->lifeSpan = 120;
 		break;
 	}
-	this->life = lifeSpan;
-	this->lifeTouched = 0;
-	this->touched = false;
-	this->missed = true;
 	switch (pos / 10)
 	{
 	case 1:this->setPositionX(POS_X1); break;
@@ -110,16 +109,59 @@ void Note::removeNote(float dt)
 
 void Note::update(float dt)
 {
+	if (isTouched())
+	{
+		if (lifeTouched == 0)
+			life = lifeSpan;
+		lifeTouched++;
+	}
 	life--;
 	if (life <= 0)
 	{
-		if (missed)
+		if (!isTouched())
 			GameScene::judgeNote(0);
+		else
+		{
+			this->judge();
+		}
 		this->removeFromParentAndCleanup(true);
 	}
-	else if (isTouched())
+}
+
+void Note::judge()
+{
+	float lifePercent;
+	switch (this->getType())
 	{
-		lifeTouched++;
+	case 0:
+		lifePercent = this->getLife() / TIME_PRELOAD;
+		if (lifePercent >= PERCENT1 || lifePercent <= PERCENT2)
+			GameScene::judgeNote(1);
+		else
+			GameScene::judgeNote(2);
+		break;
+	case 1:
+		lifePercent = (float)this->getLifeTouched() / (float)this->getLifeSpan();
+		if (lifePercent >= PERCENT1 || lifePercent <= PERCENT2)
+			GameScene::judgeNote(1);
+		else
+			GameScene::judgeNote(2);
+		break;
+	case 2:
+		Size s = getContentSize();
+		Point dest = Point(destX, destY);
+		Rect rect2 = Rect(getPositionX() - s.width / 2, getPositionY() - s.height / 2, s.width, s.height);
+		if (rect2.containsPoint(dest))
+		{
+			lifePercent = (float)this->getLifeTouched() / (float)this->getLifeSpan();
+			if (lifePercent >= PERCENT1 || lifePercent <= PERCENT2)
+				GameScene::judgeNote(1);
+			else
+				GameScene::judgeNote(2);
+		}
+		else
+			GameScene::judgeNote(0);
+		break;
 	}
 }
 
@@ -131,5 +173,3 @@ int Note::getLifeSpan(){ return this->lifeSpan; }
 int Note::getLifeTouched(){ return this->lifeTouched; }
 void Note::setTouched(){ this->touched = true; }
 bool Note::isTouched(){ return this->touched; }
-void Note::setNotMissed(){ this->missed = false; }
-bool Note::isMissed(){ return this->missed; }
