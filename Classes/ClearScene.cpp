@@ -32,24 +32,23 @@ bool ClearScene::init()
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	auto buttonReturn = dynamic_cast<Button*>(UIlayer->getChildByTag(CLEARSCENE_RETURN));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
-	char buffer[64];
 	auto labelPerfect = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_PNO));
-	labelPerfect->setText(_itoa(counterPerfect, buffer, 10));
+	labelPerfect->setText(std::to_string(counterPerfect).c_str());
 	auto labelGood = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_GNO));
-	labelGood->setText(_itoa(counterGood, buffer, 10));
+	labelGood->setText(std::to_string(counterGood).c_str());
 	auto labelMiss = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_MNO));
-	labelMiss->setText(_itoa(counterMiss, buffer, 10));
+	labelMiss->setText(std::to_string(counterMiss).c_str());
 	auto labelTotal = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
-	labelTotal->setText(_itoa(counterTotal, buffer, 10));
+	labelTotal->setText(std::to_string(counterTotal).c_str());
 	auto labelMaxCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
 	if (counterMaxcombo == 0)
 		counterMaxcombo = counterTotal;//È«³ÌÎÞmiss
-	labelMaxCombo->setText(_itoa(counterMaxcombo, buffer, 10));
+	labelMaxCombo->setText(std::to_string(counterMaxcombo).c_str());
 	auto labelComplete = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_COMPLETE));
 	float completePercent = (float)counterPerfect / (float)counterTotal * 0.7;
 	completePercent += (float)counterGood / (float)counterTotal * 0.6;
 	completePercent += (float)counterMaxcombo / (float)counterTotal * 0.3;
-	std::string cp = std::to_string(completePercent) + "% Complete";
+	std::string cp = std::to_string(completePercent * 100).substr(0, 5) + "% Complete";
 	labelComplete->setText(cp.c_str());
 	return true;
 }

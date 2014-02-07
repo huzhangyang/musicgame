@@ -226,7 +226,7 @@ void GameScene::judgeNote(int judge)
 	}
 	labelJudge->setVisible(true);
 	labelCombo->setVisible(true);
-	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2, 1.25), ScaleTo::create(0.2, 1), NULL));
+	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2, 1.25), ScaleTo::create(0.2, 1), FadeOut::create(1), NULL));
 	labelCombo->runAction(FadeOut::create(1));
 }
 
