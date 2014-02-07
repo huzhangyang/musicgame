@@ -8,6 +8,7 @@ const float TIME_DISAPPEAR = 0.2;//消失特效时间
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
+MotionStreak* streak;
 
 Scene* GameScene::createScene()
 {
@@ -172,6 +173,8 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 			target->runAction(RotateBy::create(target->getLifeSpan() / 60.0, 360));//生命周期特效
 			if (target->getType() == 2)
 				addArrow(target->getPositionX(), target->getPositionY(), target->getDestX(), target->getDestY());
+			streak = MotionStreak::create(1, 3, 60, Color3B(255, 255, 255), "gameSceneUI/note2.png");
+			this->addChild(streak);
 		}
 	}
 	return true;
@@ -182,7 +185,7 @@ void GameScene::onTouchMoved(Touch *touch, Event  *event)
 	if (!Director::getInstance()->isPaused() && target->getType() == 2)
 	{
 		target->setPosition(touch->getLocation());//滑动note跟手
-		//要制作出轨迹呀！使用基本图形绘制？
+		streak->setPosition(touch->getLocation());//滑动轨迹
 	}
 }
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
@@ -200,6 +203,7 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 		target->runAction(FadeOut::create(TIME_DISAPPEAR));//消失特效
 		target->judge();
 	}
+	streak->removeFromParentAndCleanup(true);
 }
 void GameScene::judgeNote(int judge)
 {
