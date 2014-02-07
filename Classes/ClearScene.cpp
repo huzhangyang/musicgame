@@ -41,14 +41,13 @@ bool ClearScene::init()
 	auto labelTotal = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
 	labelTotal->setText(std::to_string(counterTotal).c_str());
 	auto labelMaxCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
-	if (counterMaxcombo == 0)
-		counterMaxcombo = counterTotal;//È«³ÌÎÞmiss
 	labelMaxCombo->setText(std::to_string(counterMaxcombo).c_str());
 	auto labelComplete = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_COMPLETE));
 	float completePercent = (float)counterPerfect / (float)counterTotal * 0.7;
 	completePercent += (float)counterGood / (float)counterTotal * 0.6;
 	completePercent += (float)counterMaxcombo / (float)counterTotal * 0.3;
-	std::string cp = std::to_string(completePercent * 100).substr(0, 5) + "% Complete";
+	std::string cp = std::to_string(completePercent * 100);
+	cp=cp.substr(0, cp.find('.') + 3) + "% Complete";
 	labelComplete->setText(cp.c_str());
 	return true;
 }
