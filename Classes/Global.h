@@ -3,6 +3,8 @@
 
 extern int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 
+const int INTROSCENE_START = 3;
+
 const int MAINSCENE_INK = 14;
 const int MAINSCENE_SHELF = 12;
 const int MAINSCENE_OPTION = 7;

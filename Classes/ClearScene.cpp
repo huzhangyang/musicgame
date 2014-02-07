@@ -54,6 +54,8 @@ bool ClearScene::init()
 
 void ClearScene::onEnterTransitionDidFinish()
 {
+	Layer::onEnterTransitionDidFinish();
+	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/clear.mp3");
 }
 
