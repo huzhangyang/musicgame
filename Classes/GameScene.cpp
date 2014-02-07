@@ -123,8 +123,6 @@ void GameScene::addNewNote(int type, int pos, int des)
 	noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
 	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 	addChild(note);
-	if (note->getType() == 2)
-		addArrow(note->getPositionX(), note->getPositionY(), note->getDestX(), note->getDestY());
 }
 
 void GameScene::addArrow(int posX, int posY, int desX, int desY)
@@ -133,14 +131,7 @@ void GameScene::addArrow(int posX, int posY, int desX, int desY)
 	auto dest = Sprite::create("gameSceneUI/note.png");
 	arrow->setPosition(posX / 2 + desX / 2, posY / 2 + desY / 2);
 	dest->setPosition(desX, desY);
-	if (desX > posX && desY == posY);
-	else if (desX > posX && desY < posY)arrow->setRotation(45);
-	else if (desX == posX && desY < posY)arrow->setRotation(90);
-	else if (desX < posX && desY < posY)arrow->setRotation(135);
-	else if (desX < posX && desY == posY)arrow->setRotation(180);
-	else if (desX < posX && desY > posY)arrow->setRotation(225);
-	else if (desX == posX && desY > posY)arrow->setRotation(270);
-	else if (desX > posX && desY > posY)arrow->setRotation(315);
+	arrow->setRotation(atan2(desX - posX, desY - posY) * 180 / M_PI);
 	dest->runAction(FadeOut::create(3));
 	arrow->runAction(FadeOut::create(3));
 	this->addChild(arrow);
@@ -167,8 +158,8 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		target->setTouched();
 		if (target->getType() == 0)
 		{
-			target->stopAllActions();
 			target->unscheduleUpdate();
+			target->stopAllActions();
 			target->scheduleOnce(schedule_selector(Note::removeNote), TIME_DISAPPEAR);
 			target->runAction(FadeOut::create(TIME_DISAPPEAR));//点击后消失特效
 			target->judge();
@@ -177,6 +168,8 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		{
 			target->setScale(1.25);
 			target->runAction(RotateBy::create(target->getLifeSpan() / 60.0, 360));
+			if (target->getType() == 2)
+				addArrow(target->getPositionX(), target->getPositionY(), target->getDestX(), target->getDestY());
 		}
 	}
 	return true;
@@ -196,7 +189,7 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 	Size s = target->getContentSize();
 	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->getType() != 0)
 	{
 		target->setScale(1);
 		target->stopAllActions();
@@ -208,34 +201,32 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 }
 void GameScene::judgeNote(int judge)
 {
-	char buffer[64];
-	if (judge == 0)
+	switch (judge)
 	{
+	case 0:
 		if (counterMaxcombo < counterCombo)
 			counterMaxcombo = counterCombo;
 		counterCombo = 0;
 		counterMiss++;
 		labelJudge->setText("Miss!");
 		labelCombo->setText("");
-	}
-	else if (judge == 1)
-	{
+		break;
+	case 1:
 		counterCombo++;
 		counterGood++;
 		labelJudge->setText("Good!");
-		labelCombo->setText(_itoa(counterCombo, buffer, 10));
-	}
-	else if (judge == 2)
-	{
+		labelCombo->setText(std::to_string(counterCombo).c_str());
+		break;
+	case 2:
 		counterCombo++;
 		counterPerfect++;
 		labelJudge->setText("Perfect!");
-		labelCombo->setText(_itoa(counterCombo, buffer, 10));
+		labelCombo->setText(std::to_string(counterCombo).c_str());
+		break;
 	}
 	labelJudge->setVisible(true);
 	labelCombo->setVisible(true);
-	labelJudge->setScale(1.25);
-	labelJudge->runAction(ScaleTo::create(0.25, 1));
+	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2, 1.25), ScaleTo::create(0.2, 1), NULL));
 	labelCombo->runAction(FadeOut::create(1));
 }
 

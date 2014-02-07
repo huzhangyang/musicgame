@@ -2,8 +2,6 @@
 #include "GameScene.h"
 
 const int TIME_PRELOAD = 60;//用于反应的时间
-const float PERCENT1 = 0.8;//GOOD和PERFECT前分界线
-const float PERCENT2 = 0.4;//GOOD和PERFECT后分界线
 
 const int POS_X1 = 270;
 const int POS_X2 = 420;
@@ -46,7 +44,7 @@ void Note::initNote(int type, int pos, int des)
 	this->lifeTouched = 0;
 	this->touched = false;
 	this->setScale(0.5);
-	this->runAction(ScaleTo::create(life / 180.0, 1));//出现时的动画
+	this->runAction(EaseBackOut::create(ScaleTo::create(life / 180.0, 1)));//出现时的动画
 	switch (type)
 	{
 	case 0:
@@ -59,7 +57,7 @@ void Note::initNote(int type, int pos, int des)
 		break;
 	case 2:
 		this->initWithFile("gameSceneUI/note2.png");
-		this->lifeSpan = 120;
+		this->lifeSpan = 60;
 		break;
 	}
 	switch (pos / 10)
@@ -121,9 +119,7 @@ void Note::update(float dt)
 		if (!isTouched())
 			GameScene::judgeNote(0);
 		else
-		{
 			this->judge();
-		}
 		this->removeFromParentAndCleanup(true);
 	}
 }
@@ -134,15 +130,15 @@ void Note::judge()
 	switch (this->getType())
 	{
 	case 0:
-		lifePercent = this->getLife() / TIME_PRELOAD;
-		if (lifePercent >= PERCENT1 || lifePercent <= PERCENT2)
+		lifePercent = (float)this->getLife() / TIME_PRELOAD;
+		if (lifePercent >= 0.8 || lifePercent <= 0.4)
 			GameScene::judgeNote(1);
 		else
 			GameScene::judgeNote(2);
 		break;
 	case 1:
 		lifePercent = (float)this->getLifeTouched() / (float)this->getLifeSpan();
-		if (lifePercent >= PERCENT1 || lifePercent <= PERCENT2)
+		if (lifePercent <= 0.8)
 			GameScene::judgeNote(1);
 		else
 			GameScene::judgeNote(2);
@@ -150,11 +146,11 @@ void Note::judge()
 	case 2:
 		Size s = getContentSize();
 		Point dest = Point(destX, destY);
-		Rect rect2 = Rect(getPositionX() - s.width / 2, getPositionY() - s.height / 2, s.width, s.height);
-		if (rect2.containsPoint(dest))
+		Rect rect = Rect(getPositionX() - s.width / 2, getPositionY() - s.height / 2, s.width, s.height);
+		if (rect.containsPoint(dest))
 		{
 			lifePercent = (float)this->getLifeTouched() / (float)this->getLifeSpan();
-			if (lifePercent >= PERCENT1 || lifePercent <= PERCENT2)
+			if (lifePercent <= 0.8)
 				GameScene::judgeNote(1);
 			else
 				GameScene::judgeNote(2);

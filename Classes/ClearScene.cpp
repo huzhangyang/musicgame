@@ -46,10 +46,11 @@ bool ClearScene::init()
 		counterMaxcombo = counterTotal;//È«³ÌÎÞmiss
 	labelMaxCombo->setText(_itoa(counterMaxcombo, buffer, 10));
 	auto labelComplete = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_COMPLETE));
-	double completePercent = (double)counterPerfect / (double)counterTotal * 0.7;
-	completePercent += (double)counterGood / (double)counterTotal * 0.6;
-	completePercent += (double)counterMaxcombo / (double)counterTotal * 0.3;
-	labelComplete->setText(strcat(_gcvt(completePercent * 100, 4, buffer), "% Complete"));
+	float completePercent = (float)counterPerfect / (float)counterTotal * 0.7;
+	completePercent += (float)counterGood / (float)counterTotal * 0.6;
+	completePercent += (float)counterMaxcombo / (float)counterTotal * 0.3;
+	std::string cp = std::to_string(completePercent) + "% Complete";
+	labelComplete->setText(cp.c_str());
 	return true;
 }
 
