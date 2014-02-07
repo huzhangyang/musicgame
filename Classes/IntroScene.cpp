@@ -25,7 +25,6 @@ bool IntroScene::init()
 	auto logo = Sprite::create("introSceneUI/cocoslogo.png");
 	logo->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	addChild(logo);
-	logo->runAction(Sequence::create(DelayTime::create(1), FadeOut::create(1), NULL));
 	this->scheduleOnce(schedule_selector(IntroScene::playIntro), 2);
 	return true;
 }
@@ -52,6 +51,7 @@ void IntroScene::playIntro(float dt)
 	auto UINode = sceneNode->getChildByTag(10003);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
 	auto UIlayer = UIComponent->getNode();
+	UIlayer->runAction(FadeIn::create(2));
 	auto buttonStart = dynamic_cast<Button*>(UIlayer->getChildByTag(INTROSCENE_START));
 	buttonStart->addTouchEventListener(this, toucheventselector(IntroScene::touchEvent));
 }

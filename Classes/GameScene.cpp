@@ -72,13 +72,13 @@ void GameScene::menuCloseCallback(Object* pSender)
 void GameScene::update(float dt)
 {
 	framecounter++;
-	switch (framecounter % 720)
+	switch (framecounter % 720)//随机生成点note先用着吧…
 	{
 	case 180:addRandomNote(2); break;
 	case 360:addRandomNote(1); break;
 	case 540:addRandomNote(0); break;
 	}
-	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
 		if (counterMaxcombo == 0)
@@ -135,7 +135,7 @@ void GameScene::addArrow(int posX, int posY, int desX, int desY)
 	dest->setPosition(desX, desY);
 	arrow->setRotation(atan2(desX - posX, desY - posY) * 180 / M_PI);
 	dest->runAction(FadeOut::create(3));
-	arrow->runAction(FadeOut::create(3));
+	arrow->runAction(FadeOut::create(3));//消失特效
 	this->addChild(arrow);
 	this->addChild(dest);
 }
@@ -157,19 +157,19 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	Rect rect = Rect(0, 0, s.width, s.height);
 	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isTouched())
 	{
-		target->setTouched();
-		if (target->getType() == 0)
+		target->setTouched();//设为触摸过
+		if (target->getType() == 0)//对普通note，直接进行判定
 		{
 			target->unscheduleUpdate();
 			target->stopAllActions();
 			target->scheduleOnce(schedule_selector(Note::removeNote), TIME_DISAPPEAR);
-			target->runAction(FadeOut::create(TIME_DISAPPEAR));//点击后消失特效
+			target->runAction(FadeOut::create(TIME_DISAPPEAR));//消失特效
 			target->judge();
 		}
-		else
+		else//对长按和滑动note，开始走生命周期
 		{
 			target->setScale(1.25);
-			target->runAction(RotateBy::create(target->getLifeSpan() / 60.0, 360));
+			target->runAction(RotateBy::create(target->getLifeSpan() / 60.0, 360));//生命周期特效
 			if (target->getType() == 2)
 				addArrow(target->getPositionX(), target->getPositionY(), target->getDestX(), target->getDestY());
 		}
@@ -181,7 +181,7 @@ void GameScene::onTouchMoved(Touch *touch, Event  *event)
 	auto target = static_cast<Note*>(event->getCurrentTarget());
 	if (!Director::getInstance()->isPaused() && target->getType() == 2)
 	{
-		target->setPosition(touch->getLocation());
+		target->setPosition(touch->getLocation());//滑动note跟手
 		//要制作出轨迹呀！使用基本图形绘制？
 	}
 }
@@ -192,12 +192,12 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	Size s = target->getContentSize();
 	Rect rect = Rect(0, 0, s.width, s.height);
 	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->getType() != 0)
-	{
+	{//离开时进行判定
 		target->setScale(1);
 		target->stopAllActions();
 		target->unscheduleUpdate();
 		target->scheduleOnce(schedule_selector(Note::removeNote), TIME_DISAPPEAR);
-		target->runAction(FadeOut::create(TIME_DISAPPEAR));//点击后消失特效
+		target->runAction(FadeOut::create(TIME_DISAPPEAR));//消失特效
 		target->judge();
 	}
 }
@@ -229,6 +229,6 @@ void GameScene::judgeNote(int judge)
 	labelJudge->setVisible(true);
 	labelCombo->setVisible(true);
 	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2, 1.25), ScaleTo::create(0.2, 1), NULL));
-	labelCombo->runAction(FadeOut::create(1));
+	labelCombo->runAction(FadeOut::create(1));//消失特效
 }
 

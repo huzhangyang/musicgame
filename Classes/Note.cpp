@@ -44,7 +44,7 @@ void Note::initNote(int type, int pos, int des)
 	this->lifeTouched = 0;
 	this->touched = false;
 	this->setScale(0.5);
-	this->runAction(EaseBackOut::create(ScaleTo::create(life / 180.0, 1)));//出现时的动画
+	this->runAction(EaseBackOut::create(ScaleTo::create(life / 180.0, 1)));//出现特效
 	switch (type)
 	{
 	case 0:
@@ -107,20 +107,20 @@ void Note::removeNote(float dt)
 
 void Note::update(float dt)
 {
-	if (isTouched())
+	if (isTouched())//如果被触摸过，则增加触摸时间
 	{
-		if (lifeTouched == 0)
+		if (lifeTouched == 0)//第一次先把生命设为lifespan
 			life = lifeSpan;
 		lifeTouched++;
 	}
-	life--;
+	life--;//减少生命
 	if (life <= 0)
 	{
-		if (!isTouched())
+		if (!isTouched())//如果到死都没被触摸过则肯定是miss，否则就是按到头没有松手，送去judge
 			GameScene::judgeNote(0);
 		else
 			this->judge();
-		this->removeFromParentAndCleanup(true);
+		this->removeFromParentAndCleanup(true);//删除该note
 	}
 }
 
@@ -131,32 +131,32 @@ void Note::judge()
 	{
 	case 0:
 		lifePercent = (float)this->getLife() / TIME_PRELOAD;
-		if (lifePercent >= 0.8 || lifePercent <= 0.4)
+		if (lifePercent >= 0.8 || lifePercent <= 0.4)//太快或太慢触摸都只能是good
 			GameScene::judgeNote(1);
 		else
 			GameScene::judgeNote(2);
 		break;
 	case 1:
 		lifePercent = (float)this->getLifeTouched() / (float)this->getLifeSpan();
-		if (lifePercent <= 0.8)
+		if (lifePercent <= 0.8)//长按的触摸时间不够长是good
 			GameScene::judgeNote(1);
 		else
 			GameScene::judgeNote(2);
 		break;
 	case 2:
 		Size s = getContentSize();
-		Point dest = Point(destX, destY);
-		Rect rect = Rect(getPositionX() - s.width / 2, getPositionY() - s.height / 2, s.width, s.height);
-		if (rect.containsPoint(dest))
+		Point dest = Point(destX, destY);//目标点
+		Rect rect = Rect(getPositionX() - s.width / 2, getPositionY() - s.height / 2, s.width, s.height);//当前note矩形
+		if (rect.containsPoint(dest))//检测目标点是否在note内
 		{
 			lifePercent = (float)this->getLifeTouched() / (float)this->getLifeSpan();
-			if (lifePercent <= 0.8)
+			if (lifePercent <= 0.8)//如果滑动用时过短也只能是good
 				GameScene::judgeNote(1);
 			else
 				GameScene::judgeNote(2);
 		}
 		else
-			GameScene::judgeNote(0);
+			GameScene::judgeNote(0);//没包含住目标点则为miss
 		break;
 	}
 }
