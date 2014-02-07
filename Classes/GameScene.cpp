@@ -81,6 +81,8 @@ void GameScene::update(float dt)
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
 	{
 		this->unscheduleUpdate();
+		if (counterMaxcombo == 0)
+			counterMaxcombo = counterTotal;//È«³ÌÎÞmiss
 		auto scene = ClearScene::createScene();
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 	}
@@ -226,7 +228,7 @@ void GameScene::judgeNote(int judge)
 	}
 	labelJudge->setVisible(true);
 	labelCombo->setVisible(true);
-	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2, 1.25), ScaleTo::create(0.2, 1), FadeOut::create(1), NULL));
+	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2, 1.25), ScaleTo::create(0.2, 1), NULL));
 	labelCombo->runAction(FadeOut::create(1));
 }
 
