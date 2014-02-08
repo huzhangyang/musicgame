@@ -3,8 +3,6 @@
 #include "ClearScene.h"
 #include "Note.h"
 
-const float TIME_DISAPPEAR = 0.2;//消失特效时间
-
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
@@ -82,7 +80,7 @@ void GameScene::update(float dt)
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
-		if (counterMaxcombo == 0)
+		if (counterMaxcombo == 0 && counterMiss != counterTotal)
 			counterMaxcombo = counterTotal;//全程无miss
 		auto scene = ClearScene::createScene();
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
@@ -97,7 +95,10 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	{
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == GAMESCENE_PAUSE)
-		{
+		{//暂时把暂停作为跳转到结算界面用
+			this->unscheduleUpdate();
+			if (counterMaxcombo == 0 && counterMiss != counterTotal)
+				counterMaxcombo = counterTotal;//全程无miss
 			auto scene = ClearScene::createScene();
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 			/*if (!Director::getInstance()->isPaused())
@@ -163,8 +164,8 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		{
 			target->unscheduleUpdate();
 			target->stopAllActions();
-			target->scheduleOnce(schedule_selector(Note::removeNote), TIME_DISAPPEAR);
-			target->runAction(FadeOut::create(TIME_DISAPPEAR));//消失特效
+			target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
+			target->runAction(FadeOut::create(0.2));//消失特效
 			target->judge();
 		}
 		else//对长按和滑动note，开始走生命周期
@@ -191,19 +192,17 @@ void GameScene::onTouchMoved(Touch *touch, Event  *event)
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
-	Size s = target->getContentSize();
-	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->getType() != 0)
+	if (!Director::getInstance()->isPaused() && target->getType() != 0)
 	{//离开时进行判定
 		target->setScale(1);
 		target->stopAllActions();
 		target->unscheduleUpdate();
-		target->scheduleOnce(schedule_selector(Note::removeNote), TIME_DISAPPEAR);
-		target->runAction(FadeOut::create(TIME_DISAPPEAR));//消失特效
+		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
+		target->runAction(FadeOut::create(0.2));//消失特效
 		target->judge();
+		streak->removeFromParentAndCleanup(true);
 	}
-	streak->removeFromParentAndCleanup(true);
+
 }
 void GameScene::judgeNote(int judge)
 {
