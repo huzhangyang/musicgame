@@ -14,6 +14,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	auto director = Director::getInstance();
 	auto eglView = EGLView::getInstance();
 	director->setOpenGLView(eglView);
+	eglView->setDesignResolutionSize(1280, 720, ResolutionPolicy::SHOW_ALL);
 	director->setDisplayStats(true);
 	director->setAnimationInterval(1.0 / 60);//ÉèÖÃÖ¡ÂÊ
 	auto scene = IntroScene::createScene();
