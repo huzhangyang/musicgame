@@ -6,7 +6,6 @@
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
-MotionStreak* streak;
 
 Scene* GameScene::createScene()
 {
@@ -127,6 +126,8 @@ void GameScene::addNewNote(int type, int pos, int des)
 	noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
 	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 	addChild(note);
+	if (note->getType() == 2)
+		addArrow(note->getPositionX(), note->getPositionY(), note->getDestX(), note->getDestY());
 }
 
 void GameScene::addArrow(int posX, int posY, int desX, int desY)
@@ -136,8 +137,8 @@ void GameScene::addArrow(int posX, int posY, int desX, int desY)
 	arrow->setPosition(posX / 2 + desX / 2, posY / 2 + desY / 2);
 	dest->setPosition(desX, desY);
 	arrow->setRotation(atan2(desX - posX, desY - posY) * 180 / M_PI);
-	dest->runAction(FadeOut::create(3));
-	arrow->runAction(FadeOut::create(3));//消失特效
+	dest->runAction(FadeOut::create(2));
+	arrow->runAction(FadeOut::create(2));//消失特效
 	this->addChild(arrow);
 	this->addChild(dest);
 }
@@ -162,20 +163,11 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		target->setTouched();//设为触摸过
 		if (target->getType() == 0)//对普通note，直接进行判定
 		{
-			target->unscheduleUpdate();
 			target->stopAllActions();
+			target->unscheduleAllSelectors();
+			target->runAction(RotateBy::create(0.2, 360));//消失特效
 			target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
-			target->runAction(FadeOut::create(0.2));//消失特效
 			target->judge();
-		}
-		else//对长按和滑动note，开始走生命周期
-		{
-			target->setScale(1.25);
-			target->runAction(RotateBy::create(target->getLifeSpan() / 60.0, 360));//生命周期特效
-			if (target->getType() == 2)
-				addArrow(target->getPositionX(), target->getPositionY(), target->getDestX(), target->getDestY());
-			streak = MotionStreak::create(1, 3, 60, Color3B(255, 255, 255), "gameSceneUI/note2.png");
-			this->addChild(streak);
 		}
 	}
 	return true;
@@ -183,10 +175,19 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 void GameScene::onTouchMoved(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	if (!Director::getInstance()->isPaused() && target->getType() == 2)
+	Size s = target->getContentSize();
+	Point pos = touch->getLocation();
+	Point t = target->getPosition();
+	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
+	Rect rect2 = Rect(pos.x - s.width, pos.y - s.height, s.width * 2, s.height * 2);
+	if (!Director::getInstance()->isPaused() && target->getType() == 2 && target->isInLifeSpan() && target->getLife() % (target->getLifeSpan() / 3) == 0)
 	{
-		target->setPosition(touch->getLocation());//滑动note跟手
-		streak->setPosition(touch->getLocation());//滑动轨迹
+		if (rect.containsPoint(target->getPosition()))//perfect
+			judgeNote(2);
+		else if (rect2.containsPoint(target->getPosition()))//good
+			judgeNote(1);
+		else//miss 
+			judgeNote(0);
 	}
 }
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
@@ -196,13 +197,11 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	{//离开时进行判定
 		target->setScale(1);
 		target->stopAllActions();
-		target->unscheduleUpdate();
-		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
+		target->unscheduleAllSelectors();
 		target->runAction(FadeOut::create(0.2));//消失特效
+		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
 		target->judge();
-		streak->removeFromParentAndCleanup(true);
 	}
-
 }
 void GameScene::judgeNote(int judge)
 {
