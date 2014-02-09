@@ -99,6 +99,9 @@
       <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
 xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</Command>
     </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>R</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
