@@ -16,7 +16,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	director->setOpenGLView(eglView);
 	director->setDisplayStats(true);
 	director->setAnimationInterval(1.0 / 60);//设置帧率
-	auto scene = GameScene::createScene();
+	auto scene = IntroScene::createScene();
 	director->runWithScene(scene);//运行场景
 	return true;
 }

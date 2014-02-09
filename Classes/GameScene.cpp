@@ -117,7 +117,6 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 
 void GameScene::addNewNote(int type, int pos, int des)
 {
-	counterTotal++;
 	auto note = Note::createNote(type, pos, des);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->setSwallowTouches(true);
@@ -205,6 +204,8 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 }
 void GameScene::judgeNote(int judge)
 {
+	counterTotal++;
+	char temp[64];
 	switch (judge)
 	{
 	case 0:
@@ -219,13 +220,15 @@ void GameScene::judgeNote(int judge)
 		counterCombo++;
 		counterGood++;
 		labelJudge->setText("Good!");
-		labelCombo->setText(std::to_string(counterCombo).c_str());
+		sprintf(temp, "%d", counterCombo);
+		labelCombo->setText(temp);
 		break;
 	case 2:
 		counterCombo++;
 		counterPerfect++;
 		labelJudge->setText("Perfect!");
-		labelCombo->setText(std::to_string(counterCombo).c_str());
+		sprintf(temp, "%d", counterCombo);
+		labelCombo->setText(temp);
 		break;
 	}
 	labelJudge->setVisible(true);

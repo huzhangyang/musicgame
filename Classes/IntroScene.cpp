@@ -25,7 +25,8 @@ bool IntroScene::init()
 	auto logo = Sprite::create("introSceneUI/cocoslogo.png");
 	logo->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	addChild(logo);
-	this->scheduleOnce(schedule_selector(IntroScene::playIntro), 2);
+	logo->runAction(Sequence::createWithTwoActions(DelayTime::create(1), FadeOut::create(2)));
+	this->scheduleOnce(schedule_selector(IntroScene::playIntro), 3);
 	return true;
 }
 
