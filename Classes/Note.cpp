@@ -23,12 +23,12 @@ Note::~Note()
 {
 }
 
-Note* Note::createNote(int type, int pos, int des)
+Note* Note::createNote(int type, int length,int pos, int des)
 {
 	Note *note = new Note();
 	if (note)
 	{
-		note->initNote(type, pos, des);
+		note->initNote(type,length, pos, des);
 		note->scheduleUpdate();
 		note->autorelease();
 		return note;
@@ -37,28 +37,26 @@ Note* Note::createNote(int type, int pos, int des)
 	return NULL;
 }
 
-void Note::initNote(int type, int pos, int des)
+void Note::initNote(int type,int length, int pos, int des)
 {
 	this->type = type;
 	this->life = TIME_PRELOAD;
+	this->lifeSpan = length;
 	this->touched = false;
 	this->inLifeSpan = false;
 	switch (type)
 	{
 	case 0:
 		this->initWithFile("gameSceneUI/note0.png");
-		this->lifeSpan = 0;
 		this->setScale(2.5);
 		this->runAction(ScaleTo::create(life / 60.0, 0));//出现特效
 		break;
 	case 1:
 		this->initWithFile("gameSceneUI/note1.png");
-		this->lifeSpan = 120;
 		this->runAction(ScaleTo::create(life / 60.0, 1.25));//出现特效
 		break;
 	case 2:
 		this->initWithFile("gameSceneUI/note2.png");
-		this->lifeSpan = 60;
 		this->runAction(RotateBy::create(life / 60.0, 360));//出现特效
 		break;
 	}

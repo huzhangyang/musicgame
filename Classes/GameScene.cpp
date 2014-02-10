@@ -2,7 +2,12 @@
 #include "GameScene.h"
 #include "ClearScene.h"
 #include "Note.h"
+#include <fstream>
 
+const int TIME_PRELOAD = 60;//用于反应的时间
+const std::string FILENAME = "test.gnm";//测试谱面名称
+
+std::ifstream fin;
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
@@ -20,7 +25,6 @@ Scene* GameScene::createScene()
 	counterMiss = 0;//错过数
 	counterCombo = 0;//连击数
 	counterMaxcombo = 0;//最大连击数
-
 	return scene;
 }
 
@@ -47,7 +51,8 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
-
+	labelInfo->setText(FILENAME.substr(0,FILENAME.find('.')).c_str());
+	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
 	return true;
 }
 
@@ -71,12 +76,25 @@ void GameScene::menuCloseCallback(Object* pSender)
 void GameScene::update(float dt)
 {
 	framecounter++;
-	switch (framecounter % 720)//随机生成点note先用着吧…
+	std::string notefile;
+	fin.clear();
+	fin.seekg(0);
+	while (getline(fin, notefile))//每次都遍历一遍难道不会影响性能么？早晚要用vector代替的吧…
+	{
+		int type = atoi(notefile.substr(0, 1).c_str());
+		int time = atoi(notefile.substr(2, 6).c_str());
+		int length = atoi(notefile.substr(8, 10).c_str());
+		int pos = atoi(notefile.substr(12, 13).c_str());
+		int des = atoi(notefile.substr(15, 16).c_str());
+		if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
+			addNewNote(type, length, pos, des);
+	}
+	/*switch (framecounter % 720)//随机生成点note先用着吧…
 	{
 	case 180:addRandomNote(2); break;
 	case 360:addRandomNote(1); break;
 	case 540:addRandomNote(0); break;
-	}
+	}*/
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
@@ -116,9 +134,9 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	}
 }
 
-void GameScene::addNewNote(int type, int pos, int des)
+void GameScene::addNewNote(int type, int length, int pos, int des)
 {
-	auto note = Note::createNote(type, pos, des);
+	auto note = Note::createNote(type, length, pos, des);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->setSwallowTouches(true);
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
@@ -149,7 +167,7 @@ void GameScene::addRandomNote(int type)
 	int randomY = CCRANDOM_0_1() * 5 + 1;
 	int randomA = CCRANDOM_0_1() * 6 + 1;
 	int randomB = CCRANDOM_0_1() * 5 + 1;
-	addNewNote(type, randomX * 10 + randomY, randomA * 10 + randomB);
+	addNewNote(type, 120, randomX * 10 + randomY, randomA * 10 + randomB);
 }
 
 bool GameScene::onTouchBegan(Touch *touch, Event  *event)
@@ -165,8 +183,8 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		{
 			target->stopAllActions();
 			target->unscheduleAllSelectors();
-			target->runAction(RotateBy::create(0.2, 360));//消失特效
-			target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
+			target->runAction(RotateBy::create(0.2f, 360));//消失特效
+			target->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);
 			target->judge();
 		}
 	}
@@ -197,8 +215,8 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	{//离开时进行判定
 		target->stopAllActions();
 		target->unscheduleAllSelectors();
-		target->runAction(FadeOut::create(0.2));//消失特效
-		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
+		target->runAction(FadeOut::create(0.2f));//消失特效
+		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);
 		target->judge();
 	}
 }
@@ -233,7 +251,7 @@ void GameScene::judgeNote(int judge)
 	}
 	labelJudge->setVisible(true);
 	labelCombo->setVisible(true);
-	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2, 1.25), ScaleTo::create(0.2, 1), NULL));
+	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
 }
 

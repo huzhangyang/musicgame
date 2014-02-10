@@ -286,7 +286,7 @@
           "__type": "ComGUIImageViewSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "ImageView",
           "name": "graybackground",
-          "ZOrder": 1,
+          "ZOrder": 0,
           "actiontag": 41,
           "anchorPointX": 0.5,
           "anchorPointY": 0.5,
