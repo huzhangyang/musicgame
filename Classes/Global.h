@@ -5,11 +5,14 @@ extern int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo,
 //开始界面Tag
 const int INTROSCENE_START = 3;
 //主界面Tag
-const int MAINSCENE_INK = 14;
-const int MAINSCENE_SHELF = 12;
 const int MAINSCENE_OPTION = 7;
 const int MAINSCENE_HELP = 8;
 const int MAINSCENE_EXIT = 9;
+const int MAINSCENE_CAT = 11;
+const int MAINSCENE_SHELF = 12;
+const int MAINSCENE_TABLE = 13;
+const int MAINSCENE_INK = 14;
+const int MAINSCENE_CLOCK = 15;
 //游戏界面Tag
 const int GAMESCENE_PAUSE = 5;
 const int GAMESCENE_COMBO = 6;

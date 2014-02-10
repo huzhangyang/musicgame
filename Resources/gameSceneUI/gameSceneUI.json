@@ -240,7 +240,7 @@
           "__type": "ComGUILabelBMFontSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "LabelBMFont",
           "name": "songiinformation",
-          "ZOrder": 1,
+          "ZOrder": 3,
           "actiontag": 37,
           "anchorPointX": 0.5,
           "anchorPointY": 0.5,
