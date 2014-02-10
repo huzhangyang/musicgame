@@ -2,7 +2,9 @@
 #include "GameScene.h"
 #include "ClearScene.h"
 #include "Note.h"
+#include <fstream>
 
+std::ifstream fin;
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
@@ -20,7 +22,6 @@ Scene* GameScene::createScene()
 	counterMiss = 0;//错过数
 	counterCombo = 0;//连击数
 	counterMaxcombo = 0;//最大连击数
-
 	return scene;
 }
 
@@ -47,7 +48,7 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
-
+	fin.open(FileUtils::getInstance()->getWritablePath() + "test.gnm");//打开测试谱面
 	return true;
 }
 
@@ -71,12 +72,25 @@ void GameScene::menuCloseCallback(Object* pSender)
 void GameScene::update(float dt)
 {
 	framecounter++;
-	switch (framecounter % 720)//随机生成点note先用着吧…
+	std::string notefile;
+	fin.clear();
+	fin.seekg(0);
+	while (getline(fin, notefile))
+	{
+		int type = atoi(notefile.substr(0, 1).c_str());
+		int time = atoi(notefile.substr(2, 6).c_str());
+		int life = atoi(notefile.substr(8, 10).c_str());
+		int pos = atoi(notefile.substr(12, 13).c_str());
+		int des = atoi(notefile.substr(15, 16).c_str());
+		if (time== framecounter)
+			addNewNote(type, pos, des);
+	}
+	/*switch (framecounter % 720)//随机生成点note先用着吧…
 	{
 	case 180:addRandomNote(2); break;
 	case 360:addRandomNote(1); break;
 	case 540:addRandomNote(0); break;
-	}
+	}*/
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
@@ -165,8 +179,8 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		{
 			target->stopAllActions();
 			target->unscheduleAllSelectors();
-			target->runAction(RotateBy::create(0.2, 360));//消失特效
-			target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
+			target->runAction(RotateBy::create(0.2f, 360));//消失特效
+			target->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);
 			target->judge();
 		}
 	}
@@ -197,8 +211,8 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	{//离开时进行判定
 		target->stopAllActions();
 		target->unscheduleAllSelectors();
-		target->runAction(FadeOut::create(0.2));//消失特效
-		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2);
+		target->runAction(FadeOut::create(0.2f));//消失特效
+		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);
 		target->judge();
 	}
 }
@@ -233,7 +247,7 @@ void GameScene::judgeNote(int judge)
 	}
 	labelJudge->setVisible(true);
 	labelCombo->setVisible(true);
-	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2, 1.25), ScaleTo::create(0.2, 1), NULL));
+	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
 }
 
