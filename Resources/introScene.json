@@ -9,7 +9,7 @@
   "visible": 1,
   "x": 0,
   "y": 0,
-  "zorder": 0,
+  "zorder": 1,
   "gameobjects": [
     {
       "__type": "ComGameObjectSurrogate:#EditorCommon.JsonModel",
@@ -51,7 +51,7 @@
       "__type": "ComSceneSurrogate:#EditorCommon.JsonModel.Component",
       "classname": "CCScene",
       "name": "CCScene",
-      "scenename": "introscene"
+      "scenename": "introScene"
     },
     {
       "__type": "ComSimpleAudioSurrogate:#EditorCommon.JsonModel.Component",

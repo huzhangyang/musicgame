@@ -148,7 +148,7 @@
           "__type": "ComGUIImageViewSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "ImageView",
           "name": "QAQ",
-          "ZOrder": 1,
+          "ZOrder": 0,
           "actiontag": 25,
           "anchorPointX": 0.5,
           "anchorPointY": 0.5,
