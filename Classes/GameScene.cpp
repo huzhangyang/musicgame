@@ -4,6 +4,9 @@
 #include "Note.h"
 #include <fstream>
 
+const int TIME_PRELOAD = 60;//用于反应的时间
+const std::string FILENAME = "test.gnm";//测试谱面名称
+
 std::ifstream fin;
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
@@ -48,7 +51,8 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
-	fin.open(FileUtils::getInstance()->getWritablePath() + "test.gnm");//打开测试谱面
+	labelInfo->setText(FILENAME.substr(0,FILENAME.find('.')).c_str());
+	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
 	return true;
 }
 
@@ -75,15 +79,15 @@ void GameScene::update(float dt)
 	std::string notefile;
 	fin.clear();
 	fin.seekg(0);
-	while (getline(fin, notefile))
+	while (getline(fin, notefile))//每次都遍历一遍难道不会影响性能么？早晚要用vector代替的吧…
 	{
 		int type = atoi(notefile.substr(0, 1).c_str());
 		int time = atoi(notefile.substr(2, 6).c_str());
-		int life = atoi(notefile.substr(8, 10).c_str());
+		int length = atoi(notefile.substr(8, 10).c_str());
 		int pos = atoi(notefile.substr(12, 13).c_str());
 		int des = atoi(notefile.substr(15, 16).c_str());
-		if (time== framecounter)
-			addNewNote(type, pos, des);
+		if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
+			addNewNote(type, length, pos, des);
 	}
 	/*switch (framecounter % 720)//随机生成点note先用着吧…
 	{
@@ -130,9 +134,9 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	}
 }
 
-void GameScene::addNewNote(int type, int pos, int des)
+void GameScene::addNewNote(int type, int length, int pos, int des)
 {
-	auto note = Note::createNote(type, pos, des);
+	auto note = Note::createNote(type, length, pos, des);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->setSwallowTouches(true);
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
@@ -163,7 +167,7 @@ void GameScene::addRandomNote(int type)
 	int randomY = CCRANDOM_0_1() * 5 + 1;
 	int randomA = CCRANDOM_0_1() * 6 + 1;
 	int randomB = CCRANDOM_0_1() * 5 + 1;
-	addNewNote(type, randomX * 10 + randomY, randomA * 10 + randomB);
+	addNewNote(type, 120, randomX * 10 + randomY, randomA * 10 + randomB);
 }
 
 bool GameScene::onTouchBegan(Touch *touch, Event  *event)

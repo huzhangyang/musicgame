@@ -20,7 +20,7 @@ public:
 	static void judgeNote(int judge);
 private:
 	void update(float dt);
-	void addNewNote(int type, int pos, int des);//生成新note
+	void addNewNote(int type, int length, int pos, int des);//生成新note
 	void addArrow(int posX, int posY, int desX, int desY);//为滑动note生成箭头和目标点
 	void addRandomNote(int type);//随机生成note
 	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
