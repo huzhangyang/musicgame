@@ -121,7 +121,6 @@ void Note::update(float dt)
 		{
 			life = lifeSpan;
 			inLifeSpan = true;
-			this->setScale(1.25);
 			if (type == 1)
 				this->runAction(RotateBy::create(lifeSpan / 60.0, 360));//生命周期特效
 			else

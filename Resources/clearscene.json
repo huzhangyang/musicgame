@@ -32,7 +32,7 @@
           "name": "GUIComponent",
           "file": null,
           "fileData": {
-            "path": "clearsceneUI/clearsceneUI.json",
+            "path": "clearSceneUI/clearSceneUI.json",
             "plistFile": null,
             "resourceType": 0
           }

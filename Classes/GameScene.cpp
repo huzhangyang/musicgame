@@ -47,6 +47,7 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
+
 	return true;
 }
 
@@ -194,7 +195,6 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	auto target = static_cast<Note*>(event->getCurrentTarget());
 	if (!Director::getInstance()->isPaused() && target->getType() != 0)
 	{//离开时进行判定
-		target->setScale(1);
 		target->stopAllActions();
 		target->unscheduleAllSelectors();
 		target->runAction(FadeOut::create(0.2));//消失特效
