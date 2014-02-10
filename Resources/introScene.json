@@ -9,7 +9,7 @@
   "visible": 1,
   "x": 0,
   "y": 0,
-  "zorder": 1,
+  "zorder": 0,
   "gameobjects": [
     {
       "__type": "ComGameObjectSurrogate:#EditorCommon.JsonModel",
@@ -32,7 +32,7 @@
           "name": "GUIComponent",
           "file": null,
           "fileData": {
-            "path": "clearsceneUI/clearsceneUI.json",
+            "path": "introSceneUI/introSceneUI.json",
             "plistFile": null,
             "resourceType": 0
           }
@@ -51,7 +51,7 @@
       "__type": "ComSceneSurrogate:#EditorCommon.JsonModel.Component",
       "classname": "CCScene",
       "name": "CCScene",
-      "scenename": "clearscene"
+      "scenename": "introscene"
     },
     {
       "__type": "ComSimpleAudioSurrogate:#EditorCommon.JsonModel.Component",

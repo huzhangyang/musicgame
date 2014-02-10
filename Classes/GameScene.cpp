@@ -47,6 +47,7 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
+
 	return true;
 }
 
@@ -117,7 +118,6 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 
 void GameScene::addNewNote(int type, int pos, int des)
 {
-	counterTotal++;
 	auto note = Note::createNote(type, pos, des);
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->setSwallowTouches(true);
@@ -195,7 +195,6 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 	auto target = static_cast<Note*>(event->getCurrentTarget());
 	if (!Director::getInstance()->isPaused() && target->getType() != 0)
 	{//离开时进行判定
-		target->setScale(1);
 		target->stopAllActions();
 		target->unscheduleAllSelectors();
 		target->runAction(FadeOut::create(0.2));//消失特效
@@ -205,6 +204,8 @@ void GameScene::onTouchEnded(Touch *touch, Event  *event)
 }
 void GameScene::judgeNote(int judge)
 {
+	counterTotal++;
+	char temp[64];
 	switch (judge)
 	{
 	case 0:
@@ -219,13 +220,15 @@ void GameScene::judgeNote(int judge)
 		counterCombo++;
 		counterGood++;
 		labelJudge->setText("Good!");
-		labelCombo->setText(std::to_string(counterCombo).c_str());
+		sprintf(temp, "%d", counterCombo);
+		labelCombo->setText(temp);
 		break;
 	case 2:
 		counterCombo++;
 		counterPerfect++;
 		labelJudge->setText("Perfect!");
-		labelCombo->setText(std::to_string(counterCombo).c_str());
+		sprintf(temp, "%d", counterCombo);
+		labelCombo->setText(temp);
 		break;
 	}
 	labelJudge->setVisible(true);
