@@ -5,6 +5,7 @@
 #include <fstream>
 
 const int TIME_PRELOAD = 60;//用于反应的时间
+const int DIFFICULTY = 0;//当前难度
 const std::string FILENAME = "test.gnm";//测试谱面名称
 
 std::ifstream fin;
@@ -81,11 +82,12 @@ void GameScene::update(float dt)
 	fin.seekg(0);
 	while (getline(fin, notefile))//每次都遍历一遍难道不会影响性能么？早晚要用vector代替的吧…
 	{
-		int type = atoi(notefile.substr(0, 1).c_str());
-		int time = atoi(notefile.substr(2, 6).c_str());
-		int length = atoi(notefile.substr(8, 10).c_str());
-		int pos = atoi(notefile.substr(12, 13).c_str());
-		int des = atoi(notefile.substr(15, 16).c_str());
+		int time = atoi(notefile.substr(0, 5).c_str());
+		int difficulty = atoi(notefile.substr(6, 7).c_str());
+		int type = atoi(notefile.substr(8, 9).c_str());
+		int length = atoi(notefile.substr(10, 13).c_str());
+		int pos = atoi(notefile.substr(14, 16).c_str());
+		int des = atoi(notefile.substr(17, 19).c_str());
 		if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
 			addNewNote(type, length, pos, des);
 	}
