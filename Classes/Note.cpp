@@ -3,12 +3,17 @@
 
 const int TIME_PRELOAD = 60;//用于反应的时间
 
-const int POS_X1 = 270;
-const int POS_X2 = 420;
-const int POS_X3 = 570;
-const int POS_X4 = 720;
-const int POS_X5 = 870;
-const int POS_X6 = 1020;
+
+const int POS_X1 = 200;
+const int POS_X2 = 320;
+const int POS_X3 = 440;
+const int POS_X4 = 560;
+const int POS_X5 = 680;
+const int POS_X6 = 800;
+const int POS_X7 = 920;
+const int POS_X8 = 1040;
+const int POS_X9 = 1160;
+
 const int POS_Y1 = 470;
 const int POS_Y2 = 380;
 const int POS_Y3 = 290;
@@ -48,8 +53,8 @@ void Note::initNote(int type,int length, int pos, int des)
 	{
 	case 0:
 		this->initWithFile("gameSceneUI/note0.png");
-		this->setScale(2.5);
-		this->runAction(ScaleTo::create(life / 60.0, 0));//出现特效
+		//this->setScale(2.5);
+		//this->runAction(ScaleTo::create(life / 60.0, 0));//出现特效
 		break;
 	case 1:
 		this->initWithFile("gameSceneUI/note1.png");
@@ -68,6 +73,9 @@ void Note::initNote(int type,int length, int pos, int des)
 	case 4:this->setPositionX(POS_X4); break;
 	case 5:this->setPositionX(POS_X5); break;
 	case 6:this->setPositionX(POS_X6); break;
+	case 7:this->setPositionX(POS_X7); break;
+	case 8:this->setPositionX(POS_X8); break;
+	case 9:this->setPositionX(POS_X9); break;
 	default: break;
 	}
 	switch (pos % 10)
@@ -81,12 +89,15 @@ void Note::initNote(int type,int length, int pos, int des)
 	}
 	switch (des / 10)
 	{
-	case 1:this->destX = POS_X1; break;
-	case 2:this->destX = POS_X2; break;
-	case 3:this->destX = POS_X3; break;
-	case 4:this->destX = POS_X4; break;
-	case 5:this->destX = POS_X5; break;
-	case 6:this->destX = POS_X6; break;
+	case 1:this->destX=POS_X1; break;
+	case 2:this->destX=POS_X2; break;
+	case 3:this->destX=POS_X3; break;
+	case 4:this->destX=POS_X4; break;
+	case 5:this->destX=POS_X5; break;
+	case 6:this->destX=POS_X6; break;
+	case 7:this->destX=POS_X7; break;
+	case 8:this->destX=POS_X8; break;
+	case 9:this->destX=POS_X9; break;
 	default: break;
 	}
 	switch (des % 10)
