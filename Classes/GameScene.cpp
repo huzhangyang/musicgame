@@ -91,7 +91,7 @@ void GameScene::update(float dt)
 		//if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
 			//addNewNote(type, length, pos, des);
 	}
-	switch (framecounter % 60)//随机生成点note先用着吧…
+	switch (framecounter % 30)//随机生成点note先用着吧…
 	{
 	//case 180:addRandomNote(2); break;
 	//case 360:addRandomNote(1); break;
