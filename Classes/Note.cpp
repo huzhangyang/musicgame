@@ -3,18 +3,6 @@
 
 const int TIME_PRELOAD = 60;//用于反应的时间
 
-const int POS_X1 = 270;
-const int POS_X2 = 420;
-const int POS_X3 = 570;
-const int POS_X4 = 720;
-const int POS_X5 = 870;
-const int POS_X6 = 1020;
-const int POS_Y1 = 470;
-const int POS_Y2 = 380;
-const int POS_Y3 = 290;
-const int POS_Y4 = 200;
-const int POS_Y5 = 110;
-
 Note::Note()
 {
 }
@@ -23,12 +11,12 @@ Note::~Note()
 {
 }
 
-Note* Note::createNote(int type, int length,int pos, int des)
+Note* Note::createNote(int type, int length, int pos, int des)
 {
 	Note *note = new Note();
 	if (note)
 	{
-		note->initNote(type,length, pos, des);
+		note->initNote(type, length, pos, des);
 		note->scheduleUpdate();
 		note->autorelease();
 		return note;
@@ -37,7 +25,7 @@ Note* Note::createNote(int type, int length,int pos, int des)
 	return NULL;
 }
 
-void Note::initNote(int type,int length, int pos, int des)
+void Note::initNote(int type, int length, int pos, int des)
 {
 	this->type = type;
 	this->life = TIME_PRELOAD;
@@ -48,8 +36,8 @@ void Note::initNote(int type,int length, int pos, int des)
 	{
 	case 0:
 		this->initWithFile("gameSceneUI/note0.png");
-		this->setScale(2.5);
-		this->runAction(ScaleTo::create(life / 60.0, 0));//出现特效
+		//this->setScale(2.5);
+		//this->runAction(ScaleTo::create(life / 60.0, 0));//出现特效
 		break;
 	case 1:
 		this->initWithFile("gameSceneUI/note1.png");
@@ -60,44 +48,10 @@ void Note::initNote(int type,int length, int pos, int des)
 		this->runAction(RotateBy::create(life / 60.0, 360));//出现特效
 		break;
 	}
-	switch (pos / 10)
-	{
-	case 1:this->setPositionX(POS_X1); break;
-	case 2:this->setPositionX(POS_X2); break;
-	case 3:this->setPositionX(POS_X3); break;
-	case 4:this->setPositionX(POS_X4); break;
-	case 5:this->setPositionX(POS_X5); break;
-	case 6:this->setPositionX(POS_X6); break;
-	default: break;
-	}
-	switch (pos % 10)
-	{
-	case 1:this->setPositionY(POS_Y1); break;
-	case 2:this->setPositionY(POS_Y2); break;
-	case 3:this->setPositionY(POS_Y3); break;
-	case 4:this->setPositionY(POS_Y4); break;
-	case 5:this->setPositionY(POS_Y5); break;
-	default: break;
-	}
-	switch (des / 10)
-	{
-	case 1:this->destX = POS_X1; break;
-	case 2:this->destX = POS_X2; break;
-	case 3:this->destX = POS_X3; break;
-	case 4:this->destX = POS_X4; break;
-	case 5:this->destX = POS_X5; break;
-	case 6:this->destX = POS_X6; break;
-	default: break;
-	}
-	switch (des % 10)
-	{
-	case 1:this->destY = POS_Y1; break;
-	case 2:this->destY = POS_Y2; break;
-	case 3:this->destY = POS_Y3; break;
-	case 4:this->destY = POS_Y4; break;
-	case 5:this->destY = POS_Y5; break;
-	default: break;
-	}
+	this->setPositionX(120 * (pos / 10) + 80);
+	this->setPositionY(60 * (pos % 10) + 5);
+	this->destX = 120 * (des / 10) + 80;
+	this->destY = 60 * (des % 10) + 5;
 }
 
 void Note::removeNote(float dt)

@@ -88,15 +88,16 @@ void GameScene::update(float dt)
 		int length = atoi(notefile.substr(10, 13).c_str());
 		int pos = atoi(notefile.substr(14, 16).c_str());
 		int des = atoi(notefile.substr(17, 19).c_str());
-		if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
-			addNewNote(type, length, pos, des);
+		//if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
+			//addNewNote(type, length, pos, des);
 	}
-	/*switch (framecounter % 720)//随机生成点note先用着吧…
+	switch (framecounter % 30)//随机生成点note先用着吧…
 	{
-	case 180:addRandomNote(2); break;
-	case 360:addRandomNote(1); break;
-	case 540:addRandomNote(0); break;
-	}*/
+	//case 180:addRandomNote(2); break;
+	//case 360:addRandomNote(1); break;
+	//case 540:addRandomNote(0); break;
+	case 0:addRandomNote(0); break;
+	}
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
@@ -140,7 +141,6 @@ void GameScene::addNewNote(int type, int length, int pos, int des)
 {
 	auto note = Note::createNote(type, length, pos, des);
 	auto noteListener = EventListenerTouchOneByOne::create();
-	noteListener->setSwallowTouches(true);
 	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
 	noteListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
 	noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
@@ -165,10 +165,10 @@ void GameScene::addArrow(int posX, int posY, int desX, int desY)
 
 void GameScene::addRandomNote(int type)
 {
-	int randomX = CCRANDOM_0_1() * 6 + 1;
-	int randomY = CCRANDOM_0_1() * 5 + 1;
-	int randomA = CCRANDOM_0_1() * 6 + 1;
-	int randomB = CCRANDOM_0_1() * 5 + 1;
+	int randomX = CCRANDOM_0_1() * 8+1;
+	int randomY = CCRANDOM_0_1() * 8+1;
+	int randomA = CCRANDOM_0_1() * 8+1;
+	int randomB = CCRANDOM_0_1() * 8+1;
 	addNewNote(type, 120, randomX * 10 + randomY, randomA * 10 + randomB);
 }
 

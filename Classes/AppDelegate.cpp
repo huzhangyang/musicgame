@@ -17,7 +17,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	eglView->setDesignResolutionSize(1280, 720, ResolutionPolicy::SHOW_ALL);
 	director->setDisplayStats(true);
 	director->setAnimationInterval(1.0 / 60);//设置帧率
-	auto scene = GameScene::createScene();
+	auto scene = IntroScene::createScene();
 	director->runWithScene(scene);//运行场景
 	return true;
 }
