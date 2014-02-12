@@ -52,7 +52,7 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
-	labelInfo->setText(FILENAME.substr(0,FILENAME.find('.')).c_str());
+	labelInfo->setText(FILENAME.substr(0, FILENAME.find('.')).c_str());
 	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
 	return true;
 }
@@ -62,7 +62,8 @@ void GameScene::onEnterTransitionDidFinish()
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3");
-	this->scheduleUpdate();
+	//this->scheduleUpdate();
+	this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -88,15 +89,8 @@ void GameScene::update(float dt)
 		int length = atoi(notefile.substr(10, 13).c_str());
 		int pos = atoi(notefile.substr(14, 16).c_str());
 		int des = atoi(notefile.substr(17, 19).c_str());
-		//if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
-			//addNewNote(type, length, pos, des);
-	}
-	switch (framecounter % 30)//随机生成点note先用着吧…
-	{
-	//case 180:addRandomNote(2); break;
-	//case 360:addRandomNote(1); break;
-	//case 540:addRandomNote(0); break;
-	case 0:addRandomNote(0); break;
+		if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
+		addNewNote(type, length, pos, des);
 	}
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
@@ -163,13 +157,14 @@ void GameScene::addArrow(int posX, int posY, int desX, int desY)
 	this->addChild(dest);
 }
 
-void GameScene::addRandomNote(int type)
+void GameScene::addRandomNote(float dt)
 {
-	int randomX = CCRANDOM_0_1() * 8+1;
-	int randomY = CCRANDOM_0_1() * 8+1;
-	int randomA = CCRANDOM_0_1() * 8+1;
-	int randomB = CCRANDOM_0_1() * 8+1;
-	addNewNote(type, 120, randomX * 10 + randomY, randomA * 10 + randomB);
+	int randomT = CCRANDOM_0_1() * 3;
+	int randomX = CCRANDOM_0_1() * 8 + 1;
+	int randomY = CCRANDOM_0_1() * 8 + 1;
+	int randomA = CCRANDOM_0_1() * 8 + 1;
+	int randomB = CCRANDOM_0_1() * 8 + 1;
+	addNewNote(randomT, 120, randomX * 10 + randomY, randomA * 10 + randomB);
 }
 
 bool GameScene::onTouchBegan(Touch *touch, Event  *event)

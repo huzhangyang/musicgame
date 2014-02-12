@@ -27,10 +27,16 @@ bool MainScene::init()
 	auto UINode = sceneNode->getChildByTag(10004);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
 	auto UIlayer = UIComponent->getNode();
-	auto objectShelf = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_SHELF));
-	objectShelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto objectTable = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_TABLE));
+	objectTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto objectInk = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_INK));
 	objectInk->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto objectShelf = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_SHELF));
+	objectShelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto objectClock = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_CLOCK));
+	objectClock->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto objectCat = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_CAT));
+	objectCat->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto buttonOption = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_OPTION));
 	buttonOption->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto buttonHelp = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_HELP));
