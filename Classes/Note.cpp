@@ -36,8 +36,8 @@ void Note::initNote(int type, int length, int pos, int des)
 	{
 	case 0:
 		this->initWithFile("gameSceneUI/note0.png");
-		//this->setScale(2.5);
-		//this->runAction(ScaleTo::create(life / 60.0, 0));//出现特效
+		this->setScale(2.5);
+		this->runAction(ScaleTo::create(life / 60.0, 0));//出现特效
 		break;
 	case 1:
 		this->initWithFile("gameSceneUI/note1.png");
@@ -49,9 +49,9 @@ void Note::initNote(int type, int length, int pos, int des)
 		break;
 	}
 	this->setPositionX(120 * (pos / 10) + 80);
-	this->setPositionY(60 * (pos % 10) + 5);
+	this->setPositionY(60 * (10 - pos % 10) + 5);
 	this->destX = 120 * (des / 10) + 80;
-	this->destY = 60 * (des % 10) + 5;
+	this->destY = 60 * (10 - des % 10) + 5;
 }
 
 void Note::removeNote(float dt)

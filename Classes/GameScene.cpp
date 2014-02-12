@@ -62,8 +62,8 @@ void GameScene::onEnterTransitionDidFinish()
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3");
-	//this->scheduleUpdate();
-	this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
+	this->scheduleUpdate();
+	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -89,8 +89,8 @@ void GameScene::update(float dt)
 		int length = atoi(notefile.substr(10, 13).c_str());
 		int pos = atoi(notefile.substr(14, 16).c_str());
 		int des = atoi(notefile.substr(17, 19).c_str());
-		if (framecounter + TIME_PRELOAD *0.6 == time)//提前一点生成该NOTE
-		addNewNote(type, length, pos, des);
+		if (framecounter + TIME_PRELOAD *0.6 == time&&DIFFICULTY >= difficulty)//提前一点生成该NOTE
+			addNewNote(type, length, pos, des);
 	}
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
