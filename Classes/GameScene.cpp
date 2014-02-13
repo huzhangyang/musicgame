@@ -4,7 +4,8 @@
 #include "Note.h"
 #include <fstream>
 
-const int TIME_PRELOAD = 60;//用于反应的时间
+const int TIME_PRELOAD = 30;//音符提前出现的时间
+const int TIME_DEADLINE = 30;//音符最大允许延迟按下的时间
 const int DIFFICULTY = 0;//当前难度
 const std::string FILENAME = "test.gnm";//测试谱面名称
 
@@ -20,7 +21,7 @@ Scene* GameScene::createScene()
 	auto layer = GameScene::create();
 	scene->addChild(layer);
 
-	framecounter;//帧数计数器
+	framecounter = 0;//帧数计数器
 	counterTotal = 0;//音符总数
 	counterPerfect = 0;//完美数
 	counterGood = 0;//普通击中数
@@ -54,8 +55,6 @@ bool GameScene::init()
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
 	labelInfo->setText(FILENAME.substr(0, FILENAME.find('.')).c_str());
-	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
-	getNoteline();//读取第一行
 	return true;
 }
 
@@ -63,9 +62,14 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3");
-	this->scheduleUpdate();
-	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
+	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
+	getNoteline();//读取第一行
+	this->scheduleOnce(schedule_selector(GameScene::startGame), 3);
+
+	Sprite* progress = Sprite::create("gameSceneUI/note.png");
+	addChild(progress);
+	progress->setPosition(-40, 605);
+	progress->runAction(MoveTo::create(3, Point(1340, 605)));//准备特效
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -77,10 +81,17 @@ void GameScene::menuCloseCallback(Object* pSender)
 #endif
 }
 
+void GameScene::startGame(float dt)
+{
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3");
+	this->scheduleUpdate();
+	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
+}
+
 void GameScene::update(float dt)
 {
 	framecounter++;
-	while (framecounter + TIME_PRELOAD *0.6 >= noteline.time)//提前一些生成
+	while (framecounter + TIME_PRELOAD >= noteline.time)//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		if (DIFFICULTY >= noteline.difficulty)//当前难度符合则生成否则跳过
@@ -90,6 +101,7 @@ void GameScene::update(float dt)
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
+		fin.close();
 		if (counterMaxcombo == 0 && counterMiss != counterTotal)
 			counterMaxcombo = counterTotal;//全程无miss
 		auto scene = ClearScene::createScene();
@@ -107,6 +119,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		if (tag == GAMESCENE_PAUSE)
 		{//暂时把暂停作为跳转到结算界面用
 			this->unscheduleUpdate();
+			fin.close();
 			if (counterMaxcombo == 0 && counterMiss != counterTotal)
 				counterMaxcombo = counterTotal;//全程无miss
 			auto scene = ClearScene::createScene();
@@ -184,16 +197,20 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 	Size s = target->getContentSize();
 	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isTouched())
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
 	{
-		target->setTouched();//设为触摸过
-		if (target->getType() == 0)//对普通note，直接进行判定
+		if (target->getStatus() == UNTOUCHED_PRELOAD)//预判时按下，状态变为按下_未激活
 		{
-			target->stopAllActions();
-			target->unscheduleAllSelectors();
-			target->runAction(RotateBy::create(0.2f, 360));//消失特效
-			target->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);
-			target->judge();
+			target->setStatus(TOUCHED_UNACTIVATED);
+			if (target->getType() == 0)//对普通note，直接进行判定
+				target->judge();
+		}
+		else if (target->getStatus() == UNTOUCHED_DEADLINE)//等待时按下，状态变为按下_激活
+		{
+			target->setStatus(TOUCHED_ACTIVATED);
+			target->setLife(target->getLength() - target->getLife());//生命变为应该剩余的生命
+			if (target->getType() == 0)//对普通note，直接进行判定
+				target->judge();
 		}
 	}
 	return true;
@@ -203,30 +220,26 @@ void GameScene::onTouchMoved(Touch *touch, Event  *event)
 	auto target = static_cast<Note*>(event->getCurrentTarget());
 	Size s = target->getContentSize();
 	Point pos = touch->getLocation();
-	Point t = target->getPosition();
 	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
 	Rect rect2 = Rect(pos.x - s.width, pos.y - s.height, s.width * 2, s.height * 2);
-	if (!Director::getInstance()->isPaused() && target->getType() == 2 && target->isInLifeSpan() && target->getLife() % (target->getLifeSpan() / 3) == 0)
+	if (!Director::getInstance()->isPaused() && target->getType() == 2 && target->getStatus() == TOUCHED_ACTIVATED)
 	{
-		if (rect.containsPoint(target->getPosition()))//perfect
-			judgeNote(2);
-		else if (rect2.containsPoint(target->getPosition()))//good
-			judgeNote(1);
-		else//miss 
-			judgeNote(0);
+		if (target->getLife() % (target->getLength() / 3) == 0)//对滑动音符，生命周期中额外判定3次
+		{
+			if (rect.containsPoint(target->getPosition()))//perfect
+				judgeNote(2);
+			else if (rect2.containsPoint(target->getPosition()))//good
+				judgeNote(1);
+			else//miss 
+				judgeNote(0);
+		}
 	}
 }
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	if (!Director::getInstance()->isPaused() && target->getType() != 0)
-	{//离开时进行判定
-		target->stopAllActions();
-		target->unscheduleAllSelectors();
-		target->runAction(FadeOut::create(0.2f));//消失特效
-		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);
+	if (!Director::getInstance()->isPaused() && target->getType() != 0)//松手后进行长按与滑动音符的判定
 		target->judge();
-	}
 }
 void GameScene::judgeNote(int judge)
 {
@@ -257,9 +270,7 @@ void GameScene::judgeNote(int judge)
 		labelCombo->setText(temp);
 		break;
 	}
-	labelJudge->setVisible(true);
-	labelCombo->setVisible(true);
-	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));
+	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), FadeOut::create(1), NULL));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
 }
 
