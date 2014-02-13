@@ -23,10 +23,21 @@ private:
 	void addNewNote(int type, int length, int pos, int des);//生成新note
 	void addRandomNote(float dt);//随机生成note
 	void addArrow(int posX, int posY, int desX, int desY);//为滑动note生成箭头和目标点
+	void getNoteline();//得到新的一行谱面
 	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void onTouchMoved(Touch *pTouch, Event  *pEvent);
 	void onTouchEnded(Touch *pTouch, Event  *pEvent);
 	void touchEvent(Object* obj, gui::TouchEventType eventType);
+};
+
+struct Noteline//曲谱结构
+{
+	int time;//时间
+	int difficulty;//难度
+	int type;//类型
+	int length;//长音符与滑动音符持续长度
+	int pos;//出现位置
+	int des;//滑动音符目标位置
 };
 
 #endif 

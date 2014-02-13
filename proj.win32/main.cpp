@@ -14,6 +14,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     // create the application instance
     AppDelegate app;
     EGLView eglView;
-    eglView.init("MusicGame",640,360);
+    eglView.init("Echo",640,360);
     return Application::getInstance()->run();
 }
