@@ -4,7 +4,8 @@
 #include "Note.h"
 #include <fstream>
 
-const int TIME_PRELOAD = 60;//用于反应的时间
+const int TIME_PRELOAD = 30;//音符提前出现的时间
+const int TIME_DEADLINE = 30;//音符最大允许延迟按下的时间
 const int DIFFICULTY = 0;//当前难度
 const std::string FILENAME = "test.gnm";//测试谱面名称
 
@@ -80,7 +81,7 @@ void GameScene::menuCloseCallback(Object* pSender)
 void GameScene::update(float dt)
 {
 	framecounter++;
-	while (framecounter + TIME_PRELOAD *0.6 >= noteline.time)//提前一些生成
+	while (framecounter + TIME_PRELOAD >= noteline.time)//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		if (DIFFICULTY >= noteline.difficulty)//当前难度符合则生成否则跳过
@@ -184,16 +185,20 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 	Size s = target->getContentSize();
 	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isTouched())
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
 	{
-		target->setTouched();//设为触摸过
-		if (target->getType() == 0)//对普通note，直接进行判定
+		if (target->getStatus() == UNTOUCHED_PRELOAD)//预判时按下，状态变为按下_未激活
 		{
-			target->stopAllActions();
-			target->unscheduleAllSelectors();
-			target->runAction(RotateBy::create(0.2f, 360));//消失特效
-			target->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);
-			target->judge();
+			target->setStatus(TOUCHED_UNACTIVATED);
+			if (target->getType() == 0)//对普通note，直接进行判定
+				target->judge();
+		}
+		else if (target->getStatus() == UNTOUCHED_DEADLINE)//等待时按下，状态变为按下_激活
+		{
+			target->setStatus(TOUCHED_ACTIVATED);
+			target->setLife(target->getLength() - target->getLife());//生命变为应该剩余的生命
+			if (target->getType() == 0)//对普通note，直接进行判定
+				target->judge();
 		}
 	}
 	return true;
@@ -203,30 +208,26 @@ void GameScene::onTouchMoved(Touch *touch, Event  *event)
 	auto target = static_cast<Note*>(event->getCurrentTarget());
 	Size s = target->getContentSize();
 	Point pos = touch->getLocation();
-	Point t = target->getPosition();
 	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
 	Rect rect2 = Rect(pos.x - s.width, pos.y - s.height, s.width * 2, s.height * 2);
-	if (!Director::getInstance()->isPaused() && target->getType() == 2 && target->isInLifeSpan() && target->getLife() % (target->getLifeSpan() / 3) == 0)
+	if (!Director::getInstance()->isPaused() && target->getType() == 2 && target->getStatus() == TOUCHED_ACTIVATED)
 	{
-		if (rect.containsPoint(target->getPosition()))//perfect
-			judgeNote(2);
-		else if (rect2.containsPoint(target->getPosition()))//good
-			judgeNote(1);
-		else//miss 
-			judgeNote(0);
+		if (target->getLife() % (target->getLength() / 3) == 0)//对滑动音符，生命周期中额外判定3次
+		{
+			if (rect.containsPoint(target->getPosition()))//perfect
+				judgeNote(2);
+			else if (rect2.containsPoint(target->getPosition()))//good
+				judgeNote(1);
+			else//miss 
+				judgeNote(0);
+		}
 	}
 }
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	if (!Director::getInstance()->isPaused() && target->getType() != 0)
-	{//离开时进行判定
-		target->stopAllActions();
-		target->unscheduleAllSelectors();
-		target->runAction(FadeOut::create(0.2f));//消失特效
-		target->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);
+	if (!Director::getInstance()->isPaused() && target->getType() != 0)//松手后进行长按与滑动音符的判定
 		target->judge();
-	}
 }
 void GameScene::judgeNote(int judge)
 {

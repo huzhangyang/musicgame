@@ -1,7 +1,8 @@
 #include "Note.h"
 #include "GameScene.h"
 
-const int TIME_PRELOAD = 60;//用于反应的时间
+const int TIME_PRELOAD = 30;//音符提前出现的时间
+const int TIME_DEADLINE = 30;//音符最大允许延迟按下的时间
 
 Note::Note()
 {
@@ -29,23 +30,22 @@ void Note::initNote(int type, int length, int pos, int des)
 {
 	this->type = type;
 	this->life = TIME_PRELOAD;
-	this->lifeSpan = length;
-	this->touched = false;
-	this->inLifeSpan = false;
+	this->length = length;
+	this->status = UNTOUCHED_PRELOAD;
 	switch (type)
 	{
 	case 0:
 		this->initWithFile("gameSceneUI/note0.png");
 		this->setScale(2.5);
-		this->runAction(ScaleTo::create(life / 60.0, 0));//出现特效
+		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1));//出现特效
 		break;
 	case 1:
 		this->initWithFile("gameSceneUI/note1.png");
-		this->runAction(ScaleTo::create(life / 60.0, 1.25));//出现特效
+		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1.25));//出现特效
 		break;
 	case 2:
 		this->initWithFile("gameSceneUI/note2.png");
-		this->runAction(RotateBy::create(life / 60.0, 360));//出现特效
+		this->runAction(RotateBy::create(TIME_PRELOAD / 60.0, 360));//出现特效
 		break;
 	}
 	this->setPositionX(120 * (pos / 10) + 80);
@@ -64,24 +64,33 @@ void Note::update(float dt)
 	life--;//减少生命
 	if (life <= 0)
 	{
-		if (!touched)//如果到死都没被触摸过则肯定是miss
+		switch (status)
 		{
-			GameScene::judgeNote(0);
-			this->removeFromParentAndCleanup(true);//删除该note
-		}
-		else if (!inLifeSpan)//否则开始生命周期
-		{
-			life = lifeSpan;
-			inLifeSpan = true;
-			if (type == 1)
-				this->runAction(RotateBy::create(lifeSpan / 60.0, 360));//生命周期特效
+		case UNTOUCHED_PRELOAD://预判时间过了还没有触摸，再等待延迟时间
+			life = TIME_DEADLINE;
+			status = UNTOUCHED_DEADLINE;
+			if (type == 0)
+				this->runAction(ScaleTo::create(TIME_DEADLINE / 60.0, 0));//生命周期特效
+			else if (type == 1)
+				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
-				this->runAction(MoveTo::create(lifeSpan / 60.0, Point(destX, destY)));//生命周期特效
-		}
-		else//生命周期结束还未松手就去结算
-		{
+				this->runAction(MoveTo::create(length / 60.0, Point(destX, destY)));//生命周期特效
+			break;
+		case UNTOUCHED_DEADLINE://等待后仍未触摸，则计为miss
+			GameScene::judgeNote(0);
+			this->removeFromParentAndCleanup(true);
+			break;
+		case TOUCHED_UNACTIVATED://预判时间过后已触摸，则开始生命周期
+			life = length;
+			status = TOUCHED_ACTIVATED;
+			if (type == 1)
+				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
+			else
+				this->runAction(MoveTo::create(length / 60.0, Point(destX, destY)));//生命周期特效
+			break;
+		case TOUCHED_ACTIVATED://生命周期结束后仍未停止触摸，直接去结算
 			this->judge();
-			this->removeFromParentAndCleanup(true);//删除该note
+			break;
 		}
 	}
 }
@@ -89,18 +98,27 @@ void Note::update(float dt)
 void Note::judge()
 {
 	float lifePercent;
+
+	this->stopAllActions();//停止所有动作
+	this->unscheduleAllSelectors();//停止所有计算
+	this->runAction(FadeOut::create(0.2f));//消失特效
+	this->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);//特效结束后移除
+
 	switch (this->getType())
 	{
 	case 0:
-		lifePercent = (float)this->getLife() / TIME_PRELOAD;
-		if (lifePercent >= 0.8 || lifePercent <= 0.4)//太快或太慢触摸都只能是good
+		if (status == TOUCHED_UNACTIVATED)
+			lifePercent = (float)life / TIME_PRELOAD;
+		else
+			lifePercent = (float)(TIME_DEADLINE - life) / TIME_DEADLINE;
+		if (lifePercent >= 0.4)//正中点前后40%开外都只能是GOOD
 			GameScene::judgeNote(1);
 		else
 			GameScene::judgeNote(2);
 		break;
 	case 1:
-		lifePercent = 1 - (float)life / lifeSpan;
-		if (!inLifeSpan || lifePercent <= 0.4)//长按的触摸时间太短则判定为miss
+		lifePercent = 1 - (float)life / length;
+		if (status != TOUCHED_ACTIVATED || lifePercent <= 0.4)//长按的触摸时间太短则判定为miss
 			GameScene::judgeNote(0);
 		else if (lifePercent <= 0.8)//长按的触摸时间不够长是good
 			GameScene::judgeNote(1);
@@ -116,7 +134,7 @@ int Note::getType(){ return this->type; }
 int Note::getDestX(){ return this->destX; }
 int Note::getDestY(){ return this->destY; }
 int Note::getLife(){ return this->life; }
-int Note::getLifeSpan(){ return this->lifeSpan; }
-void Note::setTouched(){ this->touched = true; }
-bool Note::isTouched(){ return this->touched; }
-bool Note::isInLifeSpan(){ return this->inLifeSpan; }
+int Note::getLength(){ return this->length; }
+NoteStatus Note::getStatus(){ return this->status; }
+void Note::setLife(int life){ this->life = life; }
+void Note::setStatus(NoteStatus status){ this->status = status; }
