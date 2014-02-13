@@ -183,7 +183,7 @@
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "155"
+          "text": ""
         }
       },
       {
@@ -221,7 +221,7 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 296,
+          "width": 146,
           "x": 180,
           "y": 685,
           "fileNameData": {
@@ -229,7 +229,7 @@
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "PERFECT!!!"
+          "text": "Ready"
         }
       },
       {
@@ -239,7 +239,7 @@
         "options": {
           "__type": "ComGUILabelBMFontSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "LabelBMFont",
-          "name": "songiinformation",
+          "name": "songinformation",
           "ZOrder": 3,
           "actiontag": 37,
           "anchorPointX": 0.5,
@@ -264,7 +264,7 @@
           "sizePercentY": 0,
           "sizeType": 0,
           "tag": 8,
-          "touchAble": false,
+          "touchAble": true,
           "useMergedTexture": false,
           "visible": true,
           "width": 128,
