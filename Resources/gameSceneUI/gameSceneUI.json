@@ -183,7 +183,7 @@
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "155"
+          "text": ""
         }
       },
       {
@@ -229,7 +229,7 @@
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "PERFECT!!!"
+          "text": "Ready"
         }
       },
       {
@@ -239,7 +239,7 @@
         "options": {
           "__type": "ComGUILabelBMFontSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "LabelBMFont",
-          "name": "songiinformation",
+          "name": "songinformation",
           "ZOrder": 3,
           "actiontag": 37,
           "anchorPointX": 0.5,
