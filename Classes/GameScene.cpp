@@ -8,7 +8,8 @@ const int TIME_PRELOAD = 60;//用于反应的时间
 const int DIFFICULTY = 0;//当前难度
 const std::string FILENAME = "test.gnm";//测试谱面名称
 
-std::ifstream fin;
+std::ifstream fin;//输入流
+Noteline noteline;//当前音符
 int framecounter;
 int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
@@ -54,6 +55,7 @@ bool GameScene::init()
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
 	labelInfo->setText(FILENAME.substr(0, FILENAME.find('.')).c_str());
 	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
+	getNoteline();//读取第一行
 	return true;
 }
 
@@ -78,20 +80,12 @@ void GameScene::menuCloseCallback(Object* pSender)
 void GameScene::update(float dt)
 {
 	framecounter++;
-	std::string notefile;
-	fin.clear();
-	fin.seekg(0);
-	while (getline(fin, notefile))//每次都遍历一遍难道不会影响性能么？早晚要用vector代替的吧…
+	while (framecounter + TIME_PRELOAD *0.6 >= noteline.time)//提前一些生成
 	{
-		int time = atoi(notefile.substr(0, 5).c_str());
-		int difficulty = atoi(notefile.substr(6, 7).c_str());
-		int type = atoi(notefile.substr(8, 9).c_str());
-		int length = atoi(notefile.substr(10, 13).c_str());
-		int pos = atoi(notefile.substr(14, 16).c_str());
-		int des = atoi(notefile.substr(17, 19).c_str());
-		if (framecounter + TIME_PRELOAD *0.6 == time&&DIFFICULTY >= difficulty&&type == 0
-			|| framecounter + TIME_PRELOAD*0.9 == time&&DIFFICULTY >= difficulty&&type != 0)//提前一点生成该NOTE
-			addNewNote(type, length, pos, des);
+		if (noteline.time == 0)break;//读到最后跳出
+		if (DIFFICULTY >= noteline.difficulty)//当前难度符合则生成否则跳过
+			addNewNote(noteline.type, noteline.length, noteline.pos, noteline.des);
+		getNoteline();//读取下个音符
 	}
 	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
 	{
@@ -165,7 +159,23 @@ void GameScene::addRandomNote(float dt)
 	int randomY = CCRANDOM_0_1() * 8 + 1;
 	int randomA = CCRANDOM_0_1() * 8 + 1;
 	int randomB = CCRANDOM_0_1() * 8 + 1;
-	addNewNote(randomT, 120, randomX * 10 + randomY, randomA * 10 + randomB);
+	addNewNote(randomT, 60, randomX * 10 + randomY, randomA * 10 + randomB);
+}
+
+void GameScene::getNoteline()
+{
+	std::string notestring;
+	if (getline(fin, notestring))
+	{
+		noteline.time = atoi(notestring.substr(0, 5).c_str());
+		noteline.difficulty = atoi(notestring.substr(6, 7).c_str());
+		noteline.type = atoi(notestring.substr(8, 9).c_str());
+		noteline.length = atoi(notestring.substr(10, 13).c_str());
+		noteline.pos = atoi(notestring.substr(14, 16).c_str());
+		noteline.des = atoi(notestring.substr(17, 19).c_str());
+	}
+	else
+		noteline.time = 0;//结束标识符
 }
 
 bool GameScene::onTouchBegan(Touch *touch, Event  *event)
