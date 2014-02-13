@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := cocos2dcpp_shared
 
-LOCAL_MODULE_FILENAME := libmusicgame
+LOCAL_MODULE_FILENAME := libcocos2dcpp
 
 FILE_LIST := hellocpp/main.cpp
 FILE_LIST += $(wildcard $(LOCAL_PATH)/../../Classes/*.cpp)
