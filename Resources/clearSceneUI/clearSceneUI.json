@@ -75,7 +75,7 @@
         "options": {
           "__type": "ComGUILabelBMFontSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "LabelBMFont",
-          "name": "perfect",
+          "name": "Perfect",
           "ZOrder": 1,
           "actiontag": 23,
           "anchorPointX": 0.5,
@@ -90,8 +90,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.296093762,
-          "positionPercentY": 0.7902778,
+          "positionPercentX": 0.297656238,
+          "positionPercentY": 0.8597222,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -103,15 +103,15 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 180,
-          "x": 379,
-          "y": 569,
+          "width": 197,
+          "x": 381,
+          "y": 619,
           "fileNameData": {
             "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "perfect:"
+          "text": "Perfect:"
         }
       },
       {
@@ -121,7 +121,7 @@
         "options": {
           "__type": "ComGUILabelBMFontSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "LabelBMFont",
-          "name": "good",
+          "name": "Good",
           "ZOrder": 0,
           "actiontag": 24,
           "anchorPointX": 0.5,
@@ -136,8 +136,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.585156262,
-          "positionPercentY": 0.7902778,
+          "positionPercentX": 0.5882813,
+          "positionPercentY": 0.8597222,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -149,15 +149,15 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 119,
-          "x": 749,
-          "y": 569,
+          "width": 129,
+          "x": 753,
+          "y": 619,
           "fileNameData": {
             "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "good:"
+          "text": "Good:"
         }
       },
       {
@@ -167,7 +167,7 @@
         "options": {
           "__type": "ComGUILabelBMFontSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "LabelBMFont",
-          "name": "miss",
+          "name": "Miss",
           "ZOrder": 1,
           "actiontag": 25,
           "anchorPointX": 0.5,
@@ -182,8 +182,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.8335937,
-          "positionPercentY": 0.7916667,
+          "positionPercentX": 0.836718738,
+          "positionPercentY": 0.8611111,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -195,15 +195,15 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 109,
-          "x": 1067,
-          "y": 570,
+          "width": 113,
+          "x": 1071,
+          "y": 620,
           "fileNameData": {
             "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "miss:"
+          "text": "Miss:"
         }
       },
       {
@@ -228,8 +228,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.446875,
-          "positionPercentY": 0.7916667,
+          "positionPercentX": 0.45,
+          "positionPercentY": 0.8611111,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -242,8 +242,8 @@
           "useMergedTexture": false,
           "visible": true,
           "width": 72,
-          "x": 572,
-          "y": 570,
+          "x": 576,
+          "y": 620,
           "fileNameData": {
             "path": "numberfont.fnt",
             "plistFile": null,
@@ -274,8 +274,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.69921875,
-          "positionPercentY": 0.7916667,
+          "positionPercentX": 0.702343762,
+          "positionPercentY": 0.8611111,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -288,8 +288,8 @@
           "useMergedTexture": false,
           "visible": true,
           "width": 72,
-          "x": 895,
-          "y": 570,
+          "x": 899,
+          "y": 620,
           "fileNameData": {
             "path": "numberfont.fnt",
             "plistFile": null,
@@ -320,8 +320,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.94140625,
-          "positionPercentY": 0.7916667,
+          "positionPercentX": 0.944531262,
+          "positionPercentY": 0.8611111,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -334,8 +334,8 @@
           "useMergedTexture": false,
           "visible": true,
           "width": 72,
-          "x": 1205,
-          "y": 570,
+          "x": 1209,
+          "y": 620,
           "fileNameData": {
             "path": "numberfont.fnt",
             "plistFile": null,
@@ -351,7 +351,7 @@
         "options": {
           "__type": "ComGUILabelBMFontSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "LabelBMFont",
-          "name": "note",
+          "name": "All",
           "ZOrder": 1,
           "actiontag": 29,
           "anchorPointX": 0.5,
@@ -366,8 +366,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.5335938,
-          "positionPercentY": 0.6111111,
+          "positionPercentX": 0.446093738,
+          "positionPercentY": 0.6513889,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -379,15 +379,15 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 115,
-          "x": 683,
-          "y": 440,
+          "width": 77,
+          "x": 571,
+          "y": 469,
           "fileNameData": {
             "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "note:"
+          "text": "All:"
         }
       },
       {
@@ -397,7 +397,7 @@
         "options": {
           "__type": "ComGUILabelBMFontSurrogate:#EditorCommon.JsonModel.Component.GUI",
           "classname": "LabelBMFont",
-          "name": "combo",
+          "name": "MaxCombo",
           "ZOrder": 1,
           "actiontag": 30,
           "anchorPointX": 0.5,
@@ -412,8 +412,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.80625,
-          "positionPercentY": 0.6111111,
+          "positionPercentX": 0.749218762,
+          "positionPercentY": 0.6513889,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -425,15 +425,15 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 154,
-          "x": 1032,
-          "y": 440,
+          "width": 254,
+          "x": 959,
+          "y": 469,
           "fileNameData": {
             "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "combo:"
+          "text": "MaxCombo:"
         }
       },
       {
@@ -458,8 +458,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.6460937,
-          "positionPercentY": 0.6111111,
+          "positionPercentX": 0.5296875,
+          "positionPercentY": 0.6513889,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -472,8 +472,8 @@
           "useMergedTexture": false,
           "visible": true,
           "width": 72,
-          "x": 827,
-          "y": 440,
+          "x": 678,
+          "y": 469,
           "fileNameData": {
             "path": "numberfont.fnt",
             "plistFile": null,
@@ -504,8 +504,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.9398438,
-          "positionPercentY": 0.6111111,
+          "positionPercentX": 0.9429687,
+          "positionPercentY": 0.6513889,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.50000012,
@@ -518,8 +518,8 @@
           "useMergedTexture": false,
           "visible": true,
           "width": 72,
-          "x": 1203,
-          "y": 440,
+          "x": 1207,
+          "y": 469,
           "fileNameData": {
             "path": "numberfont.fnt",
             "plistFile": null,
@@ -550,8 +550,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.7453125,
-          "positionPercentY": 0.4138889,
+          "positionPercentX": 0.75625,
+          "positionPercentY": 0.4486111,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1.5999999,
@@ -564,8 +564,8 @@
           "useMergedTexture": false,
           "visible": true,
           "width": 370,
-          "x": 954,
-          "y": 298,
+          "x": 968,
+          "y": 323,
           "fileNameData": {
             "path": "numberfont.fnt",
             "plistFile": null,
