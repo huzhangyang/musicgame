@@ -55,7 +55,7 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->destY = 60 * (10 - des % 10) + 5;
 }
 
-void Note::removeNote(float dt)
+void Note::removeNote()
 {
 	this->removeFromParentAndCleanup(true);
 }
@@ -102,8 +102,7 @@ void Note::judge()
 
 	this->stopAllActions();//停止所有动作
 	this->unscheduleAllSelectors();//停止所有计算
-	this->runAction(FadeOut::create(0.2f));//消失特效
-	this->scheduleOnce(schedule_selector(Note::removeNote), 0.2f);//特效结束后移除
+	this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
 
 	switch (this->getType())
 	{

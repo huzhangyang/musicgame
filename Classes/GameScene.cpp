@@ -64,14 +64,12 @@ void GameScene::onEnterTransitionDidFinish()
 	/////////////////////////////////////////////////////
 	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
 	getNoteline();//读取第一行
-	this->scheduleOnce(schedule_selector(GameScene::startGame), 3);
 	labelJudge->setText("Ready?");
 	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), FadeOut::create(1), NULL));
-
 	Sprite* progress = Sprite::create("gameSceneUI/note.png");
 	addChild(progress);
 	progress->setPosition(-40, 605);
-	progress->runAction(MoveTo::create(3, Point(1340, 605)));//准备特效
+	progress->runAction(Sequence::create(MoveTo::create(3, Point(1340, 605)), CallFunc::create(CC_CALLBACK_0(GameScene::startGame, this)), NULL));//准备特效
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -83,7 +81,7 @@ void GameScene::menuCloseCallback(Object* pSender)
 #endif
 }
 
-void GameScene::startGame(float dt)
+void GameScene::startGame()
 {
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3");
 	this->scheduleUpdate();

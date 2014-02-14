@@ -29,8 +29,8 @@ bool MainScene::init()
 	auto UIlayer = UIComponent->getNode();
 	auto objectTable = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_TABLE));
 	objectTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	auto objectInk = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_INK));
-	objectInk->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto objectPaper = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_PAPER));
+	objectPaper->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto objectShelf = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_SHELF));
 	objectShelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto objectClock = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_CLOCK));
@@ -69,12 +69,21 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	switch (eventType)
 	{
 	case TouchEventType::TOUCH_EVENT_ENDED:
-		if (tag == MAINSCENE_SHELF)
+		if (tag == MAINSCENE_TABLE)
+		{
+		}
+		else if (tag == MAINSCENE_PAPER)
+		{
+		}
+		else if (tag == MAINSCENE_SHELF)
 		{
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		}
-		else if (tag == MAINSCENE_INK)
+		else if (tag == MAINSCENE_CLOCK)
+		{
+		}
+		else if (tag == MAINSCENE_CAT)
 		{
 		}
 		else if (tag == MAINSCENE_OPTION)

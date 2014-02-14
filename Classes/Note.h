@@ -13,7 +13,7 @@ public:
 	Note();
 	virtual ~Note();
 	static Note* createNote(int type, int length, int pos, int des);
-	void removeNote(float dt);
+	void removeNote();
 	void judge();
 
 	int getType();

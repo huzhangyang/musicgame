@@ -34,7 +34,7 @@ bool IntroScene::init()
 	logo->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	logo->setLocalZOrder(1);
 	sceneNode->addChild(logo);
-	logo->runAction(Sequence::create(DelayTime::create(1), CallFunc::create(CC_CALLBACK_0(IntroScene::playIntro, this)), FadeOut::create(2), NULL));
+	logo->runAction(Sequence::create(DelayTime::create(1), CallFunc::create(CC_CALLBACK_0(IntroScene::playIntro, this)), FadeOut::create(2), NULL));//logo«–ªªÃÿ–ß
 	return true;
 }
 
