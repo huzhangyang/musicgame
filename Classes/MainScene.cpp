@@ -48,12 +48,9 @@ bool MainScene::init()
 
 void MainScene::onEnterTransitionDidFinish()
 {
+	Layer::onEnterTransitionDidFinish();
+	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/main.mp3");
-}
-
-void MainScene::onExit()
-{
-	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
 }
 
 void MainScene::menuCloseCallback(Object* pSender)

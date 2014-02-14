@@ -14,11 +14,10 @@ class IntroScene : public cocos2d::Layer
 public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
-	virtual void onExit();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(IntroScene);
 private:
-	void playIntro(float dt);
+	void playIntro();
 	void touchEvent(Object* obj, gui::TouchEventType eventType);
 };
 

@@ -36,12 +36,13 @@ void Note::initNote(int type, int length, int pos, int des)
 	{
 	case 0:
 		this->initWithFile("gameSceneUI/note0.png");
-		this->setScale(2.5);
+		this->setScale(2);
 		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1));//出现特效
 		break;
 	case 1:
 		this->initWithFile("gameSceneUI/note1.png");
-		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1.25));//出现特效
+		this->setScale(0.5);
+		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1));//出现特效
 		break;
 	case 2:
 		this->initWithFile("gameSceneUI/note2.png");

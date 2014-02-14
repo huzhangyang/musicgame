@@ -22,17 +22,20 @@ bool IntroScene::init()
 
 	/////////////////////////////////////////////////////
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/intro.mp3");
+	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("introScene.json");
+	addChild(sceneNode);
+	auto UINode = sceneNode->getChildByTag(10003);
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
+	auto UIlayer = UIComponent->getNode();
+	auto buttonStart = dynamic_cast<Button*>(UIlayer->getChildByTag(INTROSCENE_START));
+	buttonStart->addTouchEventListener(this, toucheventselector(IntroScene::touchEvent));
+
 	auto logo = Sprite::create("logo.png");
 	logo->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	addChild(logo);
-	logo->runAction(Sequence::createWithTwoActions(DelayTime::create(1), FadeOut::create(2)));
-	this->scheduleOnce(schedule_selector(IntroScene::playIntro), 3);
+	logo->setLocalZOrder(1);
+	sceneNode->addChild(logo);
+	logo->runAction(Sequence::create(DelayTime::create(1), CallFunc::create(CC_CALLBACK_0(IntroScene::playIntro, this)), FadeOut::create(2), NULL));
 	return true;
-}
-
-void IntroScene::onExit()
-{
-	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
 }
 
 void IntroScene::menuCloseCallback(Object* pSender)
@@ -44,17 +47,9 @@ void IntroScene::menuCloseCallback(Object* pSender)
 #endif
 }
 
-void IntroScene::playIntro(float dt)
+void IntroScene::playIntro()
 {
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/intro.mp3");
-	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("introScene.json");
-	addChild(sceneNode);
-	auto UINode = sceneNode->getChildByTag(10003);
-	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
-	auto UIlayer = UIComponent->getNode();
-	UIlayer->runAction(FadeIn::create(2));
-	auto buttonStart = dynamic_cast<Button*>(UIlayer->getChildByTag(INTROSCENE_START));
-	buttonStart->addTouchEventListener(this, toucheventselector(IntroScene::touchEvent));
 }
 
 void IntroScene::touchEvent(Object* obj, gui::TouchEventType eventType)

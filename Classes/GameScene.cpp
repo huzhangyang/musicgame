@@ -65,6 +65,8 @@ void GameScene::onEnterTransitionDidFinish()
 	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
 	getNoteline();//读取第一行
 	this->scheduleOnce(schedule_selector(GameScene::startGame), 3);
+	labelJudge->setText("Ready?");
+	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), FadeOut::create(1), NULL));
 
 	Sprite* progress = Sprite::create("gameSceneUI/note.png");
 	addChild(progress);

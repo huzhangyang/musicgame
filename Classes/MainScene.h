@@ -17,7 +17,6 @@ public:
 	static cocos2d::Scene* createScene();
 	virtual bool init();
 	virtual void onEnterTransitionDidFinish();
-	virtual void onExit();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(MainScene);
 private:
