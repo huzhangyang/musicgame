@@ -11,7 +11,7 @@ const int MAINSCENE_EXIT = 9;
 const int MAINSCENE_CAT = 11;
 const int MAINSCENE_SHELF = 12;
 const int MAINSCENE_TABLE = 13;
-const int MAINSCENE_INK = 14;
+const int MAINSCENE_PAPER = 14;
 const int MAINSCENE_CLOCK = 15;
 //”Œœ∑ΩÁ√ÊTag
 const int GAMESCENE_PAUSE = 5;
