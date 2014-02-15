@@ -65,7 +65,7 @@ void GameScene::onEnterTransitionDidFinish()
 	fin.open(FileUtils::getInstance()->fullPathForFilename(FILENAME));//打开测试谱面
 	getNoteline();//读取第一行
 	labelJudge->setText("Get Ready");
-	labelJudge->runAction( FadeOut::create(3));
+	labelJudge->runAction(FadeOut::create(3));
 	Sprite* progress = Sprite::create("gameSceneUI/note.png");
 	addChild(progress);
 	progress->setPosition(-40, 605);
@@ -142,14 +142,24 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 void GameScene::addNewNote(int type, int length, int pos, int des)
 {
 	auto note = Note::createNote(type, length, pos, des);
-	auto noteListener = EventListenerTouchOneByOne::create();
-	noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-	noteListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
-	noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
-	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 	addChild(note);
-	if (note->getType() == 2)
+	auto noteListener = EventListenerTouchOneByOne::create();
+	switch (note->getType())
+	{
+	case CLICK:
+		noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+		break;
+	case LONGPRESS:
+		noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+		noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
+		break;
+	case SLIDE:
+		noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+		noteListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
 		addArrow(note->getPositionX(), note->getPositionY(), note->getDestX(), note->getDestY());
+		break;
+	}
+	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
 }
 
 void GameScene::addArrow(int posX, int posY, int desX, int desY)
@@ -202,14 +212,14 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 		if (target->getStatus() == UNTOUCHED_PRELOAD)//预判时按下，状态变为按下_未激活
 		{
 			target->setStatus(TOUCHED_UNACTIVATED);
-			if (target->getType() == 0)//对普通note，直接进行判定
+			if (target->getType() == CLICK)//对普通note，直接进行判定
 				target->judge();
 		}
 		else if (target->getStatus() == UNTOUCHED_DEADLINE)//等待时按下，状态变为按下_激活
 		{
 			target->setStatus(TOUCHED_ACTIVATED);
 			target->setLife(target->getLength() - target->getLife());//生命变为应该剩余的生命
-			if (target->getType() == 0)//对普通note，直接进行判定
+			if (target->getType() == CLICK)//对普通note，直接进行判定
 				target->judge();
 		}
 	}
@@ -218,27 +228,15 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 void GameScene::onTouchMoved(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	Size s = target->getContentSize();
-	Point pos = touch->getLocation();
-	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
-	Rect rect2 = Rect(pos.x - s.width, pos.y - s.height, s.width * 2, s.height * 2);
-	if (!Director::getInstance()->isPaused() && target->getType() == 2 && target->getStatus() == TOUCHED_ACTIVATED)
+	if (!Director::getInstance()->isPaused() && target->getStatus() == TOUCHED_ACTIVATED)
 	{
-		if (target->getLife() % (target->getLength() / 3) == 0)//对滑动音符，生命周期中额外判定3次
-		{
-			if (rect.containsPoint(target->getPosition()))//perfect
-				judgeNote(2);
-			else if (rect2.containsPoint(target->getPosition()))//good
-				judgeNote(1);
-			else//miss 
-				judgeNote(0);
-		}
+		target->setTouchPoint(touch->getLocation());//保存触摸位置
 	}
 }
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	if (!Director::getInstance()->isPaused() && target->getType() != 0)//松手后进行长按与滑动音符的判定
+	if (!Director::getInstance()->isPaused() && target->getLife() != 0)//提前松手时进行长按与滑动音符的判定
 		target->judge();
 }
 void GameScene::judgeNote(int judge)
@@ -270,6 +268,8 @@ void GameScene::judgeNote(int judge)
 		labelCombo->setText(temp);
 		break;
 	}
+	labelJudge->stopAllActions();
+	labelCombo->stopAllActions();
 	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), FadeOut::create(1), NULL));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
 }
