@@ -4,8 +4,7 @@
 #include "Note.h"
 #include <fstream>
 
-const int TIME_PRELOAD = 30;//音符提前出现的时间
-const int TIME_DEADLINE = 30;//音符最大允许延迟按下的时间
+const int TIME_PRELOAD = 60;//音符提前出现的时间
 const int DIFFICULTY = 0;//当前难度
 const std::string FILENAME = "test.gnm";//测试谱面名称
 
@@ -91,7 +90,8 @@ void GameScene::startGame()
 void GameScene::update(float dt)
 {
 	framecounter++;
-	while (framecounter + TIME_PRELOAD >= noteline.time)//提前一些生成
+	while ((framecounter + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
+		|| (framecounter + TIME_PRELOAD / 2 >= noteline.time&&noteline.type == 0))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		if (DIFFICULTY >= noteline.difficulty)//当前难度符合则生成否则跳过
@@ -209,18 +209,16 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	Rect rect = Rect(0, 0, s.width, s.height);
 	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
 	{
-		if (target->getStatus() == UNTOUCHED_PRELOAD)//预判时按下，状态变为按下_未激活
+		if (target->getStatus() == UNTOUCHED)//预判时按下，状态变为按下_未激活
 		{
 			target->setStatus(TOUCHED_UNACTIVATED);
 			if (target->getType() == CLICK)//对普通note，直接进行判定
 				target->judge();
 		}
-		else if (target->getStatus() == UNTOUCHED_DEADLINE)//等待时按下，状态变为按下_激活
+		else if (target->getStatus() == TOUCHED_UNACTIVATED)//已经开始生命周期时按下，状态变为按下_激活
 		{
 			target->setStatus(TOUCHED_ACTIVATED);
-			target->setLife(target->getLength() - target->getLife());//生命变为应该剩余的生命
-			if (target->getType() == CLICK)//对普通note，直接进行判定
-				target->judge();
+			target->setLifeTouchBegan(target->getLife());//记录此时生命值
 		}
 	}
 	return true;
