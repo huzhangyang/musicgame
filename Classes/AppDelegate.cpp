@@ -19,6 +19,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	director->setAnimationInterval(1.0 / 60);//设置帧率
 	auto scene = IntroScene::createScene();
 	director->runWithScene(scene);//运行场景
+	auto paths = FileUtils::getInstance()->getSearchPaths();
+	paths.push_back("/mnt/sdcard/");
+	FileUtils::getInstance()->setSearchPaths(paths);//设置搜索路径
 	return true;
 }
 //切入后台

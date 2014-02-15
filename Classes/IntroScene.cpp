@@ -30,7 +30,7 @@ bool IntroScene::init()
 	auto buttonStart = dynamic_cast<Button*>(UIlayer->getChildByTag(INTROSCENE_START));
 	buttonStart->addTouchEventListener(this, toucheventselector(IntroScene::touchEvent));
 
-	auto logo = Sprite::create("logo.png");
+	auto logo = Sprite::create("introSceneUI/logo.png");
 	logo->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	logo->setLocalZOrder(1);
 	sceneNode->addChild(logo);

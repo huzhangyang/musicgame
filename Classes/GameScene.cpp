@@ -62,7 +62,7 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	fin.open(FileUtils::getInstance()->getWritablePath() + FILENAME);//打开测试谱面
+	fin.open(FileUtils::getInstance()->fullPathForFilename(FILENAME));//打开测试谱面
 	getNoteline();//读取第一行
 	labelJudge->setText("Ready?");
 	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), FadeOut::create(1), NULL));
