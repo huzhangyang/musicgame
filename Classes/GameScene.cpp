@@ -64,8 +64,8 @@ void GameScene::onEnterTransitionDidFinish()
 	/////////////////////////////////////////////////////
 	fin.open(FileUtils::getInstance()->fullPathForFilename(FILENAME));//打开测试谱面
 	getNoteline();//读取第一行
-	labelJudge->setText("Ready?");
-	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), FadeOut::create(1), NULL));
+	labelJudge->setText("Get Ready");
+	labelJudge->runAction( FadeOut::create(3));
 	Sprite* progress = Sprite::create("gameSceneUI/note.png");
 	addChild(progress);
 	progress->setPosition(-40, 605);

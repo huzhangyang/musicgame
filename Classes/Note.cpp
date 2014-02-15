@@ -57,7 +57,7 @@ void Note::initNote(int type, int length, int pos, int des)
 
 void Note::removeNote()
 {
-	this->removeFromParentAndCleanup(true);
+	this->removeFromParent();
 }
 
 void Note::update(float dt)
@@ -79,7 +79,7 @@ void Note::update(float dt)
 			break;
 		case UNTOUCHED_DEADLINE://等待后仍未触摸，则计为miss
 			GameScene::judgeNote(0);
-			this->removeFromParentAndCleanup(true);
+			this->removeNote();
 			break;
 		case TOUCHED_UNACTIVATED://预判时间过后已触摸，则开始生命周期
 			life = length;
