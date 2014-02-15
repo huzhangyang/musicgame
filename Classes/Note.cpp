@@ -28,23 +28,23 @@ Note* Note::createNote(int type, int length, int pos, int des)
 
 void Note::initNote(int type, int length, int pos, int des)
 {
-	this->type = type;
+	this->type = (NoteType)type;
 	this->life = TIME_PRELOAD;
 	this->length = length;
 	this->status = UNTOUCHED_PRELOAD;
 	switch (type)
 	{
-	case 0:
+	case CLICK:
 		this->initWithFile("gameSceneUI/note0.png");
 		this->setScale(2);
 		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1));//出现特效
 		break;
-	case 1:
+	case LONGPRESS:
 		this->initWithFile("gameSceneUI/note1.png");
 		this->setScale(0.5);
 		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1));//出现特效
 		break;
-	case 2:
+	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
 		this->runAction(RotateBy::create(TIME_PRELOAD / 60.0, 360));//出现特效
 		break;
@@ -63,6 +63,8 @@ void Note::removeNote()
 void Note::update(float dt)
 {
 	life--;//减少生命
+	if (this->type == SLIDE && this->status == TOUCHED_ACTIVATED&&this->life % (this->length / 3) == 0)
+		this->judge();
 	if (life <= 0)
 	{
 		switch (status)
@@ -70,9 +72,9 @@ void Note::update(float dt)
 		case UNTOUCHED_PRELOAD://预判时间过了还没有触摸，再等待延迟时间
 			life = TIME_DEADLINE;
 			status = UNTOUCHED_DEADLINE;
-			if (type == 0)
+			if (type == CLICK)
 				this->runAction(ScaleTo::create(TIME_DEADLINE / 60.0, 0));//生命周期特效
-			else if (type == 1)
+			else if (type == LONGPRESS)
 				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
 				this->runAction(MoveTo::create(length / 60.0, Point(destX, destY)));//生命周期特效
@@ -84,7 +86,7 @@ void Note::update(float dt)
 		case TOUCHED_UNACTIVATED://预判时间过后已触摸，则开始生命周期
 			life = length;
 			status = TOUCHED_ACTIVATED;
-			if (type == 1)
+			if (type == LONGPRESS)
 				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
 				this->runAction(MoveTo::create(length / 60.0, Point(destX, destY)));//生命周期特效
@@ -106,7 +108,7 @@ void Note::judge()
 
 	switch (this->getType())
 	{
-	case 0:
+	case CLICK:
 		if (status == TOUCHED_UNACTIVATED)
 			lifePercent = (float)life / TIME_PRELOAD;
 		else
@@ -116,7 +118,7 @@ void Note::judge()
 		else
 			GameScene::judgeNote(2);
 		break;
-	case 1:
+	case LONGPRESS:
 		lifePercent = 1 - (float)life / length;
 		if (status != TOUCHED_ACTIVATED || lifePercent <= 0.4)//长按的触摸时间太短则判定为miss
 			GameScene::judgeNote(0);
@@ -125,16 +127,28 @@ void Note::judge()
 		else
 			GameScene::judgeNote(2);
 		break;
-	case 2:
+	case SLIDE:
+		Point pos = this->touchpoint;
+		Size s = this->getContentSize();
+		Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
+		Rect rect2 = Rect(pos.x - s.width, pos.y - s.height, s.width * 2, s.height * 2);
+		if (rect.containsPoint(pos))//触摸点在音符内为perfect
+			GameScene::judgeNote(2);
+		else if (rect2.containsPoint(pos))//稍稍偏离为good
+			GameScene::judgeNote(1);
+		else//偏离太多为miss
+			GameScene::judgeNote(0);
 		break;
 	}
 }
 
-int Note::getType(){ return this->type; }
+
 int Note::getDestX(){ return this->destX; }
 int Note::getDestY(){ return this->destY; }
 int Note::getLife(){ return this->life; }
 int Note::getLength(){ return this->length; }
+NoteType Note::getType(){ return this->type; }
 NoteStatus Note::getStatus(){ return this->status; }
 void Note::setLife(int life){ this->life = life; }
 void Note::setStatus(NoteStatus status){ this->status = status; }
+void Note::setTouchPoint(Point point){ this->touchpoint = point; }
