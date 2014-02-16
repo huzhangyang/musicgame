@@ -64,7 +64,7 @@ void GameScene::onEnterTransitionDidFinish()
 	fin.open(FileUtils::getInstance()->fullPathForFilename(FILENAME));//打开测试谱面
 	getNoteline();//读取第一行
 	labelJudge->setText("Get Ready");
-	labelJudge->runAction(FadeOut::create(3));
+	labelJudge->runAction(FadeOut::create(2));
 	Sprite* progress = Sprite::create("gameSceneUI/note.png");
 	addChild(progress);
 	progress->setPosition(-40, 605);
@@ -144,7 +144,7 @@ void GameScene::addNewNote(int type, int length, int pos, int des)
 	auto note = Note::createNote(type, length, pos, des);
 	addChild(note);
 	auto noteListener = EventListenerTouchOneByOne::create();
-	//noteListener->setSwallowTouches(true);
+	//noteListener->setSwallowTouches(true);//菜单layer做好之前先不swallow
 	switch (note->getType())
 	{
 	case CLICK:
@@ -212,18 +212,22 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	{
 		if (target->getStatus() == UNTOUCHED_UNACTIVATED)//预判时按下，状态变为按下_未激活
 		{
-			target->setTouchPoint(touch->getLocation());//保存触摸位置
 			target->setStatus(TOUCHED_UNACTIVATED);
+			if (target->getType() == SLIDE)//对滑动note，保存此时触摸位置
+				target->setTouchPoint(touch->getLocation());
+			return true;
 		}
 		else if (target->getStatus() == UNTOUCHED_ACTIVATED)//已经开始生命周期时按下，状态变为按下_激活
 		{
 			target->setStatus(TOUCHED_ACTIVATED);
-			target->setLifeTouchBegan(target->getLife());//记录此时生命值
 			if (target->getType() == CLICK)//对普通note，直接进行判定
 				target->judge();
+			else if (target->getType() == LONGPRESS)//对长按note,记录此时生命值
+				target->setLifeTouchBegan(target->getLife());
+			return true;
 		}
 	}
-	return true;
+	return false;
 }
 void GameScene::onTouchMoved(Touch *touch, Event  *event)
 {
@@ -236,7 +240,7 @@ void GameScene::onTouchMoved(Touch *touch, Event  *event)
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	if (!Director::getInstance()->isPaused() && target->getLife() != 0 && (target->getStatus() == TOUCHED_UNACTIVATED || target->getStatus() == TOUCHED_ACTIVATED))//提前松手时进行长按与滑动音符的判定
+	if (!Director::getInstance()->isPaused() && target->getLife() != 0)//提前松手时进行长按与滑动音符的判定
 		target->judge();
 }
 void GameScene::judgeNote(int judge)
@@ -268,7 +272,7 @@ void GameScene::judgeNote(int judge)
 		labelCombo->setText(temp);
 		break;
 	}
-	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), FadeOut::create(1), NULL));
+	labelJudge->runAction(FadeOut::create(1));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
 }
 

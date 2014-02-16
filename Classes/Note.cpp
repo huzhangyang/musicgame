@@ -63,9 +63,9 @@ void Note::removeNote()
 
 void Note::update(float dt)
 {
-	life--;//减少生命
 	if (this->type == SLIDE && (this->life % (this->length / 3) == 0) && (this->status == UNTOUCHED_ACTIVATED || this->status == TOUCHED_ACTIVATED))
 		this->judge();
+	life--;//减少生命
 	if (life <= 0)
 	{
 		switch (status)
@@ -76,13 +76,7 @@ void Note::update(float dt)
 			if (type == LONGPRESS)
 				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
-			{
-				this->judge();
 				this->runAction(Sequence::create(MoveTo::create(length / 60.0, Point(destX, destY)), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//生命周期特效
-			}
-			break;
-		case UNTOUCHED_ACTIVATED://生命周期结束后仍未开始触摸，直接去结算
-			this->judge();
 			break;
 		case TOUCHED_UNACTIVATED://预判时间过后已触摸，则开始生命周期
 			life = length;
@@ -91,10 +85,10 @@ void Note::update(float dt)
 			if (type == LONGPRESS)
 				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
-			{
-				this->judge();
 				this->runAction(Sequence::create(MoveTo::create(length / 60.0, Point(destX, destY)), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//生命周期特效
-			}
+			break;
+		case UNTOUCHED_ACTIVATED://生命周期结束后仍未开始触摸，直接去结算
+			this->judge();
 			break;
 		case TOUCHED_ACTIVATED://生命周期结束后仍未停止触摸，直接去结算
 			this->judge();
