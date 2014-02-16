@@ -5,8 +5,8 @@
 
 USING_NS_CC;
 
-enum NoteType{CLICK=0,LONGPRESS=1,SLIDE=2};//音符类型枚举
-enum NoteStatus{ UNTOUCHED_PRELOAD = 0, UNTOUCHED_DEADLINE = 1, TOUCHED_UNACTIVATED = 2, TOUCHED_ACTIVATED = 3 };//音符状态枚举
+enum NoteType{ CLICK = 0, LONGPRESS = 1, SLIDE = 2 };//音符类型枚举
+enum NoteStatus{ UNTOUCHED_UNACTIVATED = 0, UNTOUCHED_ACTIVATED = 1, TOUCHED_UNACTIVATED = 2, TOUCHED_ACTIVATED = 3 };//音符状态枚举
 
 class Note : public cocos2d::Sprite
 {
@@ -24,8 +24,8 @@ public:
 	NoteType getType();
 	NoteStatus getStatus();
 	void setStatus(NoteStatus status);
-	void setLife(int life);
 	void setTouchPoint(Point point);
+	void setLifeTouchBegan(int lifeTouchBegan);
 private:
 	void update(float dt);
 	void initNote(int type, int length, int pos, int des);
@@ -35,8 +35,7 @@ private:
 	int length;//总生命长度
 	int destX, destY;//滑动音符的目的地
 	int life;//剩余生命长度
-	
-
+	int lifeTouchBegan;//触摸开始时的生命值
 };
 
 #endif 

@@ -49,9 +49,9 @@ bool ClearScene::init()
 	labelTotal->setText(temp);
 	sprintf(temp, "%d", counterMaxcombo);
 	labelMaxCombo->setText(temp);
-	float completePercent = (float)counterPerfect / (float)counterTotal * 0.7;
-	completePercent += (float)counterGood / (float)counterTotal * 0.6;
-	completePercent += (float)counterMaxcombo / (float)counterTotal * 0.3;
+	float completePercent = (float)counterPerfect / (float)counterTotal * 0.8;
+	completePercent += (float)counterGood / (float)counterTotal * 0.4;
+	completePercent += (float)counterMaxcombo / (float)counterTotal * 0.2;
 	sprintf(temp, "%.2f", completePercent * 100);
 	labelComplete->setText(strcat(temp, "% Complete"));
 	return true;
