@@ -144,6 +144,7 @@ void GameScene::addNewNote(int type, int length, int pos, int des)
 	auto note = Note::createNote(type, length, pos, des);
 	addChild(note);
 	auto noteListener = EventListenerTouchOneByOne::create();
+	//noteListener->setSwallowTouches(true);
 	switch (note->getType())
 	{
 	case CLICK:
@@ -211,6 +212,7 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	{
 		if (target->getStatus() == UNTOUCHED_UNACTIVATED)//预判时按下，状态变为按下_未激活
 		{
+			target->setTouchPoint(touch->getLocation());//保存触摸位置
 			target->setStatus(TOUCHED_UNACTIVATED);
 		}
 		else if (target->getStatus() == UNTOUCHED_ACTIVATED)//已经开始生命周期时按下，状态变为按下_激活
@@ -234,7 +236,7 @@ void GameScene::onTouchMoved(Touch *touch, Event  *event)
 void GameScene::onTouchEnded(Touch *touch, Event  *event)
 {
 	auto target = static_cast<Note*>(event->getCurrentTarget());
-	if (!Director::getInstance()->isPaused() && target->getLife() != 0)//提前松手时进行长按与滑动音符的判定
+	if (!Director::getInstance()->isPaused() && target->getLife() != 0 && (target->getStatus() == TOUCHED_UNACTIVATED || target->getStatus() == TOUCHED_ACTIVATED))//提前松手时进行长按与滑动音符的判定
 		target->judge();
 }
 void GameScene::judgeNote(int judge)
