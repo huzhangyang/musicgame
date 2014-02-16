@@ -6,7 +6,7 @@
 USING_NS_CC;
 
 enum NoteType{ CLICK = 0, LONGPRESS = 1, SLIDE = 2 };//Òô·ûÀàÐÍÃ¶¾Ù
-enum NoteStatus{ UNTOUCHED = 0, TOUCHED_UNACTIVATED = 1, TOUCHED_ACTIVATED = 2 };//Òô·û×´Ì¬Ã¶¾Ù
+enum NoteStatus{ UNTOUCHED_UNACTIVATED = 0, UNTOUCHED_ACTIVATED = 1, TOUCHED_UNACTIVATED = 2, TOUCHED_ACTIVATED = 3 };//Òô·û×´Ì¬Ã¶¾Ù
 
 class Note : public cocos2d::Sprite
 {

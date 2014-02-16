@@ -31,11 +31,12 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->life = TIME_PRELOAD;
 	this->lifeTouchBegan = 0;
 	this->length = length;
-	this->status = UNTOUCHED;
+	this->status = UNTOUCHED_UNACTIVATED;
 	switch (type)
 	{
 	case CLICK:
 		this->initWithFile("gameSceneUI/note0.png");
+		this->status = UNTOUCHED_ACTIVATED;
 		this->setScale(2);
 		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 0));//出现特效
 		break;
@@ -63,24 +64,25 @@ void Note::removeNote()
 void Note::update(float dt)
 {
 	life--;//减少生命
-	if (this->type == SLIDE && this->status == TOUCHED_ACTIVATED&&this->life % (this->length / 3) == 0)
+	if (this->type == SLIDE && (this->life % (this->length / 3) == 0) && (this->status == UNTOUCHED_ACTIVATED || this->status == TOUCHED_ACTIVATED))
 		this->judge();
 	if (life <= 0)
 	{
 		switch (status)
 		{
-		case UNTOUCHED://预判时间过了，长按和滑动开始，普通音符消失
-			if (type == CLICK)
-				this->judge();
+		case UNTOUCHED_UNACTIVATED://预判时间过了，长按和滑动开始，普通音符消失
+			life = length;
+			status = UNTOUCHED_ACTIVATED;
+			if (type == LONGPRESS)
+				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
 			{
-				life = length;
-				status = TOUCHED_ACTIVATED;
-				if (type == LONGPRESS)
-					this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
-				else
-					this->runAction(MoveTo::create(length / 60.0, Point(destX, destY)));//生命周期特效
+				this->judge();
+				this->runAction(Sequence::create(MoveTo::create(length / 60.0, Point(destX, destY)), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//生命周期特效
 			}
+			break;
+		case UNTOUCHED_ACTIVATED://生命周期结束后仍未开始触摸，直接去结算
+			this->judge();
 			break;
 		case TOUCHED_UNACTIVATED://预判时间过后已触摸，则开始生命周期
 			life = length;
@@ -89,7 +91,10 @@ void Note::update(float dt)
 			if (type == LONGPRESS)
 				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
-				this->runAction(MoveTo::create(length / 60.0, Point(destX, destY)));//生命周期特效
+			{
+				this->judge();
+				this->runAction(Sequence::create(MoveTo::create(length / 60.0, Point(destX, destY)), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//生命周期特效
+			}
 			break;
 		case TOUCHED_ACTIVATED://生命周期结束后仍未停止触摸，直接去结算
 			this->judge();
@@ -101,25 +106,26 @@ void Note::update(float dt)
 void Note::judge()
 {
 	float lifePercent;
-
-	this->stopAllActions();//停止所有动作
-	this->unscheduleAllSelectors();//停止所有计算
-	this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
-
+	if (this->getType() != SLIDE)
+	{
+		this->stopAllActions();//停止所有动作
+		this->unscheduleAllSelectors();//停止所有计算
+		this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
+	}
 	switch (this->getType())
 	{
 	case CLICK:
 		lifePercent = (float)life / TIME_PRELOAD;
-		if (lifePercent == 0)
-			GameScene::judgeNote(1);
-		else if (lifePercent <= 0.3 || lifePercent >= 0.7)//正中点前后40%开外都只能是GOOD
+		if (lifePercent <= 0.1 || lifePercent >= 0.9)//太早或太晚都是miss
+			GameScene::judgeNote(0);
+		else if (lifePercent <= 0.3 || lifePercent >= 0.7)//正中点前后40%开外只能是good
 			GameScene::judgeNote(1);
 		else
 			GameScene::judgeNote(2);
 		break;
 	case LONGPRESS:
 		lifePercent = (float)(lifeTouchBegan - life) / length;
-		if (status != TOUCHED_ACTIVATED || lifePercent <= 0.4)//触摸时间太短则判定为miss
+		if (status == TOUCHED_UNACTIVATED || lifePercent <= 0.4)//触摸时间太短则判定为miss
 			GameScene::judgeNote(0);
 		else if (lifePercent <= 0.8)//触摸时间不够长是good
 			GameScene::judgeNote(1);
@@ -131,11 +137,11 @@ void Note::judge()
 		Size s = this->getContentSize();
 		Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
 		Rect rect2 = Rect(pos.x - s.width, pos.y - s.height, s.width * 2, s.height * 2);
-		if (rect.containsPoint(pos))//触摸点在音符内为perfect
+		if (rect.containsPoint(this->getPosition()))//触摸点在音符内为perfect
 			GameScene::judgeNote(2);
-		else if (rect2.containsPoint(pos))//稍稍偏离为good
+		else if (rect2.containsPoint(this->getPosition()))//稍稍偏离为good
 			GameScene::judgeNote(1);
-		else//偏离太多为miss
+		else
 			GameScene::judgeNote(0);
 		break;
 	}

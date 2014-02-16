@@ -209,16 +209,16 @@ bool GameScene::onTouchBegan(Touch *touch, Event  *event)
 	Rect rect = Rect(0, 0, s.width, s.height);
 	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
 	{
-		if (target->getStatus() == UNTOUCHED)//预判时按下，状态变为按下_未激活
+		if (target->getStatus() == UNTOUCHED_UNACTIVATED)//预判时按下，状态变为按下_未激活
 		{
 			target->setStatus(TOUCHED_UNACTIVATED);
-			if (target->getType() == CLICK)//对普通note，直接进行判定
-				target->judge();
 		}
-		else if (target->getStatus() == TOUCHED_UNACTIVATED)//已经开始生命周期时按下，状态变为按下_激活
+		else if (target->getStatus() == UNTOUCHED_ACTIVATED)//已经开始生命周期时按下，状态变为按下_激活
 		{
 			target->setStatus(TOUCHED_ACTIVATED);
 			target->setLifeTouchBegan(target->getLife());//记录此时生命值
+			if (target->getType() == CLICK)//对普通note，直接进行判定
+				target->judge();
 		}
 	}
 	return true;
@@ -266,8 +266,6 @@ void GameScene::judgeNote(int judge)
 		labelCombo->setText(temp);
 		break;
 	}
-	labelJudge->stopAllActions();
-	labelCombo->stopAllActions();
 	labelJudge->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), FadeOut::create(1), NULL));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
 }
