@@ -27,6 +27,9 @@ public:
 	void setTouchPoint(Point point);
 	void setLifeTouchBegan(int lifeTouchBegan);
 private:
+	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
+	void onTouchMoved(Touch *pTouch, Event  *pEvent);
+	void onTouchEnded(Touch *pTouch, Event  *pEvent);
 	void update(float dt);
 	void initNote(int type, int length, int pos, int des);
 	NoteType type;//“Ù∑˚¿‡–Õ
