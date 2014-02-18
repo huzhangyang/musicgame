@@ -49,7 +49,7 @@ void IntroScene::menuCloseCallback(Object* pSender)
 
 void IntroScene::playIntro()
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/intro.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/intro.mp3", true);
 }
 
 void IntroScene::touchEvent(Object* obj, gui::TouchEventType eventType)

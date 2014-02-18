@@ -63,6 +63,7 @@ void GameScene::onEnterTransitionDidFinish()
 	/////////////////////////////////////////////////////
 	fin.open(FileUtils::getInstance()->fullPathForFilename(FILENAME));//打开测试谱面
 	getNoteline();//读取第一行
+
 	labelJudge->setText("Get Ready");
 	labelJudge->runAction(FadeOut::create(2));
 	Sprite* progress = Sprite::create("gameSceneUI/note.png");
@@ -82,7 +83,7 @@ void GameScene::menuCloseCallback(Object* pSender)
 
 void GameScene::startGame()
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3", false);
 	this->scheduleUpdate();
 	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
 }
@@ -109,83 +110,6 @@ void GameScene::update(float dt)
 	}
 }
 
-void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
-{
-	auto button = dynamic_cast<Button*>(obj);
-	int tag = button->getTag();
-	switch (eventType)
-	{
-	case TouchEventType::TOUCH_EVENT_ENDED:
-		if (tag == GAMESCENE_PAUSE)
-		{//暂时把暂停作为跳转到结算界面用
-			this->unscheduleUpdate();
-			fin.close();
-			if (counterMaxcombo == 0 && counterMiss != counterTotal)
-				counterMaxcombo = counterTotal;//全程无miss
-			auto scene = ClearScene::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
-			/*if (!Director::getInstance()->isPaused())
-			{
-			Director::getInstance()->pause();
-			CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
-			}
-			else
-			{
-			Director::getInstance()->resume();
-			CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
-			}*/
-		}
-		break;
-	}
-}
-
-void GameScene::addNewNote(int type, int length, int pos, int des)
-{
-	auto note = Note::createNote(type, length, pos, des);
-	addChild(note);
-	auto noteListener = EventListenerTouchOneByOne::create();
-	//noteListener->setSwallowTouches(true);//菜单layer做好之前先不swallow
-	switch (note->getType())
-	{
-	case CLICK:
-		noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-		break;
-	case LONGPRESS:
-		noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-		noteListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
-		break;
-	case SLIDE:
-		noteListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-		noteListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
-		addArrow(note->getPositionX(), note->getPositionY(), note->getDestX(), note->getDestY());
-		break;
-	}
-	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, note);
-}
-
-void GameScene::addArrow(int posX, int posY, int desX, int desY)
-{
-	auto arrow = Sprite::create("gameSceneUI/arrow.png");
-	auto dest = Sprite::create("gameSceneUI/note.png");
-	arrow->setPosition(posX / 2 + desX / 2, posY / 2 + desY / 2);
-	dest->setPosition(desX, desY);
-	arrow->setRotation(atan2(desX - posX, desY - posY) * 180 / M_PI);
-	dest->runAction(FadeOut::create(2));
-	arrow->runAction(FadeOut::create(2));//消失特效
-	this->addChild(arrow);
-	this->addChild(dest);
-}
-
-void GameScene::addRandomNote(float dt)
-{
-	int randomT = CCRANDOM_0_1() * 3;
-	int randomX = CCRANDOM_0_1() * 8 + 1;
-	int randomY = CCRANDOM_0_1() * 8 + 1;
-	int randomA = CCRANDOM_0_1() * 8 + 1;
-	int randomB = CCRANDOM_0_1() * 8 + 1;
-	addNewNote(randomT, 60, randomX * 10 + randomY, randomA * 10 + randomB);
-}
-
 void GameScene::getNoteline()
 {
 	std::string notestring;
@@ -202,47 +126,37 @@ void GameScene::getNoteline()
 		noteline.time = 0;//结束标识符
 }
 
-bool GameScene::onTouchBegan(Touch *touch, Event  *event)
+void GameScene::addNewNote(int type, int length, int pos, int des)
 {
-	auto target = static_cast<Note*>(event->getCurrentTarget());
-	Point locationInNode = target->convertToNodeSpace(touch->getLocation());
-	Size s = target->getContentSize();
-	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
-	{
-		if (target->getStatus() == UNTOUCHED_UNACTIVATED)//预判时按下，状态变为按下_未激活
-		{
-			target->setStatus(TOUCHED_UNACTIVATED);
-			if (target->getType() == SLIDE)//对滑动note，保存此时触摸位置
-				target->setTouchPoint(touch->getLocation());
-			return true;
-		}
-		else if (target->getStatus() == UNTOUCHED_ACTIVATED)//已经开始生命周期时按下，状态变为按下_激活
-		{
-			target->setStatus(TOUCHED_ACTIVATED);
-			if (target->getType() == CLICK)//对普通note，直接进行判定
-				target->judge();
-			else if (target->getType() == LONGPRESS)//对长按note,记录此时生命值
-				target->setLifeTouchBegan(target->getLife());
-			return true;
-		}
-	}
-	return false;
+	auto note = Note::createNote(type, length, pos, des);
+	addChild(note);
+	if (note->getType() == 2)
+		addArrow(note->getPositionX(), note->getPositionY(), note->getDestX(), note->getDestY());
 }
-void GameScene::onTouchMoved(Touch *touch, Event  *event)
+
+void GameScene::addArrow(int posX, int posY, int desX, int desY)
 {
-	auto target = static_cast<Note*>(event->getCurrentTarget());
-	if (!Director::getInstance()->isPaused() && target->getStatus() == TOUCHED_ACTIVATED)
-	{
-		target->setTouchPoint(touch->getLocation());//保存触摸位置
-	}
+	auto arrow = Sprite::create("gameSceneUI/arrow.png");
+	auto dest = Sprite::create("gameSceneUI/note.png");
+	arrow->setPosition(posX / 2 + desX / 2, posY / 2 + desY / 2);
+	dest->setPosition(desX, desY);
+	arrow->setRotation(atan2(desX - posX, desY - posY) * 180 / M_PI);
+	dest->runAction(FadeOut::create(2));
+	arrow->runAction(FadeOut::create(2));//消失特效
+	addChild(arrow);
+	addChild(dest);
 }
-void GameScene::onTouchEnded(Touch *touch, Event  *event)
+
+void GameScene::addRandomNote(float dt)
 {
-	auto target = static_cast<Note*>(event->getCurrentTarget());
-	if (!Director::getInstance()->isPaused() && target->getLife() != 0)//提前松手时进行长按与滑动音符的判定
-		target->judge();
+	int randomT = CCRANDOM_0_1() * 3;
+	int randomX = CCRANDOM_0_1() * 8 + 1;
+	int randomY = CCRANDOM_0_1() * 8 + 1;
+	int randomA = CCRANDOM_0_1() * 8 + 1;
+	int randomB = CCRANDOM_0_1() * 8 + 1;
+	addNewNote(randomT, 60, randomX * 10 + randomY, randomA * 10 + randomB);
 }
+
 void GameScene::judgeNote(int judge)
 {
 	counterTotal++;
@@ -274,5 +188,30 @@ void GameScene::judgeNote(int judge)
 	}
 	labelJudge->runAction(FadeOut::create(1));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
+}
+
+void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
+{
+	auto button = dynamic_cast<Button*>(obj);
+	int tag = button->getTag();
+	switch (eventType)
+	{
+	case TouchEventType::TOUCH_EVENT_ENDED:
+		if (tag == GAMESCENE_PAUSE)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();//暂时用来跳出
+			if (!Director::getInstance()->isPaused())
+			{
+				Director::getInstance()->pause();
+				CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+			}
+			else
+			{
+				Director::getInstance()->resume();
+				CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+			}
+		}
+		break;
+	}
 }
 

@@ -32,21 +32,28 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->lifeTouchBegan = 0;
 	this->length = length;
 	this->status = UNTOUCHED_UNACTIVATED;
+	auto noteListener = EventListenerTouchOneByOne::create();
+	//noteListener->setSwallowTouches(true);//菜单layer做好之前先不swallow
 	switch (type)
 	{
 	case CLICK:
 		this->initWithFile("gameSceneUI/note0.png");
 		this->status = UNTOUCHED_ACTIVATED;
+		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
 		this->setScale(2);
 		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 0));//出现特效
 		break;
 	case LONGPRESS:
 		this->initWithFile("gameSceneUI/note1.png");
+		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
+		noteListener->onTouchEnded = CC_CALLBACK_2(Note::onTouchEnded, this);
 		this->setScale(0.5);
 		this->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1));//出现特效
 		break;
 	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
+		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
+		noteListener->onTouchMoved = CC_CALLBACK_2(Note::onTouchMoved, this);
 		this->runAction(RotateBy::create(TIME_PRELOAD / 60.0, 360));//出现特效
 		break;
 	}
@@ -54,6 +61,7 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->setPositionY(60 * (10 - pos % 10) + 5);
 	this->destX = 120 * (des / 10) + 80;
 	this->destY = 60 * (10 - des % 10) + 5;
+	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, this);
 }
 
 void Note::removeNote()
@@ -89,9 +97,11 @@ void Note::update(float dt)
 			break;
 		case UNTOUCHED_ACTIVATED://生命周期结束后仍未开始触摸，直接去结算
 			this->judge();
+			this->removeNote();
 			break;
 		case TOUCHED_ACTIVATED://生命周期结束后仍未停止触摸，直接去结算
 			this->judge();
+			this->removeNote();
 			break;
 		}
 	}
@@ -141,6 +151,47 @@ void Note::judge()
 	}
 }
 
+bool Note::onTouchBegan(Touch *touch, Event  *event)
+{
+	auto note = static_cast<Note*>(event->getCurrentTarget());
+	Point locationInNode = note->convertToNodeSpace(touch->getLocation());
+	Size s = note->getContentSize();
+	Rect rect = Rect(0, 0, s.width, s.height);
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
+	{
+		if (note->getStatus() == UNTOUCHED_UNACTIVATED)//预判时按下，状态变为按下_未激活
+		{
+			note->setStatus(TOUCHED_UNACTIVATED);
+			if (note->getType() == SLIDE)//对滑动note，保存此时触摸位置
+				note->setTouchPoint(touch->getLocation());
+			return true;
+		}
+		else if (note->getStatus() == UNTOUCHED_ACTIVATED)//已经开始生命周期时按下，状态变为按下_激活
+		{
+			note->setStatus(TOUCHED_ACTIVATED);
+			if (note->getType() == CLICK)//对普通note，直接进行判定
+				note->judge();
+			else if (note->getType() == LONGPRESS)//对长按note,记录此时生命值
+				note->setLifeTouchBegan(note->getLife());
+			return true;
+		}
+	}
+	return false;
+}
+void Note::onTouchMoved(Touch *touch, Event  *event)
+{
+	auto note = static_cast<Note*>(event->getCurrentTarget());
+	if (!Director::getInstance()->isPaused() && note->getStatus() == TOUCHED_ACTIVATED)
+	{
+		note->setTouchPoint(touch->getLocation());//保存触摸位置
+	}
+}
+void Note::onTouchEnded(Touch *touch, Event  *event)
+{
+	auto note = static_cast<Note*>(event->getCurrentTarget());
+	if (!Director::getInstance()->isPaused() && note->getLife() != 0)//提前松手时进行长按与滑动音符的判定
+		note->judge();
+}
 
 int Note::getDestX(){ return this->destX; }
 int Note::getDestY(){ return this->destY; }
