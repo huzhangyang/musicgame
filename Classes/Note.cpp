@@ -97,9 +97,11 @@ void Note::update(float dt)
 			break;
 		case UNTOUCHED_ACTIVATED://生命周期结束后仍未开始触摸，直接去结算
 			this->judge();
+			this->removeNote();
 			break;
 		case TOUCHED_ACTIVATED://生命周期结束后仍未停止触摸，直接去结算
 			this->judge();
+			this->removeNote();
 			break;
 		}
 	}
