@@ -41,7 +41,6 @@ bool GameScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/game.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	sceneNode->setLocalZOrder(-1);
 	addChild(sceneNode);
@@ -61,6 +60,7 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/test.mp3");
 	fin.open(FileUtils::getInstance()->fullPathForFilename(FILENAME));//打开测试谱面
 	getNoteline();//读取第一行
 
@@ -83,7 +83,7 @@ void GameScene::menuCloseCallback(Object* pSender)
 
 void GameScene::startGame()
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/game.mp3", false);
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/test.mp3", false);
 	this->scheduleUpdate();
 	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
 }
@@ -199,7 +199,6 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == GAMESCENE_PAUSE)
 		{
-			CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();//暂时用来跳出
 			if (!Director::getInstance()->isPaused())
 			{
 				Director::getInstance()->pause();
