@@ -18,7 +18,7 @@ public:
 	CREATE_FUNC(IntroScene);
 private:
 	void playIntro();
-	void touchEvent(Object* obj, gui::TouchEventType eventType);
+	void touchEvent(Object* obj, TouchEventType eventType);
 };
 
 #endif 

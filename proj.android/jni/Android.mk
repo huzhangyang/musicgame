@@ -1,9 +1,18 @@
 LOCAL_PATH := $(call my-dir)
 
+#fmod
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := fmod
+LOCAL_SRC_FILES := ../../fmod/lib.android/$(TARGET_ARCH_ABI)/libfmod.so
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../fmod/inc
+
+include $(PREBUILT_SHARED_LIBRARY)
+
+#cocos2dx
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := cocos2dcpp_shared
-
 LOCAL_MODULE_FILENAME := libmusicgame
 
 FILE_LIST := hellocpp/main.cpp
@@ -21,6 +30,7 @@ LOCAL_WHOLE_STATIC_LIBRARIES += cocostudio_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_extension_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_gui_static
 
+LOCAL_SHARED_LIBRARIES := fmod
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,2d)

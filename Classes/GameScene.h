@@ -25,7 +25,7 @@ private:
 	void addArrow(int posX, int posY, int desX, int desY);//为滑动note生成箭头和目标点
 	void getNoteline();//得到新的一行谱面
 	void startGame();//开始游戏
-	void touchEvent(Object* obj, gui::TouchEventType eventType);
+	void touchEvent(Object* obj, TouchEventType eventType);
 };
 
 struct Noteline//曲谱结构
