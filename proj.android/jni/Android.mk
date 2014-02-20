@@ -30,7 +30,6 @@ LOCAL_WHOLE_STATIC_LIBRARIES += cocostudio_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_extension_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_gui_static
 
-LOCAL_SHARED_LIBRARIES := fmod
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,2d)

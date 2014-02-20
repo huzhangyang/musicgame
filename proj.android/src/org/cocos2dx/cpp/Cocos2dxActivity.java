@@ -1,9 +1,9 @@
 package org.cocos2dx.cpp;
 
-import android.app.Activity;
+import android.app.NativeActivity;
 import android.os.Bundle;
 
-public class Cocos2dxActivity extends Activity {
+public class Cocos2dxActivity extends NativeActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class Cocos2dxActivity extends Activity {
 	}
 
 	static {
-		System.loadLibrary("fmod");
+		//System.loadLibrary("fmod");
 		System.loadLibrary("musicgame");
 	}
 }
