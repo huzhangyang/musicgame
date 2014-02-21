@@ -4,7 +4,7 @@
 #include "CocosGUI.h"  
 #include "cocostudio/CocoStudio.h"  
 #include "cocos2d.h"
-#include "SimpleAudioEngine.h" 
+#include "AudioEngine.h" 
 
 USING_NS_CC;
 using namespace gui;

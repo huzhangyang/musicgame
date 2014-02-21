@@ -21,7 +21,7 @@ bool MainScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/main.mp3");
+	AudioEngine::getInstance()->createLoop("music/main.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10004);
@@ -50,7 +50,7 @@ void MainScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/main.mp3", true);
+	AudioEngine::getInstance()->play();
 }
 
 void MainScene::menuCloseCallback(Object* pSender)

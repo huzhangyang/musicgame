@@ -60,7 +60,7 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/test.mp3");
+	AudioEngine::getInstance()->create("music/test.mp3");
 	fin.open(FileUtils::getInstance()->fullPathForFilename(FILENAME));//打开测试谱面
 	getNoteline();//读取第一行
 
@@ -83,7 +83,7 @@ void GameScene::menuCloseCallback(Object* pSender)
 
 void GameScene::startGame()
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/test.mp3", false);
+	AudioEngine::getInstance()->play();
 	this->scheduleUpdate();
 	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
 }
@@ -99,7 +99,7 @@ void GameScene::update(float dt)
 			addNewNote(noteline.type, noteline.length, noteline.pos, noteline.des);
 		getNoteline();//读取下个音符
 	}
-	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
+	if (!AudioEngine::getInstance()->isPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
 		fin.close();
@@ -202,12 +202,12 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			if (!Director::getInstance()->isPaused())
 			{
 				Director::getInstance()->pause();
-				CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+				AudioEngine::getInstance()->pause();
 			}
 			else
 			{
 				Director::getInstance()->resume();
-				CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+				AudioEngine::getInstance()->resume();
 			}
 		}
 		break;

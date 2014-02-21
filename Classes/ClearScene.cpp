@@ -22,7 +22,7 @@ bool ClearScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/clear.mp3");
+	AudioEngine::getInstance()->createLoop("music/clear.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("clearScene.json");
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10003);
@@ -61,12 +61,12 @@ void ClearScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/clear.mp3", true);
+	AudioEngine::getInstance()->play();
 }
 
 void ClearScene::onExit()
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
+	//AudioEngine::getInstance()->stopBackgroundMusic(true);
 }
 
 void ClearScene::menuCloseCallback(Object* pSender)

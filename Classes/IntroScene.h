@@ -2,7 +2,7 @@
 #define __INTRO_SCENE_H__
 
 #include "cocos2d.h"
-#include "SimpleAudioEngine.h" 
+#include "AudioEngine.h" 
 #include "cocostudio/CocoStudio.h"  
 #include "CocosGUI.h" 
 
