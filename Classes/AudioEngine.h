@@ -15,8 +15,10 @@ public:
 	void play();
 	void pause();
 	void resume();
-	void exit();
+	void close();
 	bool isPlaying();
+	int getLength();
+	int getPosition();	
 private:
 	AudioEngine();
 	void init();

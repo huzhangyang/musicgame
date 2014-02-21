@@ -186,6 +186,8 @@ void GameScene::judgeNote(int judge)
 		labelCombo->setText(temp);
 		break;
 	}
+	//sprintf(temp, "%f", AudioEngine::getInstance()->getPosition());
+	//labelCombo->setText(temp);
 	labelJudge->runAction(FadeOut::create(1));
 	labelCombo->runAction(FadeOut::create(1));//ЯћЪЇЬиаЇ
 }

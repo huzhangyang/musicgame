@@ -49,7 +49,7 @@ void AudioEngine::resume()
 	channel->setPaused(FALSE);
 }
 
-void AudioEngine::exit()
+void AudioEngine::close()
 {
 	result = system->release();
 }
@@ -60,3 +60,20 @@ bool AudioEngine::isPlaying()
 	result = channel->isPlaying(&x);
 	return x;
 }
+
+int AudioEngine::getLength()
+{
+	unsigned int x;
+	result = sound->getLength(&x, FMOD_TIMEUNIT_MS);
+	x = x * 60 / 1000;//换算成帧数
+	return x;
+}
+
+int AudioEngine::getPosition()
+{
+	unsigned int x;
+	result = channel->getPosition(&x, FMOD_TIMEUNIT_MS);
+	x = x * 60 / 1000;//换算成帧数
+	return x;
+}
+
