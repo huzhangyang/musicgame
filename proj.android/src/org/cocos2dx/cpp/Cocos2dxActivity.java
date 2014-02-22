@@ -27,7 +27,7 @@ public class Cocos2dxActivity extends NativeActivity {
 	}
 
 	static {
-		//System.loadLibrary("fmod");
+		System.loadLibrary("fmodex");
 		System.loadLibrary("musicgame");
 	}
 }

@@ -24,33 +24,34 @@ void AudioEngine::init()
 	result = system->init(1, FMOD_INIT_NORMAL, 0);
 }
 
-void AudioEngine::create(char* songname)
+void AudioEngine::create(const char* songname)
 {
 	result = system->createStream(songname, FMOD_DEFAULT, 0, &sound);
 }
 
-void AudioEngine::createLoop(char* songname)
+void AudioEngine::createLoop(const char* songname)
 {
 	result = system->createStream(songname, FMOD_HARDWARE | FMOD_LOOP_NORMAL | FMOD_2D, 0, &sound);
 }
 
 void AudioEngine::play()
 {
-	result = system->playSound(sound, 0, false, &channel);
+	result = system->playSound(FMOD_CHANNEL_FREE, sound, false, &channel);
 }
 
 void AudioEngine::pause()
 {
-	channel->setPaused(TRUE);
+	channel->setPaused(true);
 }
 
 void AudioEngine::resume()
 {
-	channel->setPaused(FALSE);
+	channel->setPaused(false);
 }
 
 void AudioEngine::close()
 {
+	result = sound->release();
 	result = system->release();
 }
 

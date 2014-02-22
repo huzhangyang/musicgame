@@ -10,8 +10,8 @@ using namespace FMOD;
 class AudioEngine{
 public:
 	static AudioEngine* getInstance();
-	void create(char* songname);
-	void AudioEngine::createLoop(char* songname);
+	void create(const char* songname);
+	void createLoop(const char* songname);
 	void play();
 	void pause();
 	void resume();
