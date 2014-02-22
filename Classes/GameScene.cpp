@@ -91,6 +91,10 @@ void GameScene::startGame()
 void GameScene::update(float dt)
 {
 	framecounter++;
+	char temp[64];
+	float bpm = AudioEngine::getInstance()->getBPM();
+	sprintf(temp, "%f", bpm);
+	labelCombo->setText(temp);
 	while ((framecounter + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
 		|| (framecounter + TIME_PRELOAD / 2 >= noteline.time&&noteline.type == 0))//提前一些生成
 	{
@@ -186,8 +190,6 @@ void GameScene::judgeNote(int judge)
 		labelCombo->setText(temp);
 		break;
 	}
-	//sprintf(temp, "%d", AudioEngine::getInstance()->getPosition());
-	//labelCombo->setText(temp);
 	labelJudge->runAction(FadeOut::create(1));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
 }

@@ -19,6 +19,8 @@ public:
 	bool isPlaying();
 	int getLength();
 	int getPosition();	
+	float getBPM();
+	float* getSpectrum();
 private:
 	AudioEngine();
 	void init();
@@ -26,6 +28,5 @@ private:
 	Sound* sound;
 	Channel* channel;
 	FMOD_RESULT result;
-
 };
 #endif 
