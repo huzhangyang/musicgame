@@ -29,14 +29,43 @@ void AudioEngine::init()
 	result = system->init(1, FMOD_INIT_NORMAL, 0);
 }
 
+void AudioEngine::LoadFileIntoMemory(const char *name, void **buff, int *length)
+{
+	FILE *fp = fopen(name, "rb");
+	fseek(fp, 0, SEEK_END);
+	*length = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	*buff = malloc(*length);
+	fread(*buff, *length, 1, fp);
+	fclose(fp);
+}
+
 void AudioEngine::create(const char* songname)
 {
-	result = system->createStream(songname, FMOD_DEFAULT, 0, &sound);
+	std::string file = FileUtils::getInstance()->fullPathForFilename(songname);
+	//auto data = FileUtils::getInstance()->getDataFromFile(file);这个用不了，是BUG吗
+	void *buff = 0;
+	int length = 0;
+	LoadFileIntoMemory(file.c_str(), &buff, &length);
+	FMOD_CREATESOUNDEXINFO exinfo;
+	memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
+	exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
+	exinfo.length = length;
+	result = system->createStream((const char*)buff, FMOD_OPENMEMORY | FMOD_LOOP_OFF, &exinfo, &sound);
 }
 
 void AudioEngine::createLoop(const char* songname)
 {
-	result = system->createStream(songname, FMOD_HARDWARE | FMOD_LOOP_NORMAL | FMOD_2D, 0, &sound);
+	std::string file = FileUtils::getInstance()->fullPathForFilename(songname);
+	//auto data = FileUtils::getInstance()->getDataFromFile(file);这个用不了，是BUG吗
+	void *buff = 0;
+	int length = 0;
+	LoadFileIntoMemory(file.c_str(), &buff, &length);
+	FMOD_CREATESOUNDEXINFO exinfo;
+	memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
+	exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
+	exinfo.length = length;
+	result = system->createStream((const char*)buff, FMOD_OPENMEMORY | FMOD_LOOP_NORMAL, &exinfo, &sound);
 }
 
 void AudioEngine::play()
