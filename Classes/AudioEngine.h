@@ -24,7 +24,6 @@ public:
 	float* getSpectrum();
 private:
 	AudioEngine();
-	void LoadFileIntoMemory(const char *name, void **buff, int *length);
 	void init();
 	System* system;
 	Sound* sound;
