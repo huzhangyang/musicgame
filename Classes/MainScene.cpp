@@ -1,6 +1,7 @@
-#include "Global.h"
 #include "MainScene.h"
 #include "GameScene.h"
+
+const std::string FILENAME = "test";//曲子文件名
 
 Scene* MainScene::createScene()
 {
@@ -53,6 +54,13 @@ void MainScene::onEnterTransitionDidFinish()
 	AudioEngine::getInstance()->play();
 }
 
+void MainScene::onExitTransitionDidStart()
+{
+	Layer::onExitTransitionDidStart();
+	/////////////////////////////////////////////////////
+	AudioEngine::getInstance()->stop();
+}
+
 void MainScene::menuCloseCallback(Object* pSender)
 {
 	Director::getInstance()->end();
@@ -77,7 +85,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		}
 		else if (tag == MAINSCENE_SHELF)
 		{
-			auto scene = GameScene::createScene();
+			auto scene = GameScene::createScene(FILENAME);
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		}
 		else if (tag == MAINSCENE_CLOCK)
@@ -88,6 +96,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		}
 		else if (tag == MAINSCENE_OPTION)
 		{
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
 		}
 		else if (tag == MAINSCENE_HELP)
 		{

@@ -1,12 +1,14 @@
-#include "Global.h"
 #include "ClearScene.h"
 #include "MainScene.h"
 #include "GameScene.h"
 
-Scene* ClearScene::createScene()
+extern std::string FileName;//ÒôÀÖÎÄ¼þÃû³Æ
+
+Scene* ClearScene::createScene(std::string filename)
 {
 	auto scene = Scene::create();
 	auto layer = ClearScene::create();
+	FileName = filename;
 	scene->addChild(layer);
 	return scene;
 }
@@ -39,19 +41,19 @@ bool ClearScene::init()
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	char temp[64];
-	sprintf(temp, "%d", counterPerfect);
+	sprintf(temp, "%d", counter.perfect);
 	labelPerfect->setText(temp);
-	sprintf(temp, "%d", counterGood);
+	sprintf(temp, "%d", counter.good);
 	labelGood->setText(temp);
-	sprintf(temp, "%d", counterMiss);
+	sprintf(temp, "%d", counter.miss);
 	labelMiss->setText(temp);
-	sprintf(temp, "%d", counterTotal);
+	sprintf(temp, "%d", counter.total);
 	labelTotal->setText(temp);
-	sprintf(temp, "%d", counterMaxcombo);
+	sprintf(temp, "%d", counter.maxcombo);
 	labelMaxCombo->setText(temp);
-	float completePercent = (float)counterPerfect / (float)counterTotal * 0.8;
-	completePercent += (float)counterGood / (float)counterTotal * 0.4;
-	completePercent += (float)counterMaxcombo / (float)counterTotal * 0.2;
+	float completePercent = (float)counter.perfect / (float)counter.total * 0.8;
+	completePercent += (float)counter.good / (float)counter.total * 0.4;
+	completePercent += (float)counter.maxcombo / (float)counter.total * 0.2;
 	sprintf(temp, "%.2f", completePercent * 100);
 	labelComplete->setText(strcat(temp, "% Complete"));
 	return true;
@@ -64,9 +66,11 @@ void ClearScene::onEnterTransitionDidFinish()
 	AudioEngine::getInstance()->play();
 }
 
-void ClearScene::onExit()
+void ClearScene::onExitTransitionDidStart()
 {
-	//AudioEngine::getInstance()->stopBackgroundMusic(true);
+	Layer::onExitTransitionDidStart();
+	/////////////////////////////////////////////////////
+	AudioEngine::getInstance()->stop();
 }
 
 void ClearScene::menuCloseCallback(Object* pSender)
@@ -87,7 +91,7 @@ void ClearScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == CLEARSCENE_RETRY)
 		{
-			auto scene = GameScene::createScene();
+			auto scene = GameScene::createScene(FileName);
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		}
 		else if (tag == CLEARSCENE_RETURN)

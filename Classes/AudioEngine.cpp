@@ -46,12 +46,17 @@ void AudioEngine::play()
 
 void AudioEngine::pause()
 {
-	channel->setPaused(true);
+	result = channel->setPaused(true);
 }
 
 void AudioEngine::resume()
 {
-	channel->setPaused(false);
+	result = channel->setPaused(false);
+}
+
+void AudioEngine::stop()
+{
+	result = channel->stop();
 }
 
 void AudioEngine::close()
@@ -102,7 +107,7 @@ float* AudioEngine::getSpectrum()
 float AudioEngine::getBPM()
 {
 	float bpmEstimate;//待估计BPM值
-	int beatThresholdBar = 0;
+	int beatThresholdBar = 0;//检测区域
 	int beatLastTick = 0;//上个拍子时间
 	int beatIgnoreLastTick = 0;//忽略拍点
 	std::queue<int> beatTimes;//节拍出现序列

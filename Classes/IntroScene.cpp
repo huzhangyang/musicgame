@@ -1,4 +1,3 @@
-#include "Global.h"
 #include "IntroScene.h"
 #include "MainScene.h"
 
@@ -36,6 +35,13 @@ bool IntroScene::init()
 	sceneNode->addChild(logo);
 	logo->runAction(Sequence::create(DelayTime::create(1), CallFunc::create(CC_CALLBACK_0(IntroScene::playIntro, this)), FadeOut::create(2), NULL));//logoÇÐ»»ÌØÐ§
 	return true;
+}
+
+void IntroScene::onExitTransitionDidStart()
+{
+	Layer::onExitTransitionDidStart();
+	/////////////////////////////////////////////////////
+	AudioEngine::getInstance()->stop();
 }
 
 void IntroScene::menuCloseCallback(Object* pSender)
