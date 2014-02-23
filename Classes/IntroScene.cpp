@@ -1,4 +1,3 @@
-#include "Global.h"
 #include "IntroScene.h"
 #include "MainScene.h"
 
@@ -21,7 +20,7 @@ bool IntroScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/intro.mp3");
+	AudioEngine::getInstance()->createLoop("music/intro.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("introScene.json");
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10003);
@@ -38,6 +37,13 @@ bool IntroScene::init()
 	return true;
 }
 
+void IntroScene::onExitTransitionDidStart()
+{
+	Layer::onExitTransitionDidStart();
+	/////////////////////////////////////////////////////
+	AudioEngine::getInstance()->stop();
+}
+
 void IntroScene::menuCloseCallback(Object* pSender)
 {
 	Director::getInstance()->end();
@@ -49,7 +55,7 @@ void IntroScene::menuCloseCallback(Object* pSender)
 
 void IntroScene::playIntro()
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/intro.mp3", true);
+	AudioEngine::getInstance()->play();
 }
 
 void IntroScene::touchEvent(Object* obj, gui::TouchEventType eventType)

@@ -2,19 +2,22 @@
 #define __GAME_SCENE_H__
 
 #include "cocos2d.h"
-#include "SimpleAudioEngine.h" 
-#include "cocostudio/CocoStudio.h"  
 #include "CocosGUI.h"  
+#include "cocostudio/CocoStudio.h"   
+
+#include "Global.h"
+#include "AudioEngine.h" 
 
 USING_NS_CC;
 using namespace gui;
 
-class GameScene : public cocos2d::Layer
+class GameScene : public Layer
 {
 public:
-	static cocos2d::Scene* createScene();
+	static Scene* createScene(std::string filename);
 	virtual bool init();
 	virtual void onEnterTransitionDidFinish();
+	virtual void onExitTransitionDidStart();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
 	static void judgeNote(int judge);

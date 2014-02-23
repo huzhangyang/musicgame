@@ -24,11 +24,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
 }
 //切入后台
 void AppDelegate::applicationDidEnterBackground() {
-	Director::getInstance()->stopAnimation();
-	CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+	Director::getInstance()->pause();
+	AudioEngine::getInstance()->pause();
+
 }
 //切回前台
 void AppDelegate::applicationWillEnterForeground() {
-	Director::getInstance()->startAnimation();
-	CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+	Director::getInstance()->resume();
+	AudioEngine::getInstance()->resume();
 }

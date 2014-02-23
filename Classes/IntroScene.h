@@ -2,18 +2,21 @@
 #define __INTRO_SCENE_H__
 
 #include "cocos2d.h"
-#include "SimpleAudioEngine.h" 
-#include "cocostudio/CocoStudio.h"  
-#include "CocosGUI.h" 
+#include "CocosGUI.h"  
+#include "cocostudio/CocoStudio.h"   
+
+#include "Global.h"
+#include "AudioEngine.h" 
 
 USING_NS_CC;
 using namespace gui;
 
-class IntroScene : public cocos2d::Layer
+class IntroScene : public Layer
 {
 public:
-	static cocos2d::Scene* createScene();
+	static Scene* createScene();
 	virtual bool init();
+	virtual void onExitTransitionDidStart();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(IntroScene);
 private:

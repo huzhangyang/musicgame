@@ -1,32 +1,31 @@
-#include "Global.h"
 #include "GameScene.h"
 #include "ClearScene.h"
 #include "Note.h"
 #include <fstream>
 
 const int TIME_PRELOAD = 60;//音符提前出现的时间
-const int DIFFICULTY = 0;//当前难度
-const std::string FILENAME = "test.gnm";//测试谱面名称
+Noteline noteline;
+Counter counter;
 
+int difficulty;//当前难度
+std::string FileName;//音乐文件名称
 std::ifstream fin;//输入流
-Noteline noteline;//当前音符
-int framecounter;
-int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
 TextBMFont *labelInfo, *labelCombo, *labelJudge;
 
-Scene* GameScene::createScene()
+Scene* GameScene::createScene(std::string filename)
 {
 	auto scene = Scene::create();
 	auto layer = GameScene::create();
 	scene->addChild(layer);
 
-	framecounter = 0;//帧数计数器
-	counterTotal = 0;//音符总数
-	counterPerfect = 0;//完美数
-	counterGood = 0;//普通击中数
-	counterMiss = 0;//错过数
-	counterCombo = 0;//连击数
-	counterMaxcombo = 0;//最大连击数
+	FileName = filename;
+	counter.frame = 0;
+	counter.total = 0;
+	counter.perfect = 0;
+	counter.good = 0;
+	counter.miss = 0;
+	counter.combo = 0;
+	counter.maxcombo = 0;
 	return scene;
 }
 
@@ -52,7 +51,8 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
-	labelInfo->setText(FILENAME.substr(0, FILENAME.find('.')).c_str());
+	labelInfo->setText(FileName.c_str());
+	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	return true;
 }
 
@@ -60,8 +60,8 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/test.mp3");
-	fin.open(FileUtils::getInstance()->fullPathForFilename(FILENAME));//打开测试谱面
+	AudioEngine::getInstance()->create("music/test.mp3");
+	fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开测试谱面
 	getNoteline();//读取第一行
 
 	labelJudge->setText("Get Ready");
@@ -70,6 +70,13 @@ void GameScene::onEnterTransitionDidFinish()
 	addChild(progress);
 	progress->setPosition(-40, 605);
 	progress->runAction(Sequence::create(MoveTo::create(3, Point(1340, 605)), CallFunc::create(CC_CALLBACK_0(GameScene::startGame, this)), NULL));//准备特效
+}
+
+void GameScene::onExitTransitionDidStart()
+{
+	Layer::onExitTransitionDidStart();
+	/////////////////////////////////////////////////////
+	AudioEngine::getInstance()->stop();
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -83,29 +90,29 @@ void GameScene::menuCloseCallback(Object* pSender)
 
 void GameScene::startGame()
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("music/test.mp3", false);
+	AudioEngine::getInstance()->play();
 	this->scheduleUpdate();
 	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
 }
 
 void GameScene::update(float dt)
 {
-	framecounter++;
-	while ((framecounter + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
-		|| (framecounter + TIME_PRELOAD / 2 >= noteline.time&&noteline.type == 0))//提前一些生成
+	counter.frame++;
+	while ((counter.frame + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
+		|| (counter.frame + TIME_PRELOAD / 2 >= noteline.time&&noteline.type == 0))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
-		if (DIFFICULTY >= noteline.difficulty)//当前难度符合则生成否则跳过
+		if (difficulty >= noteline.difficulty)//当前难度符合则生成否则跳过
 			addNewNote(noteline.type, noteline.length, noteline.pos, noteline.des);
 		getNoteline();//读取下个音符
 	}
-	if (!CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())//一首歌结束则切换到结算界面
+	if (!AudioEngine::getInstance()->isPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
 		fin.close();
-		if (counterMaxcombo == 0 && counterMiss != counterTotal)
-			counterMaxcombo = counterTotal;//全程无miss
-		auto scene = ClearScene::createScene();
+		if (counter.maxcombo == 0 && counter.miss != counter.total)
+			counter.maxcombo = counter.total;//全程无miss
+		auto scene = ClearScene::createScene(FileName);
 		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 	}
 }
@@ -159,30 +166,30 @@ void GameScene::addRandomNote(float dt)
 
 void GameScene::judgeNote(int judge)
 {
-	counterTotal++;
+	counter.total++;
 	char temp[64];
 	switch (judge)
 	{
 	case 0:
-		if (counterMaxcombo < counterCombo)
-			counterMaxcombo = counterCombo;
-		counterCombo = 0;
-		counterMiss++;
+		if (counter.maxcombo < counter.combo)
+			counter.maxcombo = counter.combo;
+		counter.combo = 0;
+		counter.miss++;
 		labelJudge->setText("Miss!");
 		labelCombo->setText("");
 		break;
 	case 1:
-		counterCombo++;
-		counterGood++;
+		counter.combo++;
+		counter.good++;
 		labelJudge->setText("Good!");
-		sprintf(temp, "%d", counterCombo);
+		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
 	case 2:
-		counterCombo++;
-		counterPerfect++;
+		counter.combo++;
+		counter.perfect++;
 		labelJudge->setText("Perfect!");
-		sprintf(temp, "%d", counterCombo);
+		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
 	}
@@ -202,12 +209,12 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			if (!Director::getInstance()->isPaused())
 			{
 				Director::getInstance()->pause();
-				CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+				AudioEngine::getInstance()->pause();
 			}
 			else
 			{
 				Director::getInstance()->resume();
-				CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+				AudioEngine::getInstance()->resume();
 			}
 		}
 		break;

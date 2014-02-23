@@ -1,7 +1,18 @@
 #ifndef __GLOBAL_H__
 #define __GLOBAL_H__
-//全局变量
-extern int counterTotal, counterPerfect, counterGood, counterMiss, counterCombo, counterMaxcombo;
+
+struct Counter//计数器结构
+{
+	int frame;//帧数
+	int total;//音符总数
+	int perfect;//完美数
+	int good;//普通击中数
+	int miss;//错过数
+	int combo;//连击数
+	int maxcombo;//最大连击数
+};
+extern Counter counter;
+
 //开始界面Tag
 const int INTROSCENE_START = 3;
 //主界面Tag

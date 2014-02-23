@@ -8,7 +8,7 @@ USING_NS_CC;
 enum NoteType{ CLICK = 0, LONGPRESS = 1, SLIDE = 2 };//音符类型枚举
 enum NoteStatus{ UNTOUCHED_UNACTIVATED = 0, UNTOUCHED_ACTIVATED = 1, TOUCHED_UNACTIVATED = 2, TOUCHED_ACTIVATED = 3 };//音符状态枚举
 
-class Note : public cocos2d::Sprite
+class Note : public Sprite
 {
 public:
 	Note();
