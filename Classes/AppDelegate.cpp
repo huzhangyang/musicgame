@@ -19,7 +19,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	director->setAnimationInterval(1.0 / 60);//设置帧率
 	auto scene = IntroScene::createScene();
 	director->runWithScene(scene);//运行场景
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 	FileUtils::getInstance()->addSearchPath("/mnt/sdcard/");//设置搜索路径
+#else
+	FileUtils::getInstance()->addSearchPath("../files/");//设置搜索路径
+#endif
 	return true;
 }
 //切入后台
