@@ -96,8 +96,8 @@
           "rotation": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "sizePercentX": 0.08046875,
-          "sizePercentY": 0.055555556,
+          "sizePercentX": 0.08984375,
+          "sizePercentY": 0.159722224,
           "sizeType": 0,
           "tag": 7,
           "touchAble": true,
@@ -121,13 +121,13 @@
           "fontType": 0,
           "normal": null,
           "normalData": {
-            "path": "set.png",
+            "path": "set0.png",
             "plistFile": null,
             "resourceType": 0
           },
           "pressed": null,
           "pressedData": {
-            "path": "set.png",
+            "path": "set1.png",
             "plistFile": null,
             "resourceType": 0
           },
@@ -168,8 +168,8 @@
           "rotation": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "sizePercentX": 0.08046875,
-          "sizePercentY": 0.055555556,
+          "sizePercentX": 0.08984375,
+          "sizePercentY": 0.159722224,
           "sizeType": 0,
           "tag": 8,
           "touchAble": true,
@@ -193,13 +193,13 @@
           "fontType": 0,
           "normal": null,
           "normalData": {
-            "path": "help.png",
+            "path": "help0.png",
             "plistFile": null,
             "resourceType": 0
           },
           "pressed": null,
           "pressedData": {
-            "path": "help.png",
+            "path": "help1.png",
             "plistFile": null,
             "resourceType": 0
           },
@@ -240,8 +240,8 @@
           "rotation": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "sizePercentX": 0.08046875,
-          "sizePercentY": 0.055555556,
+          "sizePercentX": 0.08984375,
+          "sizePercentY": 0.159722224,
           "sizeType": 0,
           "tag": 9,
           "touchAble": true,
@@ -265,13 +265,13 @@
           "fontType": 0,
           "normal": null,
           "normalData": {
-            "path": "exit.png",
+            "path": "exit0.png",
             "plistFile": null,
             "resourceType": 0
           },
           "pressed": null,
           "pressedData": {
-            "path": "exit.png",
+            "path": "exit1.png",
             "plistFile": null,
             "resourceType": 0
           },

@@ -600,10 +600,10 @@
           "positionPercentY": 0.2125,
           "positionType": 0,
           "rotation": 0,
-          "scaleX": 1.2,
-          "scaleY": 1.2,
-          "sizePercentX": 0.234375,
-          "sizePercentY": 0.416666657,
+          "scaleX": 1.50000012,
+          "scaleY": 1.50000012,
+          "sizePercentX": 0.08984375,
+          "sizePercentY": 0.159722224,
           "sizeType": 0,
           "tag": 14,
           "touchAble": true,
@@ -627,13 +627,13 @@
           "fontType": 0,
           "normal": null,
           "normalData": {
-            "path": "retry.png",
+            "path": "retry0.png",
             "plistFile": null,
             "resourceType": 0
           },
           "pressed": null,
           "pressedData": {
-            "path": "retry.png",
+            "path": "retry1.png",
             "plistFile": null,
             "resourceType": 0
           },
@@ -672,10 +672,10 @@
           "positionPercentY": 0.211111113,
           "positionType": 0,
           "rotation": 0,
-          "scaleX": 1.2,
-          "scaleY": 1.2,
-          "sizePercentX": 0.234375,
-          "sizePercentY": 0.416666657,
+          "scaleX": 1.50000012,
+          "scaleY": 1.50000012,
+          "sizePercentX": 0.08984375,
+          "sizePercentY": 0.159722224,
           "sizeType": 0,
           "tag": 15,
           "touchAble": true,
@@ -699,13 +699,13 @@
           "fontType": 0,
           "normal": null,
           "normalData": {
-            "path": "return.png",
+            "path": "return0.png",
             "plistFile": null,
             "resourceType": 0
           },
           "pressed": null,
           "pressedData": {
-            "path": "return.png",
+            "path": "return1.png",
             "plistFile": null,
             "resourceType": 0
           },

@@ -2,6 +2,7 @@
 #include "GameScene.h"
 
 const std::string FILENAME = "test";//曲子文件名
+Node* ExitNode;
 
 Scene* MainScene::createScene()
 {
@@ -25,8 +26,9 @@ bool MainScene::init()
 	AudioEngine::getInstance()->createLoop("music/main.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
-	auto UINode = sceneNode->getChildByTag(10004);
-	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
+
+	auto UINode = sceneNode->getChildByTag(10005);
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("mainSceneUI");
 	auto UIlayer = UIComponent->getNode();
 	auto objectTable = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_TABLE));
 	objectTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
@@ -44,6 +46,15 @@ bool MainScene::init()
 	buttonHelp->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto buttonExit = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_EXIT));
 	buttonExit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+
+	ExitNode = sceneNode->getChildByTag(10004);
+	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
+	auto Exitlayer = ExitComponent->getNode();
+	auto buttonCheck = dynamic_cast<Button*>(Exitlayer->getChildByTag(MAINSCENE_CHECKMARK));
+	buttonCheck->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto buttonCross = dynamic_cast<Button*>(Exitlayer->getChildByTag(MAINSCENE_CROSSMARK));
+	buttonCross->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+
 	return true;
 }
 
@@ -103,7 +114,15 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		}
 		else if (tag == MAINSCENE_EXIT)
 		{
+			ExitNode->setVisible(true);
+		}
+		else if (tag == MAINSCENE_CHECKMARK)
+		{
 			Director::getInstance()->popScene();
+		}
+		else if (tag == MAINSCENE_CROSSMARK)
+		{
+			ExitNode->setVisible(false);
 		}
 		break;
 	}

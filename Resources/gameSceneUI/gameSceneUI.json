@@ -96,8 +96,8 @@
           "rotation": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "sizePercentX": 0.234375,
-          "sizePercentY": 0.416666657,
+          "sizePercentX": 0.08984375,
+          "sizePercentY": 0.159722224,
           "sizeType": 0,
           "tag": 5,
           "touchAble": true,
@@ -121,13 +121,13 @@
           "fontType": 0,
           "normal": null,
           "normalData": {
-            "path": "pause.png",
+            "path": "pause0.png",
             "plistFile": null,
             "resourceType": 0
           },
           "pressed": null,
           "pressedData": {
-            "path": "pause.png",
+            "path": "pause1.png",
             "plistFile": null,
             "resourceType": 0
           },
@@ -168,8 +168,8 @@
           "rotation": 0,
           "scaleX": 1.5,
           "scaleY": 1.4,
-          "sizePercentX": 0.05625,
-          "sizePercentY": 0.07083333,
+          "sizePercentX": 0,
+          "sizePercentY": 0,
           "sizeType": 0,
           "tag": 6,
           "touchAble": false,
@@ -229,7 +229,7 @@
             "plistFile": null,
             "resourceType": 0
           },
-          "text": ""
+          "text": "Ready"
         }
       },
       {
