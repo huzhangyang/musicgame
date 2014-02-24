@@ -1,11 +1,15 @@
 #include "AudioEngine.h"
 
 static AudioEngine* engine = nullptr;//单例
+int beatLastTick = 0;
+
 const int SPEC_LEN = 128;
-const float beatThresholdVolume = 0.3f;//拍点音量阀值
+const float BEAT_THRESHOLD = 0.2f;//拍点音量阀值
+const int BEAT_MINLASTTIME = 15;//最小节奏持续帧数
 const int beatSustain = 150;//
-const int beatPostIgnore = 250;
+
 const int beatTrackCutoff = 10000;
+
 
 AudioEngine::AudioEngine()
 {
@@ -34,12 +38,13 @@ void AudioEngine::create(const char* songname)
 {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 	{
-		auto data = FileUtils::getInstance()->getDataFromFile(songname);
+		ssize_t size = 0;
+		auto data = FileUtils::getInstance()->getFileData(songname, "r", &size);
 		FMOD_CREATESOUNDEXINFO exinfo;
 		memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
 		exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-		exinfo.length = data.getSize();
-		result = system->createStream((const char*)data.getBytes(), FMOD_OPENMEMORY | FMOD_LOOP_OFF, &exinfo, &sound);
+		exinfo.length = size;
+		result = system->createStream((const char*)data, FMOD_OPENMEMORY | FMOD_LOOP_OFF, &exinfo, &sound);
 	}
 #else
 	result = system->createStream(songname, FMOD_DEFAULT, 0, &sound);
@@ -51,13 +56,13 @@ void AudioEngine::createLoop(const char* songname)
 {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 	{
-		auto data = FileUtils::getInstance()->getDataFromFile(songname);
-		log("%s", FileUtils::getInstance()->fullPathForFilename(songname).c_str());
+		ssize_t size = 0;
+		auto data = FileUtils::getInstance()->getFileData(songname, "r", &size);
 		FMOD_CREATESOUNDEXINFO exinfo;
 		memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
 		exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-		exinfo.length = data.getSize();
-		result = system->createStream((const char*)data.getBytes(), FMOD_OPENMEMORY | FMOD_LOOP_NORMAL, &exinfo, &sound);
+		exinfo.length = size;
+		result = system->createStream((const char*)data, FMOD_OPENMEMORY | FMOD_LOOP_NORMAL, &exinfo, &sound);
 	}
 #else
 	result = system->createStream(songname, FMOD_HARDWARE | FMOD_LOOP_NORMAL | FMOD_2D, 0, &sound);
@@ -97,6 +102,21 @@ bool AudioEngine::isPlaying()
 	return x;
 }
 
+bool AudioEngine::hasBeat()
+{
+	float* specData = new float[SPEC_LEN];
+	specData = this->getSpectrum();
+	for (int bar = 0; bar < SPEC_LEN; bar++)
+	{
+		if (specData[bar] >= BEAT_THRESHOLD && this->getPosition() - beatLastTick >= BEAT_MINLASTTIME)
+		{
+			beatLastTick = this->getPosition();
+			return true;
+		}
+	}
+	return false;
+}
+
 int AudioEngine::getLength()
 {
 	unsigned int x;
@@ -128,7 +148,7 @@ float* AudioEngine::getSpectrum()
 	delete[] specLeft;
 	delete[] specRight;
 }
-/*
+
 float AudioEngine::getBPM()
 {
 	float bpmEstimate;//待估计BPM值
@@ -139,7 +159,7 @@ float AudioEngine::getBPM()
 
 	float* specData = new float[SPEC_LEN];
 	specData = this->getSpectrum();
-	if (specData[beatThresholdBar] >= beatThresholdVolume && beatLastTick == 0 && beatIgnoreLastTick == 0)
+	if (specData[beatThresholdBar] >= BEAT_THRESHOLD  && beatLastTick == 0 && beatIgnoreLastTick == 0)
 	{
 		beatLastTick = GetTickCount();//检测到拍子，记录时间
 		beatTimes.push(beatLastTick);//记录到节拍出现序列中
@@ -160,7 +180,7 @@ float AudioEngine::getBPM()
 		beatIgnoreLastTick = GetTickCount();//延迟时间内不允许检测下个拍点
 	}
 
-	if (GetTickCount() - beatIgnoreLastTick >= beatPostIgnore)
+	if (GetTickCount() - beatIgnoreLastTick >= BEAT_MINLASTTIME)
 		beatIgnoreLastTick = 0;//延迟时间已过，允许检测下个拍点
 
 	if (beatTimes.size() >= 2)
@@ -171,5 +191,5 @@ float AudioEngine::getBPM()
 	else
 		bpmEstimate = 0;
 	return bpmEstimate;
-}*/
+}
 
