@@ -32,6 +32,8 @@ const int GAMESCENE_PAUSE = 5;
 const int GAMESCENE_COMBO = 6;
 const int GAMESCENE_JUDGE = 7;
 const int GAMESCENE_INFO = 8;
+const int GAMESCENE_LOADINGBAR = 12;
+const int GAMESCENE_DIFFICULTY = 13;
 //Ω·À„ΩÁ√ÊTag
 const int CLEARSCENE_PNO = 6;
 const int CLEARSCENE_GNO = 7;

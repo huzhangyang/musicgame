@@ -51,8 +51,17 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
+	auto labelDifficulty = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
 	labelInfo->setText(FileName.c_str());
 	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+	if (difficulty == 0)
+	{
+		labelDifficulty->setText("EASY");
+	}
+	else if (difficulty == 1)
+	{
+		labelDifficulty->setText("HARD");
+	}
 	return true;
 }
 
