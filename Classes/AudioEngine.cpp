@@ -104,15 +104,22 @@ bool AudioEngine::isPlaying()
 
 bool AudioEngine::hasBeat()
 {
+	double beatavg = 0, beatmax = 0;
 	float* specData = new float[SPEC_LEN];
+
 	specData = this->getSpectrum();
 	for (int bar = 0; bar < SPEC_LEN; bar++)
 	{
-		if (specData[bar] >= BEAT_THRESHOLD && this->getPosition() - beatLastTick >= BEAT_MINLASTTIME)
-		{
-			beatLastTick = this->getPosition();
-			return true;
-		}
+		beatavg += specData[bar];
+		if (specData[bar]>beatmax)
+			beatmax = specData[bar];
+	}
+	delete[] specData;
+	beatavg = beatavg / (float)SPEC_LEN;
+	if ((beatmax - beatavg) >= BEAT_THRESHOLD && this->getPosition() - beatLastTick >= BEAT_MINLASTTIME)
+	{
+		beatLastTick = this->getPosition();
+		return true;
 	}
 	return false;
 }

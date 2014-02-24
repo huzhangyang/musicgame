@@ -10,7 +10,8 @@ Counter counter;
 int difficulty;//当前难度
 std::string FileName;//音乐文件名称
 std::ifstream fin;//输入流
-TextBMFont *labelInfo, *labelCombo, *labelJudge;
+TextBMFont *labelInfo, *labelCombo, *labelJudge, *labelDifficulty;
+LoadingBar *loadingBar;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -51,7 +52,8 @@ bool GameScene::init()
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
-	auto labelDifficulty = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
+	labelDifficulty = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
+	loadingBar = dynamic_cast<LoadingBar*>(UIlayer->getChildByTag(GAMESCENE_LOADINGBAR));
 	labelInfo->setText(FileName.c_str());
 	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
@@ -74,11 +76,9 @@ void GameScene::onEnterTransitionDidFinish()
 	getNoteline();//读取第一行
 
 	labelJudge->setText("Get Ready");
-	labelJudge->runAction(FadeOut::create(2));
-	Sprite* progress = Sprite::create("gameSceneUI/note.png");
-	addChild(progress);
-	progress->setPosition(-40, 605);
-	progress->runAction(Sequence::create(MoveTo::create(3, Point(1340, 605)), CallFunc::create(CC_CALLBACK_0(GameScene::startGame, this)), NULL));//准备特效
+	labelJudge->runAction(FadeOut::create(3));
+	loadingBar->setPercent(0);
+	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
 
 void GameScene::onExitTransitionDidStart()
@@ -97,16 +97,27 @@ void GameScene::menuCloseCallback(Object* pSender)
 #endif
 }
 
-void GameScene::startGame()
+void GameScene::startGame(float dt)
 {
-	AudioEngine::getInstance()->play();
-	this->scheduleUpdate();
+	loadingBar->setPercent(loadingBar->getPercent() + 1);
+	if (loadingBar->getPercent() == 100)
+	{
+		this->unscheduleAllSelectors();
+		AudioEngine::getInstance()->play();
+		this->scheduleUpdate();
+	}
 	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
 }
 
 void GameScene::update(float dt)
 {
 	counter.frame++;
+	/*if (AudioEngine::getInstance()->hasBeat())
+		labelInfo->setText("BEAT");
+		else
+		labelInfo->setText("");*/
+	int percent = AudioEngine::getInstance()->getPosition() * 100 / AudioEngine::getInstance()->getLength();
+	loadingBar->setPercent(percent);
 	while ((counter.frame + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
 		|| (counter.frame + TIME_PRELOAD / 2 >= noteline.time&&noteline.type == 0))//提前一些生成
 	{
