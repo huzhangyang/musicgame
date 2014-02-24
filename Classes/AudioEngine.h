@@ -18,6 +18,7 @@ public:
 	void stop();
 	void close();
 	bool isPlaying();
+	bool hasBeat();
 	int getLength();
 	int getPosition();
 	float getBPM();
