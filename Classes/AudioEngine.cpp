@@ -1,10 +1,10 @@
 #include "AudioEngine.h"
 
 static AudioEngine* engine = nullptr;//单例
-int beatLastTick = 0;
 
-const int SPEC_LEN = 128;
-const float BEAT_THRESHOLD = 0.2f;//拍点音量阀值
+
+const int SPEC_LEN = 127;
+const float BEAT_THRESHOLD = 1.2f;//拍点音量阀值
 const int BEAT_MINLASTTIME = 15;//最小节奏持续帧数
 const int beatSustain = 150;//
 
@@ -69,6 +69,25 @@ void AudioEngine::createLoop(const char* songname)
 #endif
 }
 
+void AudioEngine::createNRT(const char* songname)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	{
+		ssize_t size = 0;
+		auto data = FileUtils::getInstance()->getFileData(songname, "r", &size);
+		FMOD_CREATESOUNDEXINFO exinfo;
+		memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
+		exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
+		exinfo.length = size;
+		result = system->createStream((const char*)data, FMOD_OPENMEMORY | FMOD_INIT_STREAM_FROM_UPDATE, &exinfo, &sound);
+	}
+#else
+	result = system->createStream(songname, FMOD_INIT_STREAM_FROM_UPDATE, 0, &sound);
+#endif
+	result = system->setOutput(FMOD_OUTPUTTYPE_NOSOUND_NRT);
+	
+}
+
 void AudioEngine::play()
 {
 	result = system->playSound(FMOD_CHANNEL_FREE, sound, false, &channel);
@@ -95,6 +114,11 @@ void AudioEngine::close()
 	result = system->release();
 }
 
+void AudioEngine::update()
+{
+	system->update();
+}
+
 bool AudioEngine::isPlaying()
 {
 	bool x;
@@ -104,19 +128,20 @@ bool AudioEngine::isPlaying()
 
 bool AudioEngine::hasBeat()
 {
-	double beatavg = 0, beatmax = 0;
+	float DBavg = 0, DBmax = 0;//每一帧的平均dB和最大dB
+	static int beatLastTick = 0;
 	float* specData = new float[SPEC_LEN];
 
 	specData = this->getSpectrum();
 	for (int bar = 0; bar < SPEC_LEN; bar++)
 	{
-		beatavg += specData[bar];
-		if (specData[bar]>beatmax)
-			beatmax = specData[bar];
+		DBavg += specData[bar];
+		if (specData[bar]>DBmax)
+			DBmax = specData[bar];
 	}
 	delete[] specData;
-	beatavg = beatavg / (float)SPEC_LEN;
-	if ((beatmax - beatavg) >= BEAT_THRESHOLD && this->getPosition() - beatLastTick >= BEAT_MINLASTTIME)
+	DBavg = DBavg / SPEC_LEN;
+	if ((DBmax / DBavg) >= BEAT_THRESHOLD && this->getPosition() - beatLastTick >= BEAT_MINLASTTIME)
 	{
 		beatLastTick = this->getPosition();
 		return true;
@@ -142,12 +167,11 @@ int AudioEngine::getPosition()
 
 float* AudioEngine::getSpectrum()
 {
-	system->update();//貌似要先刷新？
 	float* specData = new float[SPEC_LEN];
 	float* specLeft = new float[SPEC_LEN];
 	float* specRight = new float[SPEC_LEN];
-	result = channel->getSpectrum(specLeft, SPEC_LEN, 0, FMOD_DSP_FFT_WINDOW_RECT);//得到左声道频谱
-	result = channel->getSpectrum(specRight, SPEC_LEN, 1, FMOD_DSP_FFT_WINDOW_RECT);//得到右声道频谱
+	result = channel->getSpectrum(specLeft, SPEC_LEN + 1, 0, FMOD_DSP_FFT_WINDOW_RECT);//得到左声道频谱
+	result = channel->getSpectrum(specRight, SPEC_LEN + 1, 1, FMOD_DSP_FFT_WINDOW_RECT);//得到右声道频谱
 	for (int i = 0; i < SPEC_LEN; i++)
 		specData[i] = (specLeft[i] + specRight[i]) / 2;//平均左右声道
 	return specData;//返回

@@ -1,5 +1,6 @@
 #include "MainScene.h"
 #include "GameScene.h"
+#include "MapGenerator.h"
 
 const std::string FILENAME = "test";//曲子文件名
 Node* ExitNode;
@@ -93,6 +94,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		}
 		else if (tag == MAINSCENE_PAPER)
 		{
+			MapGenerator::generateMap(FILENAME.c_str());
 		}
 		else if (tag == MAINSCENE_SHELF)
 		{
