@@ -29,7 +29,7 @@
         {
           "__type": "ComGUIAdapterSurrogate:#EditorCommon.JsonModel.Component",
           "classname": "GUIComponent",
-          "name": "gamescene",
+          "name": "gameSceneUI",
           "file": null,
           "fileData": {
             "path": "gameSceneUI/gameSceneUI.json",
@@ -57,7 +57,7 @@
         {
           "__type": "ComGUIAdapterSurrogate:#EditorCommon.JsonModel.Component",
           "classname": "GUIComponent",
-          "name": "pauseSelect",
+          "name": "pauseSelectUI",
           "file": null,
           "fileData": {
             "path": "gameSceneUI/pauseSelectUI/pauseSelectUI.json",
