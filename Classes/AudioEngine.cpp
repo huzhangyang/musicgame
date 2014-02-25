@@ -79,13 +79,13 @@ void AudioEngine::createNRT(const char* songname)
 		memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
 		exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
 		exinfo.length = size;
-		result = system->createStream((const char*)data, FMOD_OPENMEMORY | FMOD_INIT_STREAM_FROM_UPDATE, &exinfo, &sound);
+		result = system->createStream((const char*)data, FMOD_OPENMEMORY | FMOD_INIT_STREAM_FROM_UPDATE | FMOD_SOFTWARE,, &exinfo, &sound);
 	}
 #else
-	result = system->createStream(songname, FMOD_INIT_STREAM_FROM_UPDATE, 0, &sound);
+	result = system->createStream(songname, FMOD_INIT_STREAM_FROM_UPDATE | FMOD_SOFTWARE, 0, &sound);
 #endif
-	result = system->setOutput(FMOD_OUTPUTTYPE_NOSOUND_NRT);
-	
+	//result = system->setOutput(FMOD_OUTPUTTYPE_NOSOUND_NRT);
+	result = system->setDSPBufferSize(1024,4);
 }
 
 void AudioEngine::play()
