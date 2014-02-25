@@ -84,8 +84,9 @@ void AudioEngine::createNRT(const char* songname)
 #else
 	result = system->createStream(songname, FMOD_INIT_STREAM_FROM_UPDATE | FMOD_SOFTWARE, 0, &sound);
 #endif
-	//result = system->setOutput(FMOD_OUTPUTTYPE_NOSOUND_NRT);
+	result = system->setOutput(FMOD_OUTPUTTYPE_NOSOUND_NRT);
 	result = system->setDSPBufferSize(1024,4);
+	result = system->setSoftwareFormat(48000, FMOD_SOUND_FORMAT_PCMFLOAT, 0, 0, FMOD_DSP_RESAMPLER_LINEAR);
 }
 
 void AudioEngine::play()

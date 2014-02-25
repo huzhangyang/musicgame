@@ -13,7 +13,7 @@ std::string FileName;//音乐文件名称
 std::ifstream fin;//输入流
 TextBMFont *labelInfo, *labelCombo, *labelJudge, *labelDifficulty;
 LoadingBar *loadingBar;
-Node* pauseNode;
+Node *pauseNode, *UINode;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -44,10 +44,9 @@ bool GameScene::init()
 
 	/////////////////////////////////////////////////////
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
-	sceneNode->setLocalZOrder(-1);
 	addChild(sceneNode);
 
-	auto UINode = sceneNode->getChildByTag(10004);
+	UINode = sceneNode->getChildByTag(10004);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
 	auto UIlayer = UIComponent->getNode();
 	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
@@ -102,6 +101,7 @@ void GameScene::onExitTransitionDidStart()
 	Layer::onExitTransitionDidStart();
 	/////////////////////////////////////////////////////
 	AudioEngine::getInstance()->stop();
+	fin.close();
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -130,7 +130,7 @@ void GameScene::update(float dt)
 	counter.frame++;
 	if (AudioEngine::getInstance()->hasBeat())
 		labelInfo->setText("BEAT");
-		else
+	else
 		labelInfo->setText("");
 	int percent = AudioEngine::getInstance()->getPosition() * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
@@ -172,7 +172,7 @@ void GameScene::getNoteline()
 void GameScene::addNewNote(int type, int length, int pos, int des)
 {
 	auto note = Note::createNote(type, length, pos, des);
-	addChild(note);
+	UINode->addChild(note);
 	if (note->getType() == 2)
 		addArrow(note->getPositionX(), note->getPositionY(), note->getDestX(), note->getDestY());
 }
@@ -186,8 +186,8 @@ void GameScene::addArrow(int posX, int posY, int desX, int desY)
 	arrow->setRotation(atan2(desX - posX, desY - posY) * 180 / M_PI);
 	dest->runAction(FadeOut::create(2));
 	arrow->runAction(FadeOut::create(2));//消失特效
-	addChild(arrow);
-	addChild(dest);
+	UINode->addChild(arrow);
+	UINode->addChild(dest);
 }
 
 void GameScene::addRandomNote(float dt)
@@ -255,8 +255,12 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == GAMESCENE_RETRY)
 		{
 			pauseNode->setVisible(false);
+			Director::getInstance()->resume();
+			AudioEngine::getInstance()->stop();
+			this->unscheduleUpdate();
 			auto scene = GameScene::createScene(FileName);
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+
 		}
 		else if (tag == GAMESCENE_SET)
 		{
@@ -264,6 +268,9 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == GAMESCENE_RETURN)
 		{
 			pauseNode->setVisible(false);
+			Director::getInstance()->resume();
+			AudioEngine::getInstance()->stop();
+			this->unscheduleUpdate();
 			auto scene = MainScene::createScene();
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		}

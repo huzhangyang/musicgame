@@ -60,7 +60,7 @@
           "name": "exitSelectUI",
           "file": null,
           "fileData": {
-            "path": null,
+            "path": "mainSceneUI/exitSelectUI/exitSelectUI.json",
             "plistFile": null,
             "resourceType": 0
           }
