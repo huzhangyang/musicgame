@@ -112,10 +112,10 @@ void GameScene::startGame(float dt)
 void GameScene::update(float dt)
 {
 	counter.frame++;
-	/*if (AudioEngine::getInstance()->hasBeat())
+	if (AudioEngine::getInstance()->hasBeat())
 		labelInfo->setText("BEAT");
 		else
-		labelInfo->setText("");*/
+		labelInfo->setText("");
 	int percent = AudioEngine::getInstance()->getPosition() * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
 	while ((counter.frame + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
