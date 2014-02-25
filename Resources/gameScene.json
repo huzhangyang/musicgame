@@ -29,10 +29,38 @@
         {
           "__type": "ComGUIAdapterSurrogate:#EditorCommon.JsonModel.Component",
           "classname": "GUIComponent",
-          "name": "GUIComponent",
+          "name": "gamescene",
           "file": null,
           "fileData": {
             "path": "gameSceneUI/gameSceneUI.json",
+            "plistFile": null,
+            "resourceType": 0
+          }
+        }
+      ]
+    },
+    {
+      "__type": "ComGameObjectSurrogate:#EditorCommon.JsonModel",
+      "classname": "CCNode",
+      "name": null,
+      "canedit": true,
+      "objecttag": 10005,
+      "rotation": 0,
+      "scalex": 1,
+      "scaley": 1,
+      "visible": 0,
+      "x": 0,
+      "y": 0,
+      "zorder": 1,
+      "gameobjects": [],
+      "components": [
+        {
+          "__type": "ComGUIAdapterSurrogate:#EditorCommon.JsonModel.Component",
+          "classname": "GUIComponent",
+          "name": "pauseSelect",
+          "file": null,
+          "fileData": {
+            "path": "gameSceneUI/pauseSelectUI/pauseSelectUI.json",
             "plistFile": null,
             "resourceType": 0
           }
