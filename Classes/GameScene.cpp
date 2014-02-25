@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "ClearScene.h"
 #include "Note.h"
+#include "MainScene.h"
 #include <fstream>
 
 const int TIME_PRELOAD = 60;//音符提前出现的时间
@@ -12,6 +13,7 @@ std::string FileName;//音乐文件名称
 std::ifstream fin;//输入流
 TextBMFont *labelInfo, *labelCombo, *labelJudge, *labelDifficulty;
 LoadingBar *loadingBar;
+Node* pauseNode;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -44,8 +46,9 @@ bool GameScene::init()
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	sceneNode->setLocalZOrder(-1);
 	addChild(sceneNode);
+
 	auto UINode = sceneNode->getChildByTag(10004);
-	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
 	auto UIlayer = UIComponent->getNode();
 	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
 	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
@@ -64,6 +67,19 @@ bool GameScene::init()
 	{
 		labelDifficulty->setText("HARD");
 	}
+
+	pauseNode = sceneNode->getChildByTag(10005);
+	auto pauseComponent = (cocostudio::ComRender*) pauseNode->getComponent("pauseSelectUI");
+	auto pauselayer = pauseComponent->getNode();
+	auto buttonRetry = dynamic_cast<Button*>(pauselayer->getChildByTag(GAMESCENE_RETRY));
+	buttonRetry->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	auto buttonReturn = dynamic_cast<Button*>(pauselayer->getChildByTag(GAMESCENE_RETURN));
+	buttonReturn->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	auto buttonSet = dynamic_cast<Button*>(pauselayer->getChildByTag(GAMESCENE_SET));
+	buttonSet->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	auto buttonStart = dynamic_cast<Button*>(pauselayer->getChildByTag(GAMESCENE_START));
+	buttonStart->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+
 	return true;
 }
 
@@ -226,16 +242,30 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == GAMESCENE_PAUSE)
 		{
-			if (!Director::getInstance()->isPaused())
-			{
-				Director::getInstance()->pause();
-				AudioEngine::getInstance()->pause();
-			}
-			else
-			{
-				Director::getInstance()->resume();
-				AudioEngine::getInstance()->resume();
-			}
+			Director::getInstance()->pause();
+			AudioEngine::getInstance()->pause();
+			pauseNode->setVisible(true);
+		}
+		else if (tag == GAMESCENE_START)
+		{
+			pauseNode->setVisible(false);
+			Director::getInstance()->resume();
+			AudioEngine::getInstance()->resume();
+		}
+		else if (tag == GAMESCENE_RETRY)
+		{
+			pauseNode->setVisible(false);
+			auto scene = GameScene::createScene(FileName);
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		}
+		else if (tag == GAMESCENE_SET)
+		{
+		}
+		else if (tag == GAMESCENE_RETURN)
+		{
+			pauseNode->setVisible(false);
+			auto scene = MainScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		}
 		break;
 	}

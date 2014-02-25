@@ -34,6 +34,11 @@ const int GAMESCENE_JUDGE = 7;
 const int GAMESCENE_INFO = 8;
 const int GAMESCENE_LOADINGBAR = 12;
 const int GAMESCENE_DIFFICULTY = 13;
+const int GAMESCENE_START = 14;
+const int GAMESCENE_RETRY = 15;
+const int GAMESCENE_SET = 16;
+const int GAMESCENE_RETURN = 17;
+
 //Ω·À„ΩÁ√ÊTag
 const int CLEARSCENE_PNO = 6;
 const int CLEARSCENE_GNO = 7;
