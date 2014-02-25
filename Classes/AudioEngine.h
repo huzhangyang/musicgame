@@ -10,11 +10,11 @@ using namespace FMOD;
 class AudioEngine{
 public:
 	static AudioEngine* getInstance();
-	
 	void create(const char* songname);
 	void createLoop(const char* songname);
 	void createNRT(const char* songname);
 	void play();
+	void playNRT();
 	void pause();
 	void resume();
 	void stop();
@@ -25,13 +25,15 @@ public:
 	int getLength();
 	int getPosition();
 	float getBPM();
-	float* getSpectrum();
+	float* getSpectrum();	
 private:
 	AudioEngine();
 	void init();
+	void initNRT();
 	System* system;
-	Sound* sound;
 	Channel* channel;
+	Sound* sound;
+	System* systemNRT;
 	FMOD_RESULT result;
 };
 #endif 

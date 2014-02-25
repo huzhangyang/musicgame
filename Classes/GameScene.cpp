@@ -86,7 +86,8 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	AudioEngine::getInstance()->create("music/test.mp3");
+	std::string musicname = "music/" + FileName + ".mp3";
+	AudioEngine::getInstance()->create(musicname.c_str());
 	fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开测试谱面
 	getNoteline();//读取第一行
 

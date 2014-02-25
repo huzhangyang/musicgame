@@ -22,6 +22,7 @@ AudioEngine* AudioEngine::getInstance()
 	{
 		engine = new AudioEngine();
 		engine->init();
+		engine->initNRT();
 	}
 	return engine;
 }
@@ -33,6 +34,13 @@ void AudioEngine::init()
 	result = system->init(1, FMOD_INIT_NORMAL, 0);
 }
 
+void AudioEngine::initNRT()
+{
+	channel = 0;
+	result = FMOD::System_Create(&systemNRT);
+	result = systemNRT->setOutput(FMOD_OUTPUTTYPE_NOSOUND_NRT);
+	result = systemNRT->init(1, FMOD_INIT_STREAM_FROM_UPDATE, 0);
+}
 
 void AudioEngine::create(const char* songname)
 {
@@ -79,19 +87,21 @@ void AudioEngine::createNRT(const char* songname)
 		memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
 		exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
 		exinfo.length = size;
-		result = system->createStream((const char*)data, FMOD_OPENMEMORY | FMOD_INIT_STREAM_FROM_UPDATE | FMOD_SOFTWARE,, &exinfo, &sound);
+		result = systemNRT->createStream((const char*)data, FMOD_OPENMEMORY | FMOD_SOFTWARE,, &exinfo, &soundNRT);
 	}
 #else
-	result = system->createStream(songname, FMOD_INIT_STREAM_FROM_UPDATE | FMOD_SOFTWARE, 0, &sound);
+	result = systemNRT->createStream(songname, FMOD_SOFTWARE, 0, &sound);
 #endif
-	result = system->setOutput(FMOD_OUTPUTTYPE_NOSOUND_NRT);
-	result = system->setDSPBufferSize(1024,4);
-	result = system->setSoftwareFormat(48000, FMOD_SOUND_FORMAT_PCMFLOAT, 0, 0, FMOD_DSP_RESAMPLER_LINEAR);
 }
 
 void AudioEngine::play()
 {
 	result = system->playSound(FMOD_CHANNEL_FREE, sound, false, &channel);
+}
+
+void AudioEngine::playNRT()
+{
+	result = systemNRT->playSound(FMOD_CHANNEL_FREE, sound, false, &channel);
 }
 
 void AudioEngine::pause()
@@ -117,7 +127,7 @@ void AudioEngine::close()
 
 void AudioEngine::update()
 {
-	system->update();
+	systemNRT->update();
 }
 
 bool AudioEngine::isPlaying()
