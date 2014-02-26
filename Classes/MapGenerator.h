@@ -8,7 +8,7 @@ class MapGenerator{
 public:
 	static void generateMap(const char* songname);
 private:
-	static bool hasBeat();
+	static int getBeat();
 	static void writeNoteline();
 };
 #endif 
