@@ -94,7 +94,6 @@ void MainScene::menuCloseCallback(Object* pSender)
 
 void MainScene::speak (std::string content)
 {
-	//labelword->setText(content.c_str);
 }
 
 void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
