@@ -1,9 +1,11 @@
 #include "MainScene.h"
 #include "GameScene.h"
 #include "MapGenerator.h"
+#include <iostream>
 
 const std::string FILENAME = "test";//曲子文件名
-Node* ExitNode;
+Node *ExitNode, *dialogNode;
+TextBMFont *labelword;
 
 Scene* MainScene::createScene()
 {
@@ -47,6 +49,8 @@ bool MainScene::init()
 	buttonHelp->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto buttonExit = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_EXIT));
 	buttonExit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto objectCharacter = dynamic_cast<ImageView*>(UIlayer->getChildByTag(MAINSCENE_CHARACTER));
+	objectCharacter->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 
 	ExitNode = sceneNode->getChildByTag(10004);
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
@@ -55,6 +59,12 @@ bool MainScene::init()
 	buttonCheck->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto buttonCross = dynamic_cast<Button*>(Exitlayer->getChildByTag(MAINSCENE_CROSSMARK));
 	buttonCross->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+
+	dialogNode = sceneNode->getChildByTag(10006);
+	auto dialogComponent = (cocostudio::ComRender*) dialogNode->getComponent("dialogBoxUI");
+	auto dialoglayer = dialogComponent->getNode();
+	auto objectBox = dynamic_cast<ImageView*>(dialoglayer->getChildByTag(MAINSCENE_BOX));
+	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 
 	return true;
 }
@@ -82,9 +92,14 @@ void MainScene::menuCloseCallback(Object* pSender)
 #endif
 }
 
+void MainScene::speak (std::string content)
+{
+	labelword->setText(content.c_str);
+}
+
 void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 {
-	auto button = dynamic_cast<Button*>(obj);
+	auto button = dynamic_cast<Widget*>(obj);
 	int tag = button->getTag();
 	switch (eventType)
 	{
@@ -118,13 +133,21 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		{
 			ExitNode->setVisible(true);
 		}
-		else if (tag == MAINSCENE_CHECKMARK)
+		else if (tag == MAINSCENE_CHECKMARK && ExitNode->isVisible())
 		{
 			Director::getInstance()->popScene();
 		}
-		else if (tag == MAINSCENE_CROSSMARK)
+		else if (tag == MAINSCENE_CROSSMARK && ExitNode->isVisible())
 		{
 			ExitNode->setVisible(false);
+		}
+		else if (tag == MAINSCENE_CHARACTER)
+		{
+			dialogNode->setVisible(true);
+		}
+		else if (tag == MAINSCENE_BOX)
+		{
+			dialogNode->setVisible(false);
 		}
 		break;
 	}

@@ -19,13 +19,16 @@ const int INTROSCENE_START = 3;
 const int MAINSCENE_OPTION = 7;
 const int MAINSCENE_HELP = 8;
 const int MAINSCENE_EXIT = 9;
+const int MAINSCENE_CHARACTER = 10;
 const int MAINSCENE_CAT = 11;
 const int MAINSCENE_SHELF = 12;
 const int MAINSCENE_TABLE = 13;
 const int MAINSCENE_PAPER = 14;
 const int MAINSCENE_CLOCK = 15;
+const int MAINSCENE_BOX = 2;
 const int MAINSCENE_CHECKMARK = 3;
 const int MAINSCENE_CROSSMARK = 4;
+const int MAINSCENE_WORD = 5;
 
 //”Œœ∑ΩÁ√ÊTag
 const int GAMESCENE_PAUSE = 5;
