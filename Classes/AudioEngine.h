@@ -13,27 +13,25 @@ public:
 	void create(const char* songname);
 	void createLoop(const char* songname);
 	void createNRT(const char* songname);
+	int getLength();
+	int getPosition();
+	float* getSpectrum(int FFTSize);
+	bool isPlaying();
 	void play();
 	void playNRT();
 	void pause();
+	void release();
 	void resume();
 	void stop();
-	void close();
 	void update();
-	bool isPlaying();
-	bool hasBeat();
-	int getLength();
-	int getPosition();
-	float getBPM();
-	float* getSpectrum();	
 private:
 	AudioEngine();
 	void init();
 	void initNRT();
 	System* system;
+	System* systemNRT;
 	Channel* channel;
 	Sound* sound;
-	System* systemNRT;
 	FMOD_RESULT result;
 };
 #endif 
