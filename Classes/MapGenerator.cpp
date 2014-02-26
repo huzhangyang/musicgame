@@ -1,8 +1,8 @@
 #include "MapGenerator.h"
 #include <fstream>
 
-const float BEAT_THRESHOLD = 1.2f;//拍点音量阀值
-const int BEAT_MINLASTTIME = 15;//最小节奏持续帧数
+const float BEAT_THRESHOLD = 0.02f;//拍点音量阀值
+const int BEAT_MINLASTTIME = 27;//最小节奏持续帧数
 const int FFT_SIZE = 128;
 
 FILE* fout;//输出文件
@@ -43,9 +43,10 @@ bool MapGenerator::hasBeat()
 	}
 	delete[] specData;
 	DBavg = DBavg / FFT_SIZE;
-	if ((DBmax / DBavg) >= BEAT_THRESHOLD && AudioEngine::getInstance()->getPosition() - beatLastTick >= BEAT_MINLASTTIME)
+	if ((DBmax / DBavg) >= 1.5 &&DBmax >= BEAT_THRESHOLD&&AudioEngine::getInstance()->getPosition() - beatLastTick >= BEAT_MINLASTTIME)
 	{
 		beatLastTick = AudioEngine::getInstance()->getPosition();
+		log("%f", DBmax);
 		return true;
 	}
 	return false;
@@ -54,9 +55,9 @@ bool MapGenerator::hasBeat()
 void MapGenerator::writeNoteline()
 {
 	int time = beatLastTick;
-	int difficulty = 0;
-	int type = 0;
-	int length = 0;
+	int difficulty = CCRANDOM_0_1() * 2;
+	int type = CCRANDOM_0_1() * 3;
+	int length = 60;
 	int posX = CCRANDOM_0_1() * 8 + 1;
 	int posY = CCRANDOM_0_1() * 8 + 1;
 	int desX = CCRANDOM_0_1() * 8 + 1;
