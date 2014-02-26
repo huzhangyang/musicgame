@@ -109,7 +109,8 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		}
 		else if (tag == MAINSCENE_PAPER)
 		{
-			MapGenerator::generateMap(FILENAME.c_str());
+			std::string musicname = "music/" + FILENAME + ".mp3";
+			MapGenerator::generateMap(musicname.c_str());
 		}
 		else if (tag == MAINSCENE_SHELF)
 		{

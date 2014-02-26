@@ -86,8 +86,11 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
-	AudioEngine::getInstance()->create("music/test.mp3");
-	fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开测试谱面
+	std::string musicname = "music/" + FileName + ".mp3";
+	AudioEngine::getInstance()->create(musicname.c_str());
+	//fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开手动生成测试谱面
+	std::string mapname = FileUtils::getInstance()->getWritablePath() + FileName + ".gnm";
+	fin.open(mapname);//打开自动生成测试谱面
 	getNoteline();//读取第一行
 
 	labelJudge->setText("Get Ready");
@@ -128,10 +131,6 @@ void GameScene::startGame(float dt)
 void GameScene::update(float dt)
 {
 	counter.frame++;
-	if (AudioEngine::getInstance()->hasBeat())
-		labelInfo->setText("BEAT");
-	else
-		labelInfo->setText("");
 	int percent = AudioEngine::getInstance()->getPosition() * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
 	while ((counter.frame + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
@@ -246,13 +245,13 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			AudioEngine::getInstance()->pause();
 			pauseNode->setVisible(true);
 		}
-		else if (tag == GAMESCENE_START)
+		else if (tag == GAMESCENE_START&&pauseNode->isVisible())
 		{
 			pauseNode->setVisible(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->resume();
 		}
-		else if (tag == GAMESCENE_RETRY)
+		else if (tag == GAMESCENE_RETRY&&pauseNode->isVisible())
 		{
 			pauseNode->setVisible(false);
 			Director::getInstance()->resume();
@@ -262,10 +261,10 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 
 		}
-		else if (tag == GAMESCENE_SET)
+		else if (tag == GAMESCENE_SET&&pauseNode->isVisible())
 		{
 		}
-		else if (tag == GAMESCENE_RETURN)
+		else if (tag == GAMESCENE_RETURN&&pauseNode->isVisible())
 		{
 			pauseNode->setVisible(false);
 			Director::getInstance()->resume();
