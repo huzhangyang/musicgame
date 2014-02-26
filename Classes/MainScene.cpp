@@ -4,8 +4,8 @@
 #include <iostream>
 
 const std::string FILENAME = "test";//曲子文件名
-Node *ExitNode, *dialogNode;
-TextBMFont *labelword;
+Node *ExitNode, *DialogNode;
+TextBMFont *labelWord;
 
 Scene* MainScene::createScene()
 {
@@ -60,10 +60,11 @@ bool MainScene::init()
 	auto buttonCross = dynamic_cast<Button*>(Exitlayer->getChildByTag(MAINSCENE_CROSSMARK));
 	buttonCross->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 
-	dialogNode = sceneNode->getChildByTag(10006);
-	auto dialogComponent = (cocostudio::ComRender*) dialogNode->getComponent("dialogBoxUI");
+	DialogNode = sceneNode->getChildByTag(10006);
+	auto dialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
 	auto dialoglayer = dialogComponent->getNode();
 	auto objectBox = dynamic_cast<ImageView*>(dialoglayer->getChildByTag(MAINSCENE_BOX));
+	labelWord = dynamic_cast<TextBMFont*>(dialoglayer->getChildByTag(MAINSCENE_WORD));
 	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 
 	return true;
@@ -92,36 +93,48 @@ void MainScene::menuCloseCallback(Object* pSender)
 #endif
 }
 
-void MainScene::speak (std::string content)
+void MainScene::speak(std::string content)
 {
-	labelword->setText(content.c_str);
+	DialogNode->setVisible(true);
+	labelWord->setText(content.c_str());
 }
 
 void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 {
-	auto button = dynamic_cast<Widget*>(obj);
-	int tag = button->getTag();
+	auto widget = dynamic_cast<Widget*>(obj);
+	int tag = widget->getTag();
 	switch (eventType)
 	{
 	case TouchEventType::TOUCH_EVENT_ENDED:
 		if (tag == MAINSCENE_TABLE)
 		{
+			this->speak("我只是桌子不要碰我啊尼玛");
 		}
 		else if (tag == MAINSCENE_PAPER)
 		{
 			std::string musicname = "music/" + FILENAME + ".mp3";
 			MapGenerator::generateMap(musicname.c_str());
+			this->speak("呼，完成了！");
 		}
 		else if (tag == MAINSCENE_SHELF)
 		{
-			auto scene = GameScene::createScene(FILENAME);
-			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			std::string mapname = FileUtils::getInstance()->getWritablePath() + FILENAME + ".gnm";
+			if (FileUtils::getInstance()->isFileExist(mapname))
+			{
+				auto scene = GameScene::createScene(FILENAME);
+				Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			}
+			else
+				this->speak("好像还没有作曲吧…");
+
 		}
 		else if (tag == MAINSCENE_CLOCK)
 		{
+			this->speak("时间紧迫啊…");
 		}
 		else if (tag == MAINSCENE_CAT)
 		{
+			this->speak("喵");
 		}
 		else if (tag == MAINSCENE_OPTION)
 		{
@@ -144,11 +157,11 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		}
 		else if (tag == MAINSCENE_CHARACTER)
 		{
-			dialogNode->setVisible(true);
+			this->speak("道姐威武~");
 		}
-		else if (tag == MAINSCENE_BOX)
+		else if (tag == MAINSCENE_BOX && DialogNode->isVisible())
 		{
-			dialogNode->setVisible(false);
+			DialogNode->setVisible(false);
 		}
 		break;
 	}

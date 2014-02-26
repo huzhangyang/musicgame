@@ -19,10 +19,10 @@ public:
 	virtual void onEnterTransitionDidFinish();
 	virtual void onExitTransitionDidStart();
 	void menuCloseCallback(Object* pSender);
-	void speak(std::string content);
 	CREATE_FUNC(MainScene);
 private:
 	void touchEvent(Object* obj, TouchEventType eventType);
+	void speak(std::string content);
 };
 
 #endif 
