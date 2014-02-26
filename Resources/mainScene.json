@@ -78,7 +78,7 @@
       "scaley": 1,
       "visible": 0,
       "x": 0,
-      "y": 0,
+      "y": -25,
       "zorder": 1,
       "gameobjects": [],
       "components": [

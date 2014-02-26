@@ -33,15 +33,15 @@ bool MainScene::init()
 	auto UINode = sceneNode->getChildByTag(10005);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("mainSceneUI");
 	auto UIlayer = UIComponent->getNode();
-	auto objectTable = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_TABLE));
+	auto objectTable = dynamic_cast<ImageView*>(UIlayer->getChildByTag(MAINSCENE_TABLE));
 	objectTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto objectPaper = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_PAPER));
 	objectPaper->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto objectShelf = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_SHELF));
 	objectShelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	auto objectClock = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_CLOCK));
+	auto objectClock = dynamic_cast<ImageView*>(UIlayer->getChildByTag(MAINSCENE_CLOCK));
 	objectClock->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	auto objectCat = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_CAT));
+	auto objectCat = dynamic_cast<ImageView*>(UIlayer->getChildByTag(MAINSCENE_CAT));
 	objectCat->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	auto buttonOption = dynamic_cast<Button*>(UIlayer->getChildByTag(MAINSCENE_OPTION));
 	buttonOption->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
@@ -94,7 +94,7 @@ void MainScene::menuCloseCallback(Object* pSender)
 
 void MainScene::speak (std::string content)
 {
-	labelword->setText(content.c_str);
+	//labelword->setText(content.c_str);
 }
 
 void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
