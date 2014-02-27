@@ -179,7 +179,7 @@
           "x": 180,
           "y": 635,
           "fileNameData": {
-            "path": "numberfont.fnt",
+            "path": "../fonts/numbers.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -225,7 +225,7 @@
           "x": 180,
           "y": 685,
           "fileNameData": {
-            "path": "gamescenefont.fnt",
+            "path": "../fonts/english.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -271,7 +271,7 @@
           "x": 640,
           "y": 662,
           "fileNameData": {
-            "path": "songinformation.fnt",
+            "path": "../fonts/chinese.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -476,11 +476,11 @@
           "x": 1031,
           "y": 651,
           "fileNameData": {
-            "path": "gamescenefont.fnt",
+            "path": "../fonts/english.fnt",
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "CHALLENGING"
+          "text": "DIFFICULTY"
         }
       }
     ],

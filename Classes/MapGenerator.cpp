@@ -16,7 +16,7 @@ void MapGenerator::generateMap(const char* songname)
 	float* specData = new float[FFT_SIZE];
 	std::string mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
-	fopen_s(&fout, mapname.c_str(), "w");//打开测试谱面
+	fout=fopen(mapname.c_str(), "w");//打开测试谱面
 	while (AudioEngine::getInstance()->isPlaying())
 	{
 		AudioEngine::getInstance()->update();
@@ -80,10 +80,10 @@ void MapGenerator::writeNoteline()
 	int posY = CCRANDOM_0_1() * 8 + 1;
 	int desX = CCRANDOM_0_1() * 8 + 1;
 	int desY = CCRANDOM_0_1() * 8 + 1;
-	fprintf_s(fout, "%.5d,", time);
-	fprintf_s(fout, "%.1d,", difficulty);
-	fprintf_s(fout, "%.1d,", type);
-	fprintf_s(fout, "%.3d,", length);
-	fprintf_s(fout, "%.1d%.1d,", posX, posY);
-	fprintf_s(fout, "%.1d%.1d\n", desX, desY);
+	fprintf(fout, "%.5d,", time);
+	fprintf(fout, "%.1d,", difficulty);
+	fprintf(fout, "%.1d,", type);
+	fprintf(fout, "%.3d,", length);
+	fprintf(fout, "%.1d%.1d,", posX, posY);
+	fprintf(fout, "%.1d%.1d\n", desX, desY);
 }

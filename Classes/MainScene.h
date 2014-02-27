@@ -19,10 +19,14 @@ public:
 	virtual void onEnterTransitionDidFinish();
 	virtual void onExitTransitionDidStart();
 	void menuCloseCallback(Object* pSender);
-	void speak(std::string content);
 	CREATE_FUNC(MainScene);
 private:
 	void touchEvent(Object* obj, TouchEventType eventType);
+	void createDialog(std::string key);
+	Node *UINode, *ExitNode, *DialogNode;
+	TextBMFont *labelWord;
+	ImageView *objectBox;
+	Button *buttonOption, *buttonHelp, *buttonExit, *buttonCheck, *buttonCross;
 };
 
 #endif 

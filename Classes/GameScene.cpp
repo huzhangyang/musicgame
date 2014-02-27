@@ -4,16 +4,12 @@
 #include "MainScene.h"
 #include <fstream>
 
-const int TIME_PRELOAD = 60;//音符提前出现的时间
-Noteline noteline;
-Counter counter;
-
 int difficulty;//当前难度
 std::string FileName;//音乐文件名称
 std::ifstream fin;//输入流
-TextBMFont *labelInfo, *labelCombo, *labelJudge, *labelDifficulty;
-LoadingBar *loadingBar;
-Node *pauseNode, *UINode;
+Noteline noteline;
+Counter counter;
+TextBMFont *labelJudge, *labelCombo;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -47,16 +43,31 @@ bool GameScene::init()
 	addChild(sceneNode);
 
 	UINode = sceneNode->getChildByTag(10004);
+	PauseNode = sceneNode->getChildByTag(10005);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
+	auto PauseComponent = (cocostudio::ComRender*) PauseNode->getComponent("pauseSelectUI");
 	auto UIlayer = UIComponent->getNode();
-	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
-	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	auto Pauselayer = PauseComponent->getNode();
+	buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
+	buttonRetry = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETRY));
+	buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
+	buttonOption= dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
+	buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
 	labelDifficulty = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
 	loadingBar = dynamic_cast<LoadingBar*>(UIlayer->getChildByTag(GAMESCENE_LOADINGBAR));
-	labelInfo->setText(FileName.c_str());
+	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	buttonRetry->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	buttonReturn->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	buttonOption->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	buttonResume->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	buttonRetry->setEnabled(false);
+	buttonReturn->setEnabled(false);
+	buttonOption->setEnabled(false);
+	buttonResume->setEnabled(false);
+	labelInfo->setText(FileName.c_str());//显示文件名
 	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
 	{
@@ -66,19 +77,6 @@ bool GameScene::init()
 	{
 		labelDifficulty->setText("HARD");
 	}
-
-	pauseNode = sceneNode->getChildByTag(10005);
-	auto pauseComponent = (cocostudio::ComRender*) pauseNode->getComponent("pauseSelectUI");
-	auto pauselayer = pauseComponent->getNode();
-	auto buttonRetry = dynamic_cast<Button*>(pauselayer->getChildByTag(GAMESCENE_RETRY));
-	buttonRetry->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	auto buttonReturn = dynamic_cast<Button*>(pauselayer->getChildByTag(GAMESCENE_RETURN));
-	buttonReturn->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	auto buttonSet = dynamic_cast<Button*>(pauselayer->getChildByTag(GAMESCENE_SET));
-	buttonSet->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	auto buttonStart = dynamic_cast<Button*>(pauselayer->getChildByTag(GAMESCENE_START));
-	buttonStart->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-
 	return true;
 }
 
@@ -243,17 +241,32 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		{
 			Director::getInstance()->pause();
 			AudioEngine::getInstance()->pause();
-			pauseNode->setVisible(true);
+			PauseNode->setVisible(true);
+			buttonPause->setTouchEnabled(false);
+			buttonRetry->setEnabled(true);
+			buttonReturn->setEnabled(true);
+			buttonOption->setEnabled(true);
+			buttonResume->setEnabled(true);
 		}
-		else if (tag == GAMESCENE_START&&pauseNode->isVisible())
+		else if (tag == GAMESCENE_RESUME)
 		{
-			pauseNode->setVisible(false);
+			PauseNode->setVisible(false);
+			buttonPause->setTouchEnabled(true);
+			buttonRetry->setEnabled(false);
+			buttonReturn->setEnabled(false);
+			buttonOption->setEnabled(false);
+			buttonResume->setEnabled(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->resume();
 		}
-		else if (tag == GAMESCENE_RETRY&&pauseNode->isVisible())
+		else if (tag == GAMESCENE_RETRY)
 		{
-			pauseNode->setVisible(false);
+			PauseNode->setVisible(false);
+			buttonPause->setTouchEnabled(true);
+			buttonRetry->setEnabled(false);
+			buttonReturn->setEnabled(false);
+			buttonOption->setEnabled(false);
+			buttonResume->setEnabled(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
@@ -261,12 +274,17 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 
 		}
-		else if (tag == GAMESCENE_SET&&pauseNode->isVisible())
+		else if (tag == GAMESCENE_OPTION)
 		{
 		}
-		else if (tag == GAMESCENE_RETURN&&pauseNode->isVisible())
+		else if (tag == GAMESCENE_RETURN)
 		{
-			pauseNode->setVisible(false);
+			PauseNode->setVisible(false);
+			buttonPause->setTouchEnabled(true);
+			buttonRetry->setEnabled(false);
+			buttonReturn->setEnabled(false);
+			buttonOption->setEnabled(false);
+			buttonResume->setEnabled(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
