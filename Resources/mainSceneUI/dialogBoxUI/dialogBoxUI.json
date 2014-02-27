@@ -107,7 +107,7 @@
           "x": 827,
           "y": 178,
           "fileNameData": {
-            "path": "songinformation.fnt",
+            "path": "../../fonts/chinese.fnt",
             "plistFile": null,
             "resourceType": 0
           },
