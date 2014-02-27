@@ -31,7 +31,7 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->length = length;
 	this->status = UNTOUCHED_UNACTIVATED;
 	auto noteListener = EventListenerTouchOneByOne::create();
-	//noteListener->setSwallowTouches(true);//菜单layer做好之前先不swallow
+	noteListener->setSwallowTouches(true);//一次触摸只对一个有效
 	switch (type)
 	{
 	case CLICK:

@@ -32,7 +32,7 @@ private:
 	TextBMFont *labelInfo, *labelDifficulty;
 	LoadingBar *loadingBar;
 	Node *UINode, *PauseNode;
-	Button *buttonRetry, *buttonResume, *buttonReturn, *buttonOption;
+	Button *buttonPause, *buttonRetry, *buttonResume, *buttonReturn, *buttonOption;
 };
 
 struct Noteline//ÇúÆ×½á¹¹

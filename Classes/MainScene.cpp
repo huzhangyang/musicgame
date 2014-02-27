@@ -41,9 +41,9 @@ bool MainScene::init()
 	auto objectCat = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_CAT));
 	auto objectCharacter = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CHARACTER));
 	objectBox = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_BOX));
-	auto buttonOption = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_OPTION));
-	auto buttonHelp = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_HELP));
-	auto buttonExit = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_EXIT));
+	buttonOption = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_OPTION));
+	buttonHelp = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_HELP));
+	buttonExit = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_EXIT));
 	buttonCheck = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CHECKMARK));
 	buttonCross = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CROSSMARK));
 	labelWord = dynamic_cast<TextBMFont*>(DialogLayer->getChildByTag(MAINSCENE_WORD));
@@ -135,6 +135,9 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			break;
 		case MAINSCENE_EXIT:
 			ExitNode->setVisible(true);
+			buttonOption->setTouchEnabled(false);
+			buttonHelp->setTouchEnabled(false);
+			buttonExit->setTouchEnabled(false);
 			buttonCheck->setEnabled(true);
 			buttonCross->setEnabled(true);
 			break;
@@ -143,6 +146,9 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			break;
 		case MAINSCENE_CROSSMARK:
 			ExitNode->setVisible(false);
+			buttonOption->setTouchEnabled(true);
+			buttonHelp->setTouchEnabled(true);
+			buttonExit->setTouchEnabled(true);
 			buttonCheck->setEnabled(false);
 			buttonCross->setEnabled(false);
 			break;

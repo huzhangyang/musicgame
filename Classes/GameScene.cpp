@@ -48,11 +48,11 @@ bool GameScene::init()
 	auto PauseComponent = (cocostudio::ComRender*) PauseNode->getComponent("pauseSelectUI");
 	auto UIlayer = UIComponent->getNode();
 	auto Pauselayer = PauseComponent->getNode();
-	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
-	auto buttonRetry = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETRY));
-	auto buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
-	auto buttonOption= dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
-	auto buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
+	buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
+	buttonRetry = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETRY));
+	buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
+	buttonOption= dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
+	buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
@@ -242,6 +242,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->pause();
 			AudioEngine::getInstance()->pause();
 			PauseNode->setVisible(true);
+			buttonPause->setTouchEnabled(false);
 			buttonRetry->setEnabled(true);
 			buttonReturn->setEnabled(true);
 			buttonOption->setEnabled(true);
@@ -250,6 +251,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == GAMESCENE_RESUME)
 		{
 			PauseNode->setVisible(false);
+			buttonPause->setTouchEnabled(true);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonOption->setEnabled(false);
@@ -260,6 +262,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == GAMESCENE_RETRY)
 		{
 			PauseNode->setVisible(false);
+			buttonPause->setTouchEnabled(true);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonOption->setEnabled(false);
@@ -277,6 +280,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == GAMESCENE_RETURN)
 		{
 			PauseNode->setVisible(false);
+			buttonPause->setTouchEnabled(true);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonOption->setEnabled(false);

@@ -26,7 +26,7 @@ private:
 	Node *UINode, *ExitNode, *DialogNode;
 	TextBMFont *labelWord;
 	ImageView *objectBox;
-	Button *buttonCheck, *buttonCross;
+	Button *buttonOption, *buttonHelp, *buttonExit, *buttonCheck, *buttonCross;
 };
 
 #endif 
