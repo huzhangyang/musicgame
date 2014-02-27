@@ -39,7 +39,6 @@ void MapGenerator::generateMap(const char* songname)
 	}
 	fclose(fout);
 	delete[] specData;
-	log("%s", "finished");
 }
 
 int MapGenerator::getBeat()

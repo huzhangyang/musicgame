@@ -90,7 +90,7 @@ void MainScene::menuCloseCallback(Object* pSender)
 
 void MainScene::createDialog(std::string key)
 {
-	ValueMap strings = FileUtils::getInstance()->getValueMapFromFile("fonts/strings.xml");
+	ValueMap strings = FileUtils::getInstance()->getValueMapFromFile("strings.xml");
 	DialogNode->setVisible(true);
 	objectBox->setEnabled(true);
 	labelWord->setText(strings.at(key).asString().c_str());
