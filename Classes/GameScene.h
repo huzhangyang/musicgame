@@ -29,6 +29,10 @@ private:
 	void addArrow(int posX, int posY, int desX, int desY);//为滑动note生成箭头和目标点
 	void getNoteline();//得到新的一行谱面
 	void touchEvent(Object* obj, TouchEventType eventType);
+	TextBMFont *labelInfo, *labelDifficulty;
+	LoadingBar *loadingBar;
+	Node *UINode, *PauseNode;
+	Button *buttonRetry, *buttonResume, *buttonReturn, *buttonOption;
 };
 
 struct Noteline//曲谱结构

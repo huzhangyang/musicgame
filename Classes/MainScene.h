@@ -22,7 +22,11 @@ public:
 	CREATE_FUNC(MainScene);
 private:
 	void touchEvent(Object* obj, TouchEventType eventType);
-	void speak(std::string content);
+	void createDialog(std::string key);
+	Node *UINode, *ExitNode, *DialogNode;
+	TextBMFont *labelWord;
+	ImageView *objectBox;
+	Button *buttonCheck, *buttonCross;
 };
 
 #endif 

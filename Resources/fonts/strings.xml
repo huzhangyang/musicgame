@@ -1,0 +1,14 @@
+<dict>  
+    <key>dialogCharacter</key>  
+    <string>道姐威武~</string>  
+    <key>dialogCat</key>  
+    <string>喵~</string>  
+        <key>dialogTable</key>  
+    <string>我只是桌子不要碰我啊尼玛</string>  
+        <key>dialogClock</key>  
+    <string>时间紧迫啊…</string>  
+        <key>dialogNoMap</key>  
+    <string>没有谱子，没法弹奏啊。</string>  
+        <key>dialogMapCreated</key>  
+    <string>呼，完成了!</string>  
+</dict>  

@@ -1,8 +1,6 @@
 #include "Note.h"
 #include "GameScene.h"
 
-const int TIME_PRELOAD = 60;//音符提前出现的时间
-
 Note::Note()
 {
 }
