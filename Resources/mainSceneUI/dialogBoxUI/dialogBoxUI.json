@@ -107,11 +107,11 @@
           "x": 827,
           "y": 178,
           "fileNameData": {
-            "path": "../../fonts/chinese.fnt",
+            "path": "songinformation.fnt",
             "plistFile": null,
             "resourceType": 0
           },
-          "text": ""
+          "text": "啦啦啦"
         }
       }
     ],

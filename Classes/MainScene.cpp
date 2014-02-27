@@ -34,11 +34,11 @@ bool MainScene::init()
 	auto UILayer = UIComponent->getNode();
 	auto ExitLayer = ExitComponent->getNode();
 	auto DialogLayer = DialogComponent->getNode();
-	auto objectTable = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_TABLE));
+	auto objectTable = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_TABLE));
 	auto objectPaper = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_PAPER));
 	auto objectShelf = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_SHELF));
-	auto objectClock = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_CLOCK));
-	auto objectCat = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_CAT));
+	auto objectClock = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CLOCK));
+	auto objectCat = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CAT));
 	auto objectCharacter = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CHARACTER));
 	objectBox = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_BOX));
 	buttonOption = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_OPTION));

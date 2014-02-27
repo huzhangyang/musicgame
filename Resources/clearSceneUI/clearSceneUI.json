@@ -107,7 +107,7 @@
           "x": 381,
           "y": 614,
           "fileNameData": {
-            "path": "../fonts/english.fnt",
+            "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -153,7 +153,7 @@
           "x": 752,
           "y": 614,
           "fileNameData": {
-            "path": "../fonts/english.fnt",
+            "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -199,7 +199,7 @@
           "x": 1071,
           "y": 615,
           "fileNameData": {
-            "path": "../fonts/english.fnt",
+            "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -245,7 +245,7 @@
           "x": 576,
           "y": 620,
           "fileNameData": {
-            "path": "../fonts/numbers.fnt",
+            "path": "numberfont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -291,7 +291,7 @@
           "x": 899,
           "y": 620,
           "fileNameData": {
-            "path": "../fonts/numbers.fnt",
+            "path": "numberfont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -337,7 +337,7 @@
           "x": 1209,
           "y": 620,
           "fileNameData": {
-            "path": "../fonts/numbers.fnt",
+            "path": "numberfont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -383,7 +383,7 @@
           "x": 522,
           "y": 464,
           "fileNameData": {
-            "path": "../fonts/english.fnt",
+            "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -429,7 +429,7 @@
           "x": 961,
           "y": 464,
           "fileNameData": {
-            "path": "../fonts/english.fnt",
+            "path": "gamescenefont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -475,7 +475,7 @@
           "x": 678,
           "y": 469,
           "fileNameData": {
-            "path": "../fonts/numbers.fnt",
+            "path": "numberfont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -521,7 +521,7 @@
           "x": 1207,
           "y": 469,
           "fileNameData": {
-            "path": "../fonts/numbers.fnt",
+            "path": "numberfont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
@@ -567,7 +567,7 @@
           "x": 968,
           "y": 323,
           "fileNameData": {
-            "path": "../fonts/numbers.fnt",
+            "path": "numberfont.fnt",
             "plistFile": null,
             "resourceType": 0
           },
