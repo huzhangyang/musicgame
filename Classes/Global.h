@@ -41,11 +41,11 @@ const int GAMESCENE_RETRY = 15;
 const int GAMESCENE_OPTION = 16;
 const int GAMESCENE_RETURN = 17;
 //Ω·À„ΩÁ√ÊTag
-const int CLEARSCENE_PNO = 6;
-const int CLEARSCENE_GNO = 7;
-const int CLEARSCENE_MNO = 8;
-const int CLEARSCENE_TNO = 11;
-const int CLEARSCENE_COMPLETE = 13;
+const int CLEARSCENE_TNO = 3;
+const int CLEARSCENE_PNO = 4;
+const int CLEARSCENE_GNO = 5;
+const int CLEARSCENE_MNO = 6;
+const int CLEARSCENE_COMPLETE = 7;
 const int CLEARSCENE_INFO = 12;
 const int CLEARSCENE_RETRY = 14;
 const int CLEARSCENE_RETURN = 15;
