@@ -232,6 +232,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();
+	Scene* scene;
 	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
 		switch (tag)
@@ -266,7 +267,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
-			auto scene = GameScene::createScene(FileName);
+			scene = GameScene::createScene(FileName);
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			break;
 		case GAMESCENE_OPTION:
@@ -281,7 +282,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
-			auto scene = MainScene::createScene();
+			scene = MainScene::createScene();
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
 			break;
 		}
