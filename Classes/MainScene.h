@@ -25,8 +25,8 @@ private:
 	void createDialog(std::string key);
 	Node *UINode, *ExitNode, *DialogNode;
 	TextBMFont *labelWord;
-	ImageView *objectBox;
-	Button *buttonOption, *buttonHelp, *buttonExit, *buttonCheck, *buttonCross;
+	ImageView *objectBox, *objectDialog;
+	Button *buttonCheck, *buttonCross;
 };
 
 #endif 

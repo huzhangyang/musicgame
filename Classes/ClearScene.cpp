@@ -36,7 +36,6 @@ bool ClearScene::init()
 	auto labelGood = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_GNO));
 	auto labelMiss = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_MNO));
 	auto labelTotal = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
-	auto labelMaxCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
 	auto labelComplete = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_COMPLETE));
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
@@ -49,13 +48,10 @@ bool ClearScene::init()
 	labelMiss->setText(temp);
 	sprintf(temp, "%d", counter.total);
 	labelTotal->setText(temp);
-	sprintf(temp, "%d", counter.maxcombo);
-	labelMaxCombo->setText(temp);
-	float completePercent = (float)counter.perfect / (float)counter.total * 0.8;
-	completePercent += (float)counter.good / (float)counter.total * 0.4;
-	completePercent += (float)counter.maxcombo / (float)counter.total * 0.2;
+	float completePercent = (float)counter.perfect / (float)counter.total * 1.0;
+	completePercent += (float)counter.good / (float)counter.total * 0.5;
 	sprintf(temp, "%.2f", completePercent * 100);
-	labelComplete->setText(strcat(temp, "% Complete"));
+	labelComplete->setText(strcat(temp, "%"));
 	return true;
 }
 
@@ -92,12 +88,12 @@ void ClearScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		if (tag == CLEARSCENE_RETRY)
 		{
 			auto scene = GameScene::createScene(FileName);
-			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,true));
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 		}
 		else if (tag == CLEARSCENE_RETURN)
 		{
 			auto scene = MainScene::createScene();
-			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,false));
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
 		}
 		break;
 	}

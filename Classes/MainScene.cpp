@@ -40,13 +40,16 @@ bool MainScene::init()
 	auto objectClock = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CLOCK));
 	auto objectCat = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CAT));
 	auto objectCharacter = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CHARACTER));
-	objectBox = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_BOX));
-	buttonOption = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_OPTION));
-	buttonHelp = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_HELP));
-	buttonExit = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_EXIT));
+	auto buttonOption = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_OPTION));
+	auto buttonHelp = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_HELP));
+	auto buttonExit = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_EXIT));
+	objectBox = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_BOX));
 	buttonCheck = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CHECKMARK));
 	buttonCross = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CROSSMARK));
+	objectDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG));
 	labelWord = dynamic_cast<TextBMFont*>(DialogLayer->getChildByTag(MAINSCENE_WORD));
+	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	objectDialog->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectPaper->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectShelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
@@ -60,6 +63,7 @@ bool MainScene::init()
 	buttonCross->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectBox->setEnabled(false);
+	objectDialog->setEnabled(false);
 	buttonCheck->setEnabled(false);
 	buttonCross->setEnabled(false);
 	return true;
@@ -92,7 +96,7 @@ void MainScene::createDialog(std::string key)
 {
 	ValueMap strings = FileUtils::getInstance()->getValueMapFromFile("strings.xml");
 	DialogNode->setVisible(true);
-	objectBox->setEnabled(true);
+	objectDialog->setEnabled(true);
 	labelWord->setText(strings.at(key).asString().c_str());
 }
 
@@ -117,7 +121,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			if (FileUtils::getInstance()->isFileExist(mapname))
 			{
 				auto scene = GameScene::createScene(FILENAME);
-				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,true));
+				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			}
 			else
 				this->createDialog("dialogNoMap");
@@ -135,9 +139,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			break;
 		case MAINSCENE_EXIT:
 			ExitNode->setVisible(true);
-			buttonOption->setTouchEnabled(false);
-			buttonHelp->setTouchEnabled(false);
-			buttonExit->setTouchEnabled(false);
+			objectBox->setEnabled(true);
 			buttonCheck->setEnabled(true);
 			buttonCross->setEnabled(true);
 			break;
@@ -146,18 +148,16 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			break;
 		case MAINSCENE_CROSSMARK:
 			ExitNode->setVisible(false);
-			buttonOption->setTouchEnabled(true);
-			buttonHelp->setTouchEnabled(true);
-			buttonExit->setTouchEnabled(true);
+			objectBox->setEnabled(false);
 			buttonCheck->setEnabled(false);
 			buttonCross->setEnabled(false);
 			break;
 		case MAINSCENE_CHARACTER:
 			this->createDialog("dialogCharacter");
 			break;
-		case MAINSCENE_BOX:
+		case MAINSCENE_DIALOG:
 			DialogNode->setVisible(false);
-			objectBox->setEnabled(false);
+			objectDialog->setEnabled(false);
 			break;
 		}
 	}

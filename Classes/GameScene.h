@@ -31,8 +31,9 @@ private:
 	void touchEvent(Object* obj, TouchEventType eventType);
 	TextBMFont *labelInfo, *labelDifficulty;
 	LoadingBar *loadingBar;
+	ImageView *bgPause;
 	Node *UINode, *PauseNode;
-	Button *buttonPause, *buttonRetry, *buttonResume, *buttonReturn, *buttonOption;
+	Button *buttonRetry, *buttonResume, *buttonReturn, *buttonOption;
 };
 
 struct Noteline//ÇúÆ×½á¹¹

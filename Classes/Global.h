@@ -9,7 +9,6 @@ struct Counter
 	int good;//普通击中数
 	int miss;//错过数
 	int combo;//连击数
-	int maxcombo;//最大连击数
 };
 extern Counter counter;
 //开始界面Tag
@@ -27,6 +26,7 @@ const int MAINSCENE_CLOCK = 15;
 const int MAINSCENE_BOX = 2;
 const int MAINSCENE_CHECKMARK = 3;
 const int MAINSCENE_CROSSMARK = 4;
+const int MAINSCENE_DIALOG = 2;
 const int MAINSCENE_WORD = 5;
 //游戏界面Tag
 const int GAMESCENE_PAUSE = 5;
@@ -35,6 +35,7 @@ const int GAMESCENE_JUDGE = 7;
 const int GAMESCENE_INFO = 8;
 const int GAMESCENE_LOADINGBAR = 12;
 const int GAMESCENE_DIFFICULTY = 13;
+const int GAMESCENE_PAUSEBG = 3;
 const int GAMESCENE_RESUME = 14;
 const int GAMESCENE_RETRY = 15;
 const int GAMESCENE_OPTION = 16;

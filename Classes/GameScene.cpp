@@ -24,7 +24,6 @@ Scene* GameScene::createScene(std::string filename)
 	counter.good = 0;
 	counter.miss = 0;
 	counter.combo = 0;
-	counter.maxcombo = 0;
 	return scene;
 }
 
@@ -48,21 +47,24 @@ bool GameScene::init()
 	auto PauseComponent = (cocostudio::ComRender*) PauseNode->getComponent("pauseSelectUI");
 	auto UIlayer = UIComponent->getNode();
 	auto Pauselayer = PauseComponent->getNode();
-	buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
+	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
+	bgPause = dynamic_cast<ImageView*>(Pauselayer->getChildByTag(GAMESCENE_PAUSE));
 	buttonRetry = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETRY));
 	buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
-	buttonOption= dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
+	buttonOption = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
 	buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
 	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
 	labelDifficulty = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
 	loadingBar = dynamic_cast<LoadingBar*>(UIlayer->getChildByTag(GAMESCENE_LOADINGBAR));
+	bgPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonRetry->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonOption->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonResume->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	bgPause->setEnabled(false);
 	buttonRetry->setEnabled(false);
 	buttonReturn->setEnabled(false);
 	buttonOption->setEnabled(false);
@@ -143,8 +145,6 @@ void GameScene::update(float dt)
 	{
 		this->unscheduleUpdate();
 		fin.close();
-		if (counter.maxcombo == 0 && counter.miss != counter.total)
-			counter.maxcombo = counter.total;//È«³ÌÎÞmiss
 		auto scene = ClearScene::createScene(FileName);
 		Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 	}
@@ -204,8 +204,6 @@ void GameScene::judgeNote(int judge)
 	switch (judge)
 	{
 	case 0:
-		if (counter.maxcombo < counter.combo)
-			counter.maxcombo = counter.combo;
 		counter.combo = 0;
 		counter.miss++;
 		labelJudge->setText("Miss!");
@@ -242,7 +240,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->pause();
 			AudioEngine::getInstance()->pause();
 			PauseNode->setVisible(true);
-			buttonPause->setTouchEnabled(false);
+			bgPause->setEnabled(true);
 			buttonRetry->setEnabled(true);
 			buttonReturn->setEnabled(true);
 			buttonOption->setEnabled(true);
@@ -251,7 +249,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == GAMESCENE_RESUME)
 		{
 			PauseNode->setVisible(false);
-			buttonPause->setTouchEnabled(true);
+			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonOption->setEnabled(false);
@@ -262,7 +260,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == GAMESCENE_RETRY)
 		{
 			PauseNode->setVisible(false);
-			buttonPause->setTouchEnabled(true);
+			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonOption->setEnabled(false);
@@ -271,7 +269,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
 			auto scene = GameScene::createScene(FileName);
-			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,true));
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 
 		}
 		else if (tag == GAMESCENE_OPTION)
@@ -280,7 +278,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		else if (tag == GAMESCENE_RETURN)
 		{
 			PauseNode->setVisible(false);
-			buttonPause->setTouchEnabled(true);
+			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonOption->setEnabled(false);
@@ -289,7 +287,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
 			auto scene = MainScene::createScene();
-			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,false));
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
 		}
 		break;
 	}
