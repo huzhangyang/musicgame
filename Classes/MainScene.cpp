@@ -43,10 +43,10 @@ bool MainScene::init()
 	auto buttonOption = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_OPTION));
 	auto buttonHelp = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_HELP));
 	auto buttonExit = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_EXIT));
-	objectBox = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_BOX));
+	objectBox = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_EXITBG));
 	buttonCheck = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CHECKMARK));
 	buttonCross = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CROSSMARK));
-	objectDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG));
+	objectDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOGBG));
 	labelWord = dynamic_cast<TextBMFont*>(DialogLayer->getChildByTag(MAINSCENE_WORD));
 	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectDialog->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
@@ -155,7 +155,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		case MAINSCENE_CHARACTER:
 			this->createDialog("dialogCharacter");
 			break;
-		case MAINSCENE_DIALOG:
+		case MAINSCENE_DIALOGBG:
 			DialogNode->setVisible(false);
 			objectDialog->setEnabled(false);
 			break;

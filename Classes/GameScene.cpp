@@ -48,7 +48,7 @@ bool GameScene::init()
 	auto UIlayer = UIComponent->getNode();
 	auto Pauselayer = PauseComponent->getNode();
 	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
-	bgPause = dynamic_cast<ImageView*>(Pauselayer->getChildByTag(GAMESCENE_PAUSE));
+	bgPause = dynamic_cast<ImageView*>(Pauselayer->getChildByTag(GAMESCENE_PAUSEBG));
 	buttonRetry = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETRY));
 	buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
 	buttonOption = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
@@ -230,13 +230,13 @@ void GameScene::judgeNote(int judge)
 
 void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 {
-	auto button = dynamic_cast<Button*>(obj);
-	int tag = button->getTag();
-	switch (eventType)
+	auto widget = dynamic_cast<Widget*>(obj);
+	int tag = widget->getTag();
+	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
-	case TouchEventType::TOUCH_EVENT_ENDED:
-		if (tag == GAMESCENE_PAUSE)
+		switch (tag)
 		{
+		case  GAMESCENE_PAUSE:
 			Director::getInstance()->pause();
 			AudioEngine::getInstance()->pause();
 			PauseNode->setVisible(true);
@@ -245,9 +245,8 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			buttonReturn->setEnabled(true);
 			buttonOption->setEnabled(true);
 			buttonResume->setEnabled(true);
-		}
-		else if (tag == GAMESCENE_RESUME)
-		{
+			break;
+		case GAMESCENE_RESUME:
 			PauseNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
@@ -256,9 +255,8 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			buttonResume->setEnabled(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->resume();
-		}
-		else if (tag == GAMESCENE_RETRY)
-		{
+			break;
+		case GAMESCENE_RETRY:
 			PauseNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
@@ -270,13 +268,10 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			this->unscheduleUpdate();
 			auto scene = GameScene::createScene(FileName);
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
-
-		}
-		else if (tag == GAMESCENE_OPTION)
-		{
-		}
-		else if (tag == GAMESCENE_RETURN)
-		{
+			break;
+		case GAMESCENE_OPTION:
+			break;
+		case GAMESCENE_RETURN:
 			PauseNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
@@ -288,8 +283,8 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			this->unscheduleUpdate();
 			auto scene = MainScene::createScene();
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
+			break;
 		}
-		break;
 	}
 }
 
