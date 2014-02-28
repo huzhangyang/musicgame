@@ -23,11 +23,11 @@ const int MAINSCENE_SHELF = 12;
 const int MAINSCENE_TABLE = 13;
 const int MAINSCENE_PAPER = 14;
 const int MAINSCENE_CLOCK = 15;
-const int MAINSCENE_BOX = 2;
+const int MAINSCENE_DIALOGBG = 2;
 const int MAINSCENE_CHECKMARK = 3;
 const int MAINSCENE_CROSSMARK = 4;
-const int MAINSCENE_DIALOG = 2;
 const int MAINSCENE_WORD = 5;
+const int MAINSCENE_EXITBG = 6;
 //”Œœ∑ΩÁ√ÊTag
 const int GAMESCENE_PAUSE = 5;
 const int GAMESCENE_COMBO = 6;
