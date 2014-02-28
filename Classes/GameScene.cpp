@@ -146,7 +146,7 @@ void GameScene::update(float dt)
 		if (counter.maxcombo == 0 && counter.miss != counter.total)
 			counter.maxcombo = counter.total;//È«³ÌÎÞmiss
 		auto scene = ClearScene::createScene(FileName);
-		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+		Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 	}
 }
 
@@ -271,7 +271,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
 			auto scene = GameScene::createScene(FileName);
-			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,true));
 
 		}
 		else if (tag == GAMESCENE_OPTION)
@@ -289,7 +289,7 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
 			auto scene = MainScene::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,false));
 		}
 		break;
 	}

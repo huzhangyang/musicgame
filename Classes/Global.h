@@ -44,8 +44,8 @@ const int CLEARSCENE_PNO = 6;
 const int CLEARSCENE_GNO = 7;
 const int CLEARSCENE_MNO = 8;
 const int CLEARSCENE_TNO = 11;
-const int CLEARSCENE_CNO = 12;
 const int CLEARSCENE_COMPLETE = 13;
+const int CLEARSCENE_INFO = 12;
 const int CLEARSCENE_RETRY = 14;
 const int CLEARSCENE_RETURN = 15;
 

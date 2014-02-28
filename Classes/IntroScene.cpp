@@ -68,7 +68,7 @@ void IntroScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		if (tag == INTROSCENE_START)
 		{
 			auto scene = MainScene::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 		}
 		break;
 	}

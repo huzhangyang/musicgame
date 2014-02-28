@@ -117,7 +117,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			if (FileUtils::getInstance()->isFileExist(mapname))
 			{
 				auto scene = GameScene::createScene(FILENAME);
-				Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,true));
 			}
 			else
 				this->createDialog("dialogNoMap");

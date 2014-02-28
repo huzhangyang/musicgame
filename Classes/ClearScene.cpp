@@ -92,12 +92,12 @@ void ClearScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 		if (tag == CLEARSCENE_RETRY)
 		{
 			auto scene = GameScene::createScene(FileName);
-			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,true));
 		}
 		else if (tag == CLEARSCENE_RETURN)
 		{
 			auto scene = MainScene::createScene();
-			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene,false));
 		}
 		break;
 	}
