@@ -20,7 +20,7 @@ public:
 	virtual void onExitTransitionDidStart();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
-	static void judgeNote(int judge);
+	static void judgeNote(int judge, Point pos);
 private:
 	void update(float dt);
 	void startGame(float dt);//开始游戏
@@ -29,9 +29,9 @@ private:
 	void addArrow(int posX, int posY, int desX, int desY);//为滑动note生成箭头和目标点
 	void getNoteline();//得到新的一行谱面
 	void touchEvent(Object* obj, TouchEventType eventType);
-	TextBMFont *labelInfo, *labelDifficulty;
+	Text *labelInfo;
 	LoadingBar *loadingBar;
-	ImageView *bgPause;
+	ImageView *bgPause, *labelDifficulty;
 	Node *UINode, *PauseNode;
 	Button *buttonRetry, *buttonResume, *buttonReturn, *buttonOption;
 };

@@ -10,7 +10,7 @@ public:
 private:
 	static int getBeat();
 	static void writeNoteline(int type);
-	static int getPosX(int posY);
-	static int getPosY();
+	static int getPosX(int posY,int length);
+	static int getPosY(int time);
 };
 #endif 

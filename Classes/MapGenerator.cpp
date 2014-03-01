@@ -8,7 +8,7 @@ const int FFT_SIZE = 1024;
 
 FILE* fout;//Êä³öÎÄ¼þ
 int beatTick, lastbeatTick, beatBar, lastBeatBar;
-
+int UseMap[9][9];
 
 void MapGenerator::generateMap(const char* songname)
 {
@@ -22,6 +22,10 @@ void MapGenerator::generateMap(const char* songname)
 	while (AudioEngine::getInstance()->isPlaying())
 	{
 		AudioEngine::getInstance()->update();
+		for (int i = 1; i <= 9; i++)
+			for (int j = 1; j <= 9; j++)
+				if (UseMap[i][j] > 0)
+					UseMap[i][j]--;
 		int beatBar = getBeat();
 		if (beatBar >= 0)
 		{
@@ -74,10 +78,10 @@ void MapGenerator::writeNoteline(int type)
 	int time = beatTick;
 	int difficulty = CCRANDOM_0_1() * 2;
 	int length = 60;
-	int posY = getPosY();
-	int posX = CCRANDOM_0_1() * 8 + 1;
-	int desX = CCRANDOM_0_1() * 8 + 1;
-	int desY = CCRANDOM_0_1() * 8 + 1;
+	int posY = getPosY(time);
+	int posX = getPosX(posY, length);
+	int desY = getPosY(time + length);
+	int desX = getPosX(desY, length);
 	fprintf(fout, "%.5d,", time);
 	fprintf(fout, "%.1d,", difficulty);
 	fprintf(fout, "%.1d,", type);
@@ -86,7 +90,18 @@ void MapGenerator::writeNoteline(int type)
 	fprintf(fout, "%.1d%.1d\n", desX, desY);
 }
 
-int MapGenerator::getPosY()
+int MapGenerator::getPosX(int posY, int length)
+{
+	for (int i = 1; i <= 9; i++)
+		if (UseMap[i][posY] == 0)
+		{
+			UseMap[i][posY] = length;
+			return i;
+		}
+	return 0;
+}
+
+int MapGenerator::getPosY(int time)
 {
 	float FramePerBeat = 3600.0 / BPM;
 	auto x = beatTick % (int)(FramePerBeat * 4);

@@ -108,31 +108,26 @@ void Note::update(float dt)
 void Note::judge()
 {
 	float lifePercent;
-	if (this->getType() != SLIDE)
-	{
-		this->stopAllActions();//停止所有动作
-		this->unscheduleAllSelectors();//停止所有计算
-		this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
-	}
+	int judgeResult;
 	switch (this->getType())
 	{
 	case CLICK:
 		lifePercent = (float)life / TIME_PRELOAD;
 		if (lifePercent <= 0.1 || lifePercent >= 0.9)//太早或太晚都是miss
-			GameScene::judgeNote(0);
+			judgeResult = 0;
 		else if (lifePercent <= 0.3 || lifePercent >= 0.7)//正中点前后40%开外只能是good
-			GameScene::judgeNote(1);
+			judgeResult = 1;
 		else
-			GameScene::judgeNote(2);
+			judgeResult = 2;
 		break;
 	case LONGPRESS:
 		lifePercent = (float)(lifeTouchBegan - life) / length;
 		if (status == TOUCHED_UNACTIVATED || lifePercent <= 0.4)//触摸时间太短则判定为miss
-			GameScene::judgeNote(0);
+			judgeResult = 0;
 		else if (lifePercent <= 0.8)//触摸时间不够长是good
-			GameScene::judgeNote(1);
+			judgeResult = 1;
 		else
-			GameScene::judgeNote(2);
+			judgeResult = 2;
 		break;
 	case SLIDE:
 		Point pos = this->touchpoint;
@@ -140,13 +135,20 @@ void Note::judge()
 		Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
 		Rect rect2 = Rect(pos.x - s.width, pos.y - s.height, s.width * 2, s.height * 2);
 		if (rect.containsPoint(this->getPosition()))//触摸点在音符内为perfect
-			GameScene::judgeNote(2);
+			judgeResult = 2;
 		else if (rect2.containsPoint(this->getPosition()))//稍稍偏离为good
-			GameScene::judgeNote(1);
+			judgeResult = 1;
 		else
-			GameScene::judgeNote(0);
+			judgeResult = 0;
 		break;
 	}
+	if (this->getType() != SLIDE)
+	{
+		this->stopAllActions();//停止所有动作
+		this->unscheduleAllSelectors();//停止所有计算
+		this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
+	}
+	GameScene::judgeNote(judgeResult,this->getPosition());
 }
 
 bool Note::onTouchBegan(Touch *touch, Event  *event)

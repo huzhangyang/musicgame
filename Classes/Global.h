@@ -8,6 +8,7 @@ struct Counter
 	int good;//普通击中数
 	int miss;//错过数
 	int combo;//连击数
+	float percent;//总分
 };
 extern Counter counter;
 //开始界面Tag
@@ -30,7 +31,7 @@ const int MAINSCENE_EXITBG = 6;
 //游戏界面Tag
 const int GAMESCENE_PAUSE = 5;
 const int GAMESCENE_COMBO = 6;
-const int GAMESCENE_EASYORHARD = 7;
+const int GAMESCENE_DIFFICULTY = 7;
 const int GAMESCENE_INFO = 19;
 const int GAMESCENE_LOADINGBAR = 12;
 const int GAMESCENE_PAUSEBG = 3;
