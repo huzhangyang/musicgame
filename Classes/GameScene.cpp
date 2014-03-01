@@ -276,6 +276,10 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			break;
 		case GAMESCENE_OPTION:
+			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
+				UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
+			else
+				UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
 			break;
 		case GAMESCENE_RETURN:
 			PauseNode->setVisible(false);

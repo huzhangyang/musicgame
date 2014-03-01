@@ -133,7 +133,10 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			this->createDialog("dialogCat");
 			break;
 		case MAINSCENE_OPTION:
-			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
+			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
+				UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
+			else
+				UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
 			break;
 		case MAINSCENE_HELP:
 			break;

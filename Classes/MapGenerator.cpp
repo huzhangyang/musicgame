@@ -4,7 +4,7 @@
 const float BPM = 133.21f;
 const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
 const int BEAT_MINLASTTIME = 27;//最小节奏持续帧数
-const int FFT_SIZE = 1024;
+const int FFT_SIZE = 256;
 
 FILE* fout;//输出文件
 int beatTick, lastbeatTick, beatBar, lastBeatBar;
@@ -33,9 +33,9 @@ void MapGenerator::generateMap(const char* songname)
 			{
 
 			}
-			else
+			else if (lastbeatTick + BEAT_MINLASTTIME < beatTick)
 			{
-				writeNoteline(0);
+				writeNoteline(CCRANDOM_0_1() * 3);
 				log("%d %d", beatTick, beatBar);
 				lastbeatTick = beatTick;
 			}
@@ -79,7 +79,7 @@ void MapGenerator::writeNoteline(int type)
 	int difficulty = CCRANDOM_0_1() * 2;
 	int length = 60;
 	int posY = getPosY(time);
-	int posX = getPosX(posY, length);
+	int posX = CCRANDOM_0_1() * 8 + 1;
 	int desY = getPosY(time + length);
 	int desX = getPosX(desY, length);
 	fprintf(fout, "%.5d,", time);
