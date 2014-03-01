@@ -1,6 +1,7 @@
 #include "MapGenerator.h"
 #include <fstream>
 
+const float BPM = 133.21f;
 const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
 const int BEAT_MINLASTTIME = 27;//最小节奏持续帧数
 const int FFT_SIZE = 1024;
@@ -16,7 +17,8 @@ void MapGenerator::generateMap(const char* songname)
 	float* specData = new float[FFT_SIZE];
 	std::string mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
-	fout=fopen(mapname.c_str(), "w");//打开测试谱面
+	fout = fopen(mapname.c_str(), "w");//打开测试谱面
+
 	while (AudioEngine::getInstance()->isPlaying())
 	{
 		AudioEngine::getInstance()->update();
@@ -29,7 +31,7 @@ void MapGenerator::generateMap(const char* songname)
 			}
 			else
 			{
-				writeNoteline();
+				writeNoteline(0);
 				log("%d %d", beatTick, beatBar);
 				lastbeatTick = beatTick;
 			}
@@ -67,16 +69,13 @@ int MapGenerator::getBeat()
 	return -1;
 }
 
-void MapGenerator::writeNoteline()
+void MapGenerator::writeNoteline(int type)
 {
 	int time = beatTick;
 	int difficulty = CCRANDOM_0_1() * 2;
-	//int type = CCRANDOM_0_1() * 3;
-	int type = 0;
 	int length = 60;
-	//int posX = beatBar / 8 + 1;
+	int posY = getPosY();
 	int posX = CCRANDOM_0_1() * 8 + 1;
-	int posY = CCRANDOM_0_1() * 8 + 1;
 	int desX = CCRANDOM_0_1() * 8 + 1;
 	int desY = CCRANDOM_0_1() * 8 + 1;
 	fprintf(fout, "%.5d,", time);
@@ -85,4 +84,30 @@ void MapGenerator::writeNoteline()
 	fprintf(fout, "%.3d,", length);
 	fprintf(fout, "%.1d%.1d,", posX, posY);
 	fprintf(fout, "%.1d%.1d\n", desX, desY);
+}
+
+int MapGenerator::getPosY()
+{
+	float FramePerBeat = 3600.0 / BPM;
+	auto x = beatTick % (int)(FramePerBeat * 4);
+	switch (x % 16)
+	{
+	case 0:return 5;
+	case 1:return 6;
+	case 2:return 7;
+	case 3:return 8;
+	case 4:return 9;
+	case 5:return 8;
+	case 6:return 7;
+	case 7:return 6;
+	case 8:return 5;
+	case 9:return 4;
+	case 10:return 3;
+	case 11:return 2;
+	case 12:return 1;
+	case 13:return 2;
+	case 14:return 3;
+	case 15:return 4;
+	}
+	return 0;
 }

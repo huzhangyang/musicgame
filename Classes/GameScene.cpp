@@ -18,7 +18,6 @@ Scene* GameScene::createScene(std::string filename)
 	scene->addChild(layer);
 
 	FileName = filename;
-	counter.frame = 0;
 	counter.total = 0;
 	counter.perfect = 0;
 	counter.good = 0;
@@ -130,11 +129,11 @@ void GameScene::startGame(float dt)
 
 void GameScene::update(float dt)
 {
-	counter.frame++;
-	int percent = AudioEngine::getInstance()->getPosition() * 100 / AudioEngine::getInstance()->getLength();
+	int currPos = AudioEngine::getInstance()->getPosition();
+	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
-	while ((counter.frame + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
-		|| (counter.frame + TIME_PRELOAD / 2 >= noteline.time&&noteline.type == 0))//提前一些生成
+	while ((currPos + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
+		|| (currPos >= noteline.time&&noteline.type == 0))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		if (difficulty >= noteline.difficulty)//当前难度符合则生成否则跳过

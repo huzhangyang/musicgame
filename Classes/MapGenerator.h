@@ -9,6 +9,8 @@ public:
 	static void generateMap(const char* songname);
 private:
 	static int getBeat();
-	static void writeNoteline();
+	static void writeNoteline(int type);
+	static int getPosX(int posY);
+	static int getPosY();
 };
 #endif 

@@ -3,7 +3,6 @@
 //计数器结构
 struct Counter
 {
-	int frame;//帧数
 	int total;//音符总数
 	int perfect;//完美数
 	int good;//普通击中数
