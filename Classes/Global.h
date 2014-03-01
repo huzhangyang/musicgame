@@ -39,6 +39,7 @@ const int GAMESCENE_RETRY = 15;
 const int GAMESCENE_OPTION = 16;
 const int GAMESCENE_RETURN = 17;
 //Ω·À„ΩÁ√ÊTag
+const int CLEARSCENE_BG = 2;
 const int CLEARSCENE_TNO = 3;
 const int CLEARSCENE_PNO = 4;
 const int CLEARSCENE_GNO = 5;
