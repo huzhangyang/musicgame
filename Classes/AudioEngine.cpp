@@ -43,10 +43,10 @@ void AudioEngine::create(const char* songname)
 		memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
 		exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
 		exinfo.length = size;
-		result = system->createStream((const char*)data, FMOD_OPENMEMORY | FMOD_LOOP_OFF, &exinfo, &sound);
+		result = system->createSound((const char*)data, FMOD_OPENMEMORY | FMOD_LOOP_OFF| FMOD_ACCURATETIME, &exinfo, &sound);
 	}
 #else
-	result = system->createStream(songname, FMOD_DEFAULT, 0, &sound);
+	result = system->createSound(songname, FMOD_DEFAULT | FMOD_ACCURATETIME, 0, &sound);
 #endif
 
 }

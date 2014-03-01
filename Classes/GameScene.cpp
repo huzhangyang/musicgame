@@ -18,7 +18,6 @@ Scene* GameScene::createScene(std::string filename)
 	scene->addChild(layer);
 
 	FileName = filename;
-	counter.frame = 0;
 	counter.total = 0;
 	counter.perfect = 0;
 	counter.good = 0;
@@ -48,7 +47,7 @@ bool GameScene::init()
 	auto UIlayer = UIComponent->getNode();
 	auto Pauselayer = PauseComponent->getNode();
 	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
-	bgPause = dynamic_cast<ImageView*>(Pauselayer->getChildByTag(GAMESCENE_PAUSE));
+	bgPause = dynamic_cast<ImageView*>(Pauselayer->getChildByTag(GAMESCENE_PAUSEBG));
 	buttonRetry = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETRY));
 	buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
 	buttonOption = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
@@ -130,11 +129,11 @@ void GameScene::startGame(float dt)
 
 void GameScene::update(float dt)
 {
-	counter.frame++;
-	int percent = AudioEngine::getInstance()->getPosition() * 100 / AudioEngine::getInstance()->getLength();
+	int currPos = AudioEngine::getInstance()->getPosition();
+	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
-	while ((counter.frame + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
-		|| (counter.frame + TIME_PRELOAD / 2 >= noteline.time&&noteline.type == 0))//提前一些生成
+	while ((currPos + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
+		|| (currPos >= noteline.time&&noteline.type == 0))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		if (difficulty >= noteline.difficulty)//当前难度符合则生成否则跳过
@@ -230,13 +229,14 @@ void GameScene::judgeNote(int judge)
 
 void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 {
-	auto button = dynamic_cast<Button*>(obj);
-	int tag = button->getTag();
-	switch (eventType)
+	auto widget = dynamic_cast<Widget*>(obj);
+	int tag = widget->getTag();
+	Scene* scene;
+	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
-	case TouchEventType::TOUCH_EVENT_ENDED:
-		if (tag == GAMESCENE_PAUSE)
+		switch (tag)
 		{
+		case  GAMESCENE_PAUSE:
 			Director::getInstance()->pause();
 			AudioEngine::getInstance()->pause();
 			PauseNode->setVisible(true);
@@ -245,9 +245,8 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			buttonReturn->setEnabled(true);
 			buttonOption->setEnabled(true);
 			buttonResume->setEnabled(true);
-		}
-		else if (tag == GAMESCENE_RESUME)
-		{
+			break;
+		case GAMESCENE_RESUME:
 			PauseNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
@@ -256,9 +255,8 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			buttonResume->setEnabled(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->resume();
-		}
-		else if (tag == GAMESCENE_RETRY)
-		{
+			break;
+		case GAMESCENE_RETRY:
 			PauseNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
@@ -268,15 +266,12 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
-			auto scene = GameScene::createScene(FileName);
+			scene = GameScene::createScene(FileName);
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
-
-		}
-		else if (tag == GAMESCENE_OPTION)
-		{
-		}
-		else if (tag == GAMESCENE_RETURN)
-		{
+			break;
+		case GAMESCENE_OPTION:
+			break;
+		case GAMESCENE_RETURN:
 			PauseNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
@@ -286,10 +281,10 @@ void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
-			auto scene = MainScene::createScene();
+			scene = MainScene::createScene();
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
+			break;
 		}
-		break;
 	}
 }
 
