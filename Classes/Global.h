@@ -31,10 +31,9 @@ const int MAINSCENE_EXITBG = 6;
 //”Œœ∑ΩÁ√ÊTag
 const int GAMESCENE_PAUSE = 5;
 const int GAMESCENE_COMBO = 6;
-const int GAMESCENE_JUDGE = 7;
-const int GAMESCENE_INFO = 8;
+const int GAMESCENE_EASYORHARD = 7;
+const int GAMESCENE_INFO = 19;
 const int GAMESCENE_LOADINGBAR = 12;
-const int GAMESCENE_DIFFICULTY = 13;
 const int GAMESCENE_PAUSEBG = 3;
 const int GAMESCENE_RESUME = 14;
 const int GAMESCENE_RETRY = 15;
@@ -45,8 +44,9 @@ const int CLEARSCENE_TNO = 3;
 const int CLEARSCENE_PNO = 4;
 const int CLEARSCENE_GNO = 5;
 const int CLEARSCENE_MNO = 6;
-const int CLEARSCENE_COMPLETE = 7;
+const int CLEARSCENE_CNO = 7;
 const int CLEARSCENE_INFO = 12;
+const int CLEARSCENE_JUDGE = 13;
 const int CLEARSCENE_RETRY = 14;
 const int CLEARSCENE_RETURN = 15;
 
