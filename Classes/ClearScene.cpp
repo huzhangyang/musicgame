@@ -38,6 +38,8 @@ bool ClearScene::init()
 	auto labelTotal = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
 	auto labelComplete = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
 	auto labelJudge = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_JUDGE));
+	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
+	labelInfo->setText(FileName);
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	char temp[64];
@@ -49,22 +51,23 @@ bool ClearScene::init()
 	labelMiss->setText(temp);
 	sprintf(temp, "%d", counter.total);
 	labelTotal->setText(temp);
-	float completePercent = (float)counter.perfect / (float)counter.total * 1.0;
-	completePercent += (float)counter.good / (float)counter.total * 0.5;
+	float completePercent = counter.percent*0.2 / (float)counter.total;
+	completePercent += (float)counter.perfect / (float)counter.total * 0.8;
+	completePercent += (float)counter.good / (float)counter.total * 0.4;
 	sprintf(temp, "%.2f", completePercent * 100);
 	labelComplete->setText(strcat(temp, "%"));
-	if (completePercent >= 0.95)
+	if (completePercent >= 0.99)
 		labelJudge->loadTexture("clearSceneUI/S.png");
 	else if (completePercent >= 0.9)
 		labelJudge->loadTexture("clearSceneUI/A.png");
-	else if (completePercent >= 0.85)
-		labelJudge->loadTexture("clearSceneUI/B.png");
 	else if (completePercent >= 0.8)
+		labelJudge->loadTexture("clearSceneUI/B.png");
+	else if (completePercent >= 0.7)
 		labelJudge->loadTexture("clearSceneUI/C.png");
-	else if (completePercent >= 0.75)
+	else if (completePercent >= 0.6)
 		labelJudge->loadTexture("clearSceneUI/D.png");
-	else 
-		labelJudge->loadTexture("clearSceneUI/D.png");
+	else
+		labelJudge->loadTexture("clearSceneUI/F.png");
 	return true;
 }
 

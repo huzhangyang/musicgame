@@ -24,6 +24,7 @@ Scene* GameScene::createScene(std::string filename)
 	counter.good = 0;
 	counter.miss = 0;
 	counter.combo = 0;
+	counter.percent = 0;
 	return scene;
 }
 
@@ -212,6 +213,7 @@ void GameScene::judgeNote(int judge, Point pos)
 	case 1:
 		counter.combo++;
 		counter.good++;
+		counter.percent += (float)counter.combo / (float)counter.total;
 		judgePic->setTexture("clearSceneUI/good.png");
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
@@ -219,6 +221,7 @@ void GameScene::judgeNote(int judge, Point pos)
 	case 2:
 		counter.combo++;
 		counter.perfect++;
+		counter.percent += (float)counter.combo / (float)counter.total;
 		judgePic->setTexture("clearSceneUI/perfect.png");
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
@@ -226,7 +229,7 @@ void GameScene::judgeNote(int judge, Point pos)
 	}
 	labelCombo->runAction(FadeOut::create(1));//ÏûÊ§ÌØÐ§
 	judgePic->setPosition(pos);
-	judgePic->setScale(0.6);
+	judgePic->setScale(0.6f);
 	judgePic->runAction(FadeOut::create(0.2f));
 }
 

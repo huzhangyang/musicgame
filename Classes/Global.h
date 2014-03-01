@@ -8,6 +8,7 @@ struct Counter
 	int good;//普通击中数
 	int miss;//错过数
 	int combo;//连击数
+	float percent;//总分
 };
 extern Counter counter;
 //开始界面Tag
