@@ -30,6 +30,7 @@ bool ClearScene::init()
 	auto UINode = sceneNode->getChildByTag(10003);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
 	auto UIlayer = UIComponent->getNode();
+	auto background = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_BG));
 	auto buttonRetry = dynamic_cast<Button*>(UIlayer->getChildByTag(CLEARSCENE_RETRY));
 	auto buttonReturn = dynamic_cast<Button*>(UIlayer->getChildByTag(CLEARSCENE_RETURN));
 	auto labelPerfect = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_PNO));
@@ -67,7 +68,10 @@ bool ClearScene::init()
 	else if (completePercent >= 0.6)
 		labelJudge->loadTexture("clearSceneUI/D.png");
 	else
+	{
+		background->loadTexture("clearSceneUI/QAQ.png");
 		labelJudge->loadTexture("clearSceneUI/F.png");
+	}
 	return true;
 }
 
