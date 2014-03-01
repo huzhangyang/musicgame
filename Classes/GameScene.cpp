@@ -9,7 +9,8 @@ std::string FileName;//音乐文件名称
 std::ifstream fin;//输入流
 Noteline noteline;
 Counter counter;
-TextBMFont *labelJudge, *labelCombo;
+Text *labelCombo;
+Sprite *judgePic;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -52,10 +53,9 @@ bool GameScene::init()
 	buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
 	buttonOption = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
 	buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
-	labelInfo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_INFO));
-	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
-	labelJudge = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_JUDGE));
-	labelDifficulty = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
+	labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_INFO));
+	labelCombo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
+	labelDifficulty = dynamic_cast<ImageView*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
 	loadingBar = dynamic_cast<LoadingBar*>(UIlayer->getChildByTag(GAMESCENE_LOADINGBAR));
 	bgPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
@@ -68,16 +68,19 @@ bool GameScene::init()
 	buttonReturn->setEnabled(false);
 	buttonOption->setEnabled(false);
 	buttonResume->setEnabled(false);
-	labelInfo->setText(FileName.c_str());//显示文件名
+	labelInfo->setText(FileName);//显示文件名
 	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
 	{
-		labelDifficulty->setText("EASY");
+		labelDifficulty->loadTexture("gameSceneUI/easy.png");
 	}
 	else if (difficulty == 1)
 	{
-		labelDifficulty->setText("HARD");
+		labelDifficulty->loadTexture("gameSceneUI/hard.png");
 	}
+	judgePic = Sprite::create();
+	UINode->addChild(judgePic);
+	judgePic->setOpacity(0);
 	return true;
 }
 
@@ -92,8 +95,6 @@ void GameScene::onEnterTransitionDidFinish()
 	fin.open(mapname);//打开自动生成测试谱面
 	getNoteline();//读取第一行
 
-	labelJudge->setText("Get Ready");
-	labelJudge->runAction(FadeOut::create(3));
 	loadingBar->setPercent(0);
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
@@ -180,7 +181,7 @@ void GameScene::addArrow(int posX, int posY, int desX, int desY)
 	arrow->setPosition(posX / 2 + desX / 2, posY / 2 + desY / 2);
 	dest->setPosition(desX, desY);
 	arrow->setRotation(atan2(desX - posX, desY - posY) * 180 / M_PI);
-	dest->runAction(FadeOut::create(2));
+	dest->runAction(FadeOut::create(2));//消失特效
 	arrow->runAction(FadeOut::create(2));//消失特效
 	UINode->addChild(arrow);
 	UINode->addChild(dest);
@@ -196,7 +197,7 @@ void GameScene::addRandomNote(float dt)
 	addNewNote(randomT, 60, randomX * 10 + randomY, randomA * 10 + randomB);
 }
 
-void GameScene::judgeNote(int judge)
+void GameScene::judgeNote(int judge, Point pos)
 {
 	counter.total++;
 	char temp[64];
@@ -205,26 +206,28 @@ void GameScene::judgeNote(int judge)
 	case 0:
 		counter.combo = 0;
 		counter.miss++;
-		labelJudge->setText("Miss!");
+		judgePic->setTexture("clearSceneUI/miss.png");
 		labelCombo->setText("");
 		break;
 	case 1:
 		counter.combo++;
 		counter.good++;
-		labelJudge->setText("Good!");
+		judgePic->setTexture("clearSceneUI/good.png");
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
 	case 2:
 		counter.combo++;
 		counter.perfect++;
-		labelJudge->setText("Perfect!");
+		judgePic->setTexture("clearSceneUI/perfect.png");
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
 	}
-	labelJudge->runAction(FadeOut::create(1));
 	labelCombo->runAction(FadeOut::create(1));//消失特效
+	judgePic->setPosition(pos);
+	judgePic->setScale(0.6);
+	judgePic->runAction(FadeOut::create(0.2f));
 }
 
 void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)

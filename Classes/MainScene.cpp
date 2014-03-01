@@ -47,7 +47,7 @@ bool MainScene::init()
 	buttonCheck = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CHECKMARK));
 	buttonCross = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CROSSMARK));
 	objectDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOGBG));
-	labelWord = dynamic_cast<TextBMFont*>(DialogLayer->getChildByTag(MAINSCENE_WORD));
+	labelWord = dynamic_cast<Text*>(DialogLayer->getChildByTag(MAINSCENE_WORD));
 	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectDialog->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
@@ -97,7 +97,7 @@ void MainScene::createDialog(std::string key)
 	ValueMap strings = FileUtils::getInstance()->getValueMapFromFile("strings.xml");
 	DialogNode->setVisible(true);
 	objectDialog->setEnabled(true);
-	labelWord->setText(strings.at(key).asString().c_str());
+	labelWord->setText(strings.at(key).asString());
 }
 
 void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)

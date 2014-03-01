@@ -30,7 +30,7 @@ const int MAINSCENE_EXITBG = 6;
 //”Œœ∑ΩÁ√ÊTag
 const int GAMESCENE_PAUSE = 5;
 const int GAMESCENE_COMBO = 6;
-const int GAMESCENE_EASYORHARD = 7;
+const int GAMESCENE_DIFFICULTY = 7;
 const int GAMESCENE_INFO = 19;
 const int GAMESCENE_LOADINGBAR = 12;
 const int GAMESCENE_PAUSEBG = 3;
