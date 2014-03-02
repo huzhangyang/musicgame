@@ -95,8 +95,6 @@ void GameScene::onEnterTransitionDidFinish()
 	std::string mapname = FileUtils::getInstance()->getWritablePath() + FileName + ".gnm";
 	fin.open(mapname);//打开自动生成测试谱面
 	getNoteline();//读取第一行
-
-	loadingBar->setPercent(0);
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
 

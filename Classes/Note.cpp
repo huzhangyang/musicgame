@@ -154,10 +154,10 @@ void Note::judge()
 bool Note::onTouchBegan(Touch *touch, Event  *event)
 {
 	auto note = static_cast<Note*>(event->getCurrentTarget());
-	Point pos = touch->getLocation();
+	Point pos = note->getPosition();
 	Size s = note->getContentSize();
 	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
-	if (rect.containsPoint(pos) && !Director::getInstance()->isPaused())
+	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused())
 	{
 		if (note->getStatus() == UNTOUCHED_UNACTIVATED)//预判时按下，状态变为按下_未激活
 		{

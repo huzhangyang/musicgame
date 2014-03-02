@@ -8,38 +8,50 @@ const int FFT_SIZE = 256;
 
 FILE* fout;//输出文件
 int beatTick, lastbeatTick, beatBar, lastBeatBar;
-int UseMap[9][9];
+int UseMap[10][10];
 
 void MapGenerator::generateMap(const char* songname)
 {
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
-	float* specData = new float[FFT_SIZE];
 	std::string mapname = songname;
+	int type = 0;
+	for (int i = 1; i <= 9; i++)
+		for (int j = 1; j <= 9; j++)
+			UseMap[i][j] = 0;
+
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
 	while (AudioEngine::getInstance()->isPlaying())
 	{
 		AudioEngine::getInstance()->update();
+		for (int i = 1; i <= 9; i++)
+			for (int j = 1; j <= 9; j++)
+				if (UseMap[i][j] > 0)
+					UseMap[i][j]--;
 		int beatBar = getBeat();
-		if (beatBar >= 0)
+		if (beatBar >= 0 && beatTick - lastbeatTick > BEAT_MINLASTTIME)
 		{
-			if (beatBar <= lastBeatBar + 2 && beatBar >= lastBeatBar - 2)
+			if (beatBar == lastBeatBar)
 			{
-
+				type = 1;
 			}
-			else if (lastbeatTick + BEAT_MINLASTTIME < beatTick)
+			else if (beatBar <= lastBeatBar + 3 && beatBar >= lastBeatBar - 3)
 			{
-				writeNoteline(CCRANDOM_0_1() * 3);
+				type = 2;
+			}
+			else
+			{
+				writeNoteline(type, beatTick - lastbeatTick);
 				log("%d %d", beatTick, beatBar);
 				lastbeatTick = beatTick;
+				type = 0;
 			}
 			lastBeatBar = beatBar;
 		}
 		else lastBeatBar = -99;
 	}
 	fclose(fout);
-	delete[] specData;
 }
 
 int MapGenerator::getBeat()
@@ -68,15 +80,14 @@ int MapGenerator::getBeat()
 	return -1;
 }
 
-void MapGenerator::writeNoteline(int type)
+void MapGenerator::writeNoteline(int type, int length)
 {
 	int time = beatTick;
 	int difficulty = CCRANDOM_0_1() * 2;
-	int length = 60;
-	int posX = CCRANDOM_0_1() * 8 + 1;
 	int posY = getPosY(time);
-	int desX = CCRANDOM_0_1() * 8 + 1;
+	int posX = getPosX(posY, length);
 	int desY = getPosY(time + length);
+	int desX = getPosX(desY, length);
 	fprintf(fout, "%.5d,", time);
 	fprintf(fout, "%.1d,", difficulty);
 	fprintf(fout, "%.1d,", type);
@@ -87,7 +98,13 @@ void MapGenerator::writeNoteline(int type)
 
 int MapGenerator::getPosX(int posY, int length)
 {
-	for (int i = 1; i <= 9; i++)
+	for (int i = 5; i <= 9; i++)
+		if (UseMap[i][posY] == 0)
+		{
+			UseMap[i][posY] = length;
+			return i;
+		}
+	for (int i = 5; i >= 1; i--)
 		if (UseMap[i][posY] == 0)
 		{
 			UseMap[i][posY] = length;
