@@ -18,14 +18,9 @@ void MapGenerator::generateMap(const char* songname)
 	std::string mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//´ò¿ª²âÊÔÆ×Ãæ
-
 	while (AudioEngine::getInstance()->isPlaying())
 	{
 		AudioEngine::getInstance()->update();
-		for (int i = 1; i <= 9; i++)
-			for (int j = 1; j <= 9; j++)
-				if (UseMap[i][j] > 0)
-					UseMap[i][j]--;
 		int beatBar = getBeat();
 		if (beatBar >= 0)
 		{
@@ -78,10 +73,10 @@ void MapGenerator::writeNoteline(int type)
 	int time = beatTick;
 	int difficulty = CCRANDOM_0_1() * 2;
 	int length = 60;
-	int posY = getPosY(time);
 	int posX = CCRANDOM_0_1() * 8 + 1;
+	int posY = getPosY(time);
+	int desX = CCRANDOM_0_1() * 8 + 1;
 	int desY = getPosY(time + length);
-	int desX = getPosX(desY, length);
 	fprintf(fout, "%.5d,", time);
 	fprintf(fout, "%.1d,", difficulty);
 	fprintf(fout, "%.1d,", type);

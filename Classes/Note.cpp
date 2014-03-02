@@ -59,7 +59,7 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->setPositionY(60 * (10 - pos % 10) + 5);
 	this->destX = 120 * (des / 10) + 80;
 	this->destY = 60 * (10 - des % 10) + 5;
-	getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, this);
 }
 
 void Note::removeNote()
@@ -148,16 +148,16 @@ void Note::judge()
 		this->unscheduleAllSelectors();//停止所有计算
 		this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
 	}
-	GameScene::judgeNote(judgeResult,this->getPosition());
+	GameScene::judgeNote(judgeResult, this->getPosition());
 }
 
 bool Note::onTouchBegan(Touch *touch, Event  *event)
 {
 	auto note = static_cast<Note*>(event->getCurrentTarget());
-	Point locationInNode = note->convertToNodeSpace(touch->getLocation());
+	Point pos = touch->getLocation();
 	Size s = note->getContentSize();
-	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())
+	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
+	if (rect.containsPoint(pos) && !Director::getInstance()->isPaused())
 	{
 		if (note->getStatus() == UNTOUCHED_UNACTIVATED)//预判时按下，状态变为按下_未激活
 		{
