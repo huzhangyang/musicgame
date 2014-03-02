@@ -13,6 +13,7 @@ struct Counter
 extern Counter counter;
 //开始界面Tag
 const int INTROSCENE_START = 3;
+const int INTROSCENE_ECHO = 6;
 //主界面Tag
 const int MAINSCENE_OPTION = 7;
 const int MAINSCENE_HELP = 8;
