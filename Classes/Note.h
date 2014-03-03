@@ -17,7 +17,6 @@ private:
 	void initNote(int type, int length, int pos, int des);
 	void removeNote();
 	void update(float dt);
-	void onPreloadTimeOver();
 	void judge();
 	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void onTouchMoved(Touch *pTouch, Event  *pEvent);
