@@ -161,7 +161,7 @@ void Note::judge()
 	else
 		judgePic->setTexture("clearSceneUI/perfect.png");
 	judgePic->runAction(FadeOut::create(0.2f));
-	GameScene::judgeNote(judgeResult, this->getPosition());
+	GameScene::judgeNote(judgeResult);
 }
 
 bool Note::onTouchBegan(Touch *touch, Event  *event)

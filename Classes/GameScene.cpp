@@ -38,9 +38,11 @@ bool GameScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
+	std::string musicname = "music/" + FileName + ".mp3";
+	AudioEngine::getInstance()->create(musicname.c_str());
+
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	addChild(sceneNode);
-
 	UINode = sceneNode->getChildByTag(10004);
 	PauseNode = sceneNode->getChildByTag(10005);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
@@ -84,9 +86,7 @@ bool GameScene::init()
 void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
-	/////////////////////////////////////////////////////
-	std::string musicname = "music/" + FileName + ".mp3";
-	AudioEngine::getInstance()->create(musicname.c_str());
+	/////////////////////////////////////////////////////	
 	//fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开手动生成测试谱面
 	std::string mapname = FileUtils::getInstance()->getWritablePath() + FileName + ".gnm";
 	fin.open(mapname);//打开自动生成测试谱面
@@ -177,11 +177,11 @@ void GameScene::addRandomNote(float dt)
 	addNewNote(randomT, 60, randomX * 10 + randomY, randomA * 10 + randomB);
 }
 
-void GameScene::judgeNote(int judge, Point pos)
+void GameScene::judgeNote(int judgeResult)
 {
 	counter.total++;
 	char temp[64];
-	switch (judge)
+	switch (judgeResult)
 	{
 	case 0:
 		counter.combo = 0;

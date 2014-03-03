@@ -38,7 +38,7 @@ void MapGenerator::generateMap(const char* songname)
 			{
 				type = 1;
 			}
-			else if (beatBar <= lastBeatBar + 3 && beatBar >= lastBeatBar - 3)//频域差别不大则是滑动
+			else if (beatBar <= lastBeatBar + 1 && beatBar >= lastBeatBar - 1)//频域差别不大则是滑动
 			{
 				type = 2;
 			}

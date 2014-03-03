@@ -20,7 +20,7 @@ public:
 	virtual void onExitTransitionDidStart();
 	void menuCloseCallback(Object* pSender);
 	CREATE_FUNC(GameScene);
-	static void judgeNote(int judge, Point pos);
+	static void judgeNote(int judgeResult);
 private:
 	void update(float dt);
 	void startGame(float dt);//¿ªÊ¼ÓÎÏ·
