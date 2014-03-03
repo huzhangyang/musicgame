@@ -24,6 +24,7 @@ private:
 	void onTouchEnded(Touch *pTouch, Event  *pEvent);
 	NoteType type;//音符类型
 	Sprite *judgePic;//评级
+	EventListenerTouchOneByOne *noteListener;//事件监听器
 	bool isTouched;//是否被触摸
 	bool isActivated;//是否开始生命周期
 	int length;//总生命长度

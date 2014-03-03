@@ -38,8 +38,6 @@ bool GameScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	std::string musicname = "music/" + FileName + ".mp3";
-	AudioEngine::getInstance()->create(musicname.c_str());
 
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	addChild(sceneNode);
@@ -87,6 +85,8 @@ void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////	
+	std::string musicname = "music/" + FileName + ".mp3";
+	AudioEngine::getInstance()->create(musicname.c_str());
 	//fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开手动生成测试谱面
 	std::string mapname = FileUtils::getInstance()->getWritablePath() + FileName + ".gnm";
 	fin.open(mapname);//打开自动生成测试谱面
@@ -118,6 +118,7 @@ void GameScene::startGame(float dt)
 	{
 		this->unscheduleAllSelectors();
 		AudioEngine::getInstance()->play();
+		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
 	}
 }
@@ -134,6 +135,7 @@ void GameScene::update(float dt)
 			addNewNote(noteline.type, noteline.length, noteline.pos, noteline.des);
 		getNoteline();//读取下个音符
 	}
+
 	if (!AudioEngine::getInstance()->isPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
@@ -167,7 +169,6 @@ void GameScene::addNewNote(int type, int length, int pos, int des)
 
 void GameScene::judgeNote(int judgeResult)
 {
-	counter.total++;
 	char temp[64];
 	switch (judgeResult)
 	{

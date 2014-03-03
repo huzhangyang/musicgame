@@ -25,6 +25,7 @@ Note* Note::createNote(int type, int length, int pos, int des)
 void Note::initNote(int type, int length, int pos, int des)
 {
 	this->type = (NoteType)type;
+	this->setTag(++counter.total);
 	this->life = TIME_PRELOAD;
 	this->lifeTouchBegan = 0;
 	this->isActivated = false;
@@ -34,7 +35,7 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->desX = 120 * (des / 10) + 80;
 	this->desY = 60 * (10 - des % 10) + 5;
 	judgePic = Sprite::create("gameSceneUI/judge.png");
-	auto noteListener = EventListenerTouchOneByOne::create();
+	noteListener = EventListenerTouchOneByOne::create();
 	noteListener->setSwallowTouches(true);//一次触摸只对一个有效
 	switch (type)
 	{
@@ -52,8 +53,9 @@ void Note::initNote(int type, int length, int pos, int des)
 	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
 		this->length = length;
-		//this->setRotation(atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
-		//judgePic->setRotation(-atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
+		this->setRotation(atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
+		judgePic->setRotation(-atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
+		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
 		noteListener->onTouchMoved = CC_CALLBACK_2(Note::onTouchMoved, this);
 		break;
 	}
@@ -62,12 +64,13 @@ void Note::initNote(int type, int length, int pos, int des)
 	judgePic->runAction(Sequence::create(ScaleTo::create(TIME_PRELOAD / 60.0, 1), CallFunc::create(CC_CALLBACK_0(Note::onPreloadTimeOver, this)), NULL));
 	judgePic->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
 	this->addChild(judgePic);
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(noteListener, this->getTag());
 }
 
 void Note::removeNote()
 {
 	this->removeFromParent();
+	Director::getInstance()->getEventDispatcher()->removeEventListener(this->noteListener);
 }
 
 void Note::update(float dt)
