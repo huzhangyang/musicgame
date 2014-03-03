@@ -120,7 +120,6 @@ void GameScene::startGame(float dt)
 		AudioEngine::getInstance()->play();
 		this->scheduleUpdate();
 	}
-	//this->schedule(schedule_selector(GameScene::addRandomNote), 120 / 115.65f);
 }
 
 void GameScene::update(float dt)
@@ -128,8 +127,7 @@ void GameScene::update(float dt)
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
-	while ((currPos + TIME_PRELOAD >= noteline.time&&noteline.type != 0)
-		|| (currPos >= noteline.time&&noteline.type == 0))//提前一些生成
+	while ((currPos + TIME_PRELOAD >= noteline.time))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		if (difficulty >= noteline.difficulty)//当前难度符合则生成否则跳过
@@ -165,16 +163,6 @@ void GameScene::addNewNote(int type, int length, int pos, int des)
 {
 	auto note = Note::createNote(type, length, pos, des);
 	UINode->addChild(note);
-}
-
-void GameScene::addRandomNote(float dt)
-{
-	int randomT = CCRANDOM_0_1() * 3;
-	int randomX = CCRANDOM_0_1() * 8 + 1;
-	int randomY = CCRANDOM_0_1() * 8 + 1;
-	int randomA = CCRANDOM_0_1() * 8 + 1;
-	int randomB = CCRANDOM_0_1() * 8 + 1;
-	addNewNote(randomT, 60, randomX * 10 + randomY, randomA * 10 + randomB);
 }
 
 void GameScene::judgeNote(int judgeResult)

@@ -25,8 +25,6 @@ private:
 	void update(float dt);
 	void startGame(float dt);//开始游戏
 	void addNewNote(int type, int length, int pos, int des);//生成新note
-	void addRandomNote(float dt);//随机生成note
-	void addArrow(int posX, int posY, int desX, int desY);//为滑动note生成箭头和目标点
 	void getNoteline();//得到新的一行谱面
 	void touchEvent(Object* obj, TouchEventType eventType);
 	Text *labelInfo;
