@@ -30,6 +30,11 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->lifeTouchBegan = 0;
 	this->length = length;
 	this->status = UNTOUCHED_UNACTIVATED;
+	this->setPositionX(120 * (pos / 10) + 80);
+	this->setPositionY(60 * (10 - pos % 10) + 5);
+	this->desX = 120 * (des / 10) + 80;
+	this->desY = 60 * (10 - des % 10) + 5;
+	judgePic = Sprite::create();
 	auto noteListener = EventListenerTouchOneByOne::create();
 	noteListener->setSwallowTouches(true);//一次触摸只对一个有效
 	switch (type)
@@ -50,15 +55,16 @@ void Note::initNote(int type, int length, int pos, int des)
 		break;
 	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
+		this->setRotation(atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
+		judgePic->setRotation(-atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
 		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
 		noteListener->onTouchMoved = CC_CALLBACK_2(Note::onTouchMoved, this);
 		this->runAction(RotateBy::create(TIME_PRELOAD / 60.0, 360));//出现特效
 		break;
 	}
-	this->setPositionX(120 * (pos / 10) + 80);
-	this->setPositionY(60 * (10 - pos % 10) + 5);
-	this->destX = 120 * (des / 10) + 80;
-	this->destY = 60 * (10 - des % 10) + 5;
+	judgePic->setScale(0.5f);
+	judgePic->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
+	this->addChild(judgePic);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(noteListener, this);
 }
 
@@ -82,7 +88,7 @@ void Note::update(float dt)
 			if (type == LONGPRESS)
 				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
-				this->runAction(Sequence::create(MoveTo::create(length / 60.0, Point(destX, destY)), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//生命周期特效
+				this->runAction(Sequence::create(MoveTo::create(length / 60.0, Point(desX, desY)), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//生命周期特效
 			break;
 		case TOUCHED_UNACTIVATED://预判时间过后已触摸，则开始生命周期
 			life = length;
@@ -91,7 +97,7 @@ void Note::update(float dt)
 			if (type == LONGPRESS)
 				this->runAction(RotateBy::create(length / 60.0, 360));//生命周期特效
 			else
-				this->runAction(Sequence::create(MoveTo::create(length / 60.0, Point(destX, destY)), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//生命周期特效
+				this->runAction(Sequence::create(MoveTo::create(length / 60.0, Point(desX, desY)), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//生命周期特效
 			break;
 		case UNTOUCHED_ACTIVATED://生命周期结束后仍未开始触摸，直接去结算
 			this->judge();
@@ -148,6 +154,13 @@ void Note::judge()
 		this->unscheduleAllSelectors();//停止所有计算
 		this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
 	}
+	if (judgeResult == 0)
+		judgePic->setTexture("clearSceneUI/miss.png");
+	else if (judgeResult == 1)
+		judgePic->setTexture("clearSceneUI/good.png");
+	else
+		judgePic->setTexture("clearSceneUI/perfect.png");
+	judgePic->runAction(FadeOut::create(0.2f));
 	GameScene::judgeNote(judgeResult, this->getPosition());
 }
 
@@ -193,8 +206,8 @@ void Note::onTouchEnded(Touch *touch, Event  *event)
 		note->judge();
 }
 
-int Note::getDestX(){ return this->destX; }
-int Note::getDestY(){ return this->destY; }
+int Note::getDesX(){ return this->desX; }
+int Note::getDesY(){ return this->desY; }
 int Note::getLife(){ return this->life; }
 int Note::getLength(){ return this->length; }
 NoteType Note::getType(){ return this->type; }
