@@ -18,8 +18,8 @@ public:
 	void judge();
 
 	int getLength();
-	int getDestX();
-	int getDestY();
+	int getDesX();
+	int getDesY();
 	int getLife();
 	NoteType getType();
 	NoteStatus getStatus();
@@ -35,8 +35,9 @@ private:
 	NoteType type;//音符类型
 	NoteStatus status;//当前状态
 	Point touchpoint;//触摸点
+	Sprite *judgePic;//评级
 	int length;//总生命长度
-	int destX, destY;//滑动音符的目的地
+	int desX, desY;//滑动音符的目的地
 	int life;//剩余生命长度
 	int lifeTouchBegan;//触摸开始时的生命值
 };

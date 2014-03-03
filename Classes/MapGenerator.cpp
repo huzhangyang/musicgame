@@ -29,18 +29,20 @@ void MapGenerator::generateMap(const char* songname)
 			for (int j = 1; j <= 9; j++)
 				if (UseMap[i][j] > 0)
 					UseMap[i][j]--;
-		int beatBar = getBeat();
-		if (beatBar >= 0 && beatTick - lastbeatTick > BEAT_MINLASTTIME)
+		beatBar = getBeat();
+		if (beatBar<0)
+			lastBeatBar = -99;
+		else if (beatTick - lastbeatTick > BEAT_MINLASTTIME)//过了最小生成时间
 		{
-			if (beatBar == lastBeatBar)
+			if (beatBar == lastBeatBar)//beat频域完全相同则是长按
 			{
 				type = 1;
 			}
-			else if (beatBar <= lastBeatBar + 3 && beatBar >= lastBeatBar - 3)
+			else if (beatBar <= lastBeatBar + 1 && beatBar >= lastBeatBar - 1)//频域差别不大则是滑动
 			{
 				type = 2;
 			}
-			else
+			else//否则点击
 			{
 				writeNoteline(type, beatTick - lastbeatTick);
 				log("%d %d", beatTick, beatBar);
@@ -49,7 +51,6 @@ void MapGenerator::generateMap(const char* songname)
 			}
 			lastBeatBar = beatBar;
 		}
-		else lastBeatBar = -99;
 	}
 	fclose(fout);
 }
@@ -98,13 +99,13 @@ void MapGenerator::writeNoteline(int type, int length)
 
 int MapGenerator::getPosX(int posY, int length)
 {
-	for (int i = 5; i <= 9; i++)
+	for (int i = beatBar / 2 + 1; i <= 9; i++)
 		if (UseMap[i][posY] == 0)
 		{
 			UseMap[i][posY] = length;
 			return i;
 		}
-	for (int i = 5; i >= 1; i--)
+	for (int i = beatBar / 2 + 1; i >= 1; i--)
 		if (UseMap[i][posY] == 0)
 		{
 			UseMap[i][posY] = length;

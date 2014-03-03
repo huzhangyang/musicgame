@@ -10,7 +10,6 @@ std::ifstream fin;//输入流
 Noteline noteline;
 Counter counter;
 Text *labelCombo;
-Sprite *judgePic;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -39,9 +38,11 @@ bool GameScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
+	std::string musicname = "music/" + FileName + ".mp3";
+	AudioEngine::getInstance()->create(musicname.c_str());
+
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	addChild(sceneNode);
-
 	UINode = sceneNode->getChildByTag(10004);
 	PauseNode = sceneNode->getChildByTag(10005);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
@@ -79,18 +80,13 @@ bool GameScene::init()
 	{
 		labelDifficulty->loadTexture("gameSceneUI/hard.png");
 	}
-	judgePic = Sprite::create();
-	UINode->addChild(judgePic);
-	judgePic->setOpacity(0);
 	return true;
 }
 
 void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
-	/////////////////////////////////////////////////////
-	std::string musicname = "music/" + FileName + ".mp3";
-	AudioEngine::getInstance()->create(musicname.c_str());
+	/////////////////////////////////////////////////////	
 	//fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开手动生成测试谱面
 	std::string mapname = FileUtils::getInstance()->getWritablePath() + FileName + ".gnm";
 	fin.open(mapname);//打开自动生成测试谱面
@@ -169,21 +165,6 @@ void GameScene::addNewNote(int type, int length, int pos, int des)
 {
 	auto note = Note::createNote(type, length, pos, des);
 	UINode->addChild(note);
-	if (note->getType() == 2)
-		addArrow(note->getPositionX(), note->getPositionY(), note->getDestX(), note->getDestY());
-}
-
-void GameScene::addArrow(int posX, int posY, int desX, int desY)
-{
-	auto arrow = Sprite::create("gameSceneUI/arrow.png");
-	auto dest = Sprite::create("gameSceneUI/note.png");
-	arrow->setPosition(posX / 2 + desX / 2, posY / 2 + desY / 2);
-	dest->setPosition(desX, desY);
-	arrow->setRotation(atan2(desX - posX, desY - posY) * 180 / M_PI);
-	dest->runAction(FadeOut::create(2));//消失特效
-	arrow->runAction(FadeOut::create(2));//消失特效
-	UINode->addChild(arrow);
-	UINode->addChild(dest);
 }
 
 void GameScene::addRandomNote(float dt)
@@ -196,23 +177,21 @@ void GameScene::addRandomNote(float dt)
 	addNewNote(randomT, 60, randomX * 10 + randomY, randomA * 10 + randomB);
 }
 
-void GameScene::judgeNote(int judge, Point pos)
+void GameScene::judgeNote(int judgeResult)
 {
 	counter.total++;
 	char temp[64];
-	switch (judge)
+	switch (judgeResult)
 	{
 	case 0:
 		counter.combo = 0;
 		counter.miss++;
-		judgePic->setTexture("clearSceneUI/miss.png");
 		labelCombo->setText("");
 		break;
 	case 1:
 		counter.combo++;
 		counter.good++;
 		counter.percent += (float)counter.combo / (float)counter.total;
-		judgePic->setTexture("clearSceneUI/good.png");
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
@@ -220,15 +199,11 @@ void GameScene::judgeNote(int judge, Point pos)
 		counter.combo++;
 		counter.perfect++;
 		counter.percent += (float)counter.combo / (float)counter.total;
-		judgePic->setTexture("clearSceneUI/perfect.png");
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
 	}
 	labelCombo->runAction(FadeOut::create(1));//消失特效
-	judgePic->setPosition(pos);
-	judgePic->setScale(0.6f);
-	judgePic->runAction(FadeOut::create(0.2f));
 }
 
 void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
