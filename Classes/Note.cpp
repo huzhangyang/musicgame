@@ -60,7 +60,7 @@ void Note::initNote(int type, int length, int pos, int des)
 		noteListener->onTouchEnded = CC_CALLBACK_2(Note::onTouchEnded, this);
 		break;
 	}
-	this->setOpacity(200);
+	this->setOpacity(128);
 	this->runAction(FadeTo::create(1, 255));
 	judgePic = Sprite::create("gameSceneUI/judge.png");
 	judgePic->setScale(2);
@@ -151,13 +151,13 @@ void Note::judge(float slideAngle)
 
 bool Note::onTouchBegan(Touch *touch, Event  *event)
 {
-	Point pos = this->getPosition();
+	Point locationInNode = this->convertToNodeSpace(touch->getLocation());
 	Size s = this->getContentSize();
-	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
-	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused() && isTouched == false)
+	Rect rect = Rect(0, 0, s.width, s.height);
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && isTouched == false)
 	{
 		isTouched = true;
-		judgePic->stopAllActions();
+		judgePic->setOpacity(0);
 		if (type == CLICK)
 			this->judge();
 		else if (type == LONGPRESS)
@@ -174,28 +174,28 @@ bool Note::onTouchBegan(Touch *touch, Event  *event)
 }
 void Note::onTouchMoved(Touch *touch, Event  *event)
 {
-	Point pos = this->getPosition();
+	Point locationInNode = this->convertToNodeSpace(touch->getLocation());
 	Size s = this->getContentSize();
-	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
-	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused() && isSlided == false)//滑动经过音符内时标记为划过
+	Rect rect = Rect(0, 0, s.width, s.height);
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && isSlided == false)//滑动经过音符内时标记为划过
 	{
 		isSlided = true;
 	}
 }
 void Note::onTouchEnded(Touch *touch, Event  *event)
 {
-	Point pos = this->getPosition();
+	Point locationInNode = this->convertToNodeSpace(touch->getLocation());
 	Size s = this->getContentSize();
-	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
+	Rect rect = Rect(0, 0, s.width, s.height);
 	float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
-	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused())//提前松手时进行长按音符的判定
+	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())//提前松手时进行长按音符的判定
 	{
 		if (type == LONGPRESS)
 			this->judge();
-		else if (pos.getDistance(touch->getStartLocation()) >= s.width)
+		else
 			this->judge(slideAngle);
 	}
-	else if (type == SLIDE&&isSlided&&pos.getDistance(touch->getStartLocation()) >= s.width)
+	else if (type == SLIDE&&isSlided)
 	{
 		this->judge(slideAngle);
 	}
