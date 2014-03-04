@@ -36,7 +36,7 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->desX = 120 * (des / 10) + 80;
 	this->desY = 60 * (10 - des % 10) + 5;
 	noteListener = EventListenerTouchOneByOne::create();
-	//noteListener->setSwallowTouches(true);//一次触摸只对一个有效
+	noteListener->setSwallowTouches(true);//一次触摸只对一个有效
 	switch (type)
 	{
 	case CLICK:
@@ -106,10 +106,13 @@ void Note::judge()
 	switch (type)
 	{
 	case CLICK:
-		lifePercent = (float)life / (TIME_PRELOAD * 2);
+		if (isActivated)
+			lifePercent = (float)(TIME_PRELOAD - life) / TIME_PRELOAD;
+		else
+			lifePercent = (float)life / TIME_PRELOAD;
 		if (lifePercent >= 0.8)//太早或太晚都是miss
 			judgeResult = 0;
-		else if (lifePercent >= 0.4)//正中点前后40%开外只能是good
+		else if (lifePercent >= 0.2)//正中点前后40%开外只能是good
 			judgeResult = 1;
 		else
 			judgeResult = 2;
@@ -124,10 +127,13 @@ void Note::judge()
 			judgeResult = 2;
 		break;
 	case SLIDE:
-		lifePercent = (float)life / (TIME_PRELOAD * 2);
+		if (isActivated)
+			lifePercent = (float)(TIME_PRELOAD - life) / TIME_PRELOAD;
+		else
+			lifePercent = (float)life / TIME_PRELOAD;
 		if (lifePercent >= 0.8)//太早或太晚都是miss
 			judgeResult = 0;
-		else if (lifePercent >= 0.4)//正中点前后40%开外只能是good
+		else if (lifePercent >= 0.2)//正中点前后40%开外只能是good
 			judgeResult = 1;
 		else
 			judgeResult = 2;
@@ -160,6 +166,8 @@ bool Note::onTouchBegan(Touch *touch, Event  *event)
 			this->lifeTouchBegan = this->life;
 		return true;
 	}
+	else if (type == 2)
+		return true;
 	return false;
 }
 void Note::onTouchMoved(Touch *touch, Event  *event)
