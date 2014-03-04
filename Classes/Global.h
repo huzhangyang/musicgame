@@ -53,6 +53,6 @@ const int CLEARSCENE_RETRY = 14;
 const int CLEARSCENE_RETURN = 15;
 
 //其它常数
-const int TIME_PRELOAD = 60;//音符提前出现的时间
+const int TIME_PRELOAD = 54;//音符提前出现的时间
 const std::string FILENAME = "test";//曲子文件名
 #endif 

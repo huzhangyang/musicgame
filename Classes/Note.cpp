@@ -36,7 +36,7 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->desX = 120 * (des / 10) + 80;
 	this->desY = 60 * (10 - des % 10) + 5;
 	noteListener = EventListenerTouchOneByOne::create();
-	noteListener->setSwallowTouches(true);//一次触摸只对一个有效
+	//noteListener->setSwallowTouches(true);//一次触摸只对一个有效
 	switch (type)
 	{
 	case CLICK:
@@ -52,7 +52,7 @@ void Note::initNote(int type, int length, int pos, int des)
 		break;
 	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
-		this->length = length;
+		this->length = TIME_PRELOAD;
 		this->setRotation(atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
 		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
 		noteListener->onTouchMoved = CC_CALLBACK_2(Note::onTouchMoved, this);
@@ -62,7 +62,6 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->runAction(FadeTo::create(1, 255));
 	judgePic = Sprite::create("gameSceneUI/judge.png");
 	judgePic->setScale(2);
-	judgePic->setLocalZOrder(5);
 	judgePic->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1));
 	judgePic->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
 	this->addChild(judgePic);
@@ -72,7 +71,6 @@ void Note::initNote(int type, int length, int pos, int des)
 void Note::removeNote()
 {
 	this->removeFromParent();
-	Director::getInstance()->getEventDispatcher()->removeEventListener(this->noteListener);
 }
 
 void Note::update(float dt)
@@ -82,9 +80,11 @@ void Note::update(float dt)
 	{
 		if (!isActivated)
 		{
-			judgePic->runAction(ScaleTo::create(life / 60.0, 0));
 			isActivated = true;
-			this->life = this->length;
+			life = this->length;
+			judgePic->runAction(ScaleTo::create(life / 60.0, 0));
+			if (type == LONGPRESS)
+				this->runAction(RotateBy::create(life / 60.0, 360));
 			if (isTouched)
 				this->lifeTouchBegan = life;
 		}
@@ -100,15 +100,16 @@ void Note::judge()
 
 	this->stopAllActions();//停止所有动作
 	this->unscheduleAllSelectors();//停止所有计算
+	Director::getInstance()->getEventDispatcher()->removeEventListener(this->noteListener);//取消动作监听
 	this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
 
 	switch (type)
 	{
 	case CLICK:
 		lifePercent = (float)life / (TIME_PRELOAD * 2);
-		if (lifePercent <= 0.1 || lifePercent >= 0.9)//太早或太晚都是miss
+		if (lifePercent >= 0.8)//太早或太晚都是miss
 			judgeResult = 0;
-		else if (lifePercent <= 0.3 || lifePercent >= 0.7)//正中点前后40%开外只能是good
+		else if (lifePercent >= 0.4)//正中点前后40%开外只能是good
 			judgeResult = 1;
 		else
 			judgeResult = 2;
@@ -123,15 +124,16 @@ void Note::judge()
 			judgeResult = 2;
 		break;
 	case SLIDE:
-		lifePercent = (float)life / length * 2;
-		if (lifePercent <= 0.1 || lifePercent >= 0.9)//太早或太晚都是miss
+		lifePercent = (float)life / (TIME_PRELOAD * 2);
+		if (lifePercent >= 0.8)//太早或太晚都是miss
 			judgeResult = 0;
-		else if (lifePercent <= 0.3 || lifePercent >= 0.7)//正中点前后40%开外只能是good
+		else if (lifePercent >= 0.4)//正中点前后40%开外只能是good
 			judgeResult = 1;
 		else
 			judgeResult = 2;
 		break;
 	}
+	log("%d %f %d", type, lifePercent, judgeResult);
 	judgePic->setScale(1);
 	if (judgeResult == 0)
 		judgePic->setTexture("gameSceneUI/halo0.png");
@@ -151,6 +153,7 @@ bool Note::onTouchBegan(Touch *touch, Event  *event)
 	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused() && isTouched == false)
 	{
 		isTouched = true;
+		judgePic->stopAllActions();
 		if (this->type == CLICK)//对普通note，直接进行判定
 			this->judge();
 		else if (isActivated)//对已开始生命周期的长按note,记录此时生命值
@@ -164,13 +167,16 @@ void Note::onTouchMoved(Touch *touch, Event  *event)
 	Point pos = this->getPosition();
 	Size s = this->getContentSize();
 	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
-	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused() && this->life != 0)//滑动经过音符内时进行滑动音符的判定
+	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused())//滑动经过音符内时进行滑动音符的判定
 	{
 		this->judge();
 	}
 }
 void Note::onTouchEnded(Touch *touch, Event  *event)
 {
-	if (!Director::getInstance()->isPaused() && this->life != 0)//提前松手时进行长按音符的判定
+	Point pos = this->getPosition();
+	Size s = this->getContentSize();
+	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
+	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused())//提前松手时进行长按音符的判定
 		this->judge();
 }
