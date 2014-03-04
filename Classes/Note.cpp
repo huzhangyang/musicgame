@@ -60,7 +60,7 @@ void Note::initNote(int type, int length, int pos, int des)
 		noteListener->onTouchEnded = CC_CALLBACK_2(Note::onTouchEnded, this);
 		break;
 	}
-	this->setOpacity(128);
+	this->setOpacity(200);
 	this->runAction(FadeTo::create(1, 255));
 	judgePic = Sprite::create("gameSceneUI/judge.png");
 	judgePic->setScale(2);
@@ -103,7 +103,7 @@ void Note::judge(float slideAngle)
 	this->stopAllActions();//停止所有动作
 	this->unscheduleAllSelectors();//停止所有计算
 	Director::getInstance()->getEventDispatcher()->removeEventListener(this->noteListener);//取消动作监听
-	this->runAction(Sequence::create(FadeOut::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
+	this->runAction(Sequence::create(FadeOut::create(0.2f), DelayTime::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
 
 	switch (type)
 	{
@@ -138,6 +138,7 @@ void Note::judge(float slideAngle)
 			judgeResult = 2;
 		break;
 	}
+	judgePic->stopAllActions();
 	judgePic->setScale(1);
 	if (judgeResult == 0)
 		judgePic->setTexture("gameSceneUI/halo0.png");
@@ -145,7 +146,7 @@ void Note::judge(float slideAngle)
 		judgePic->setTexture("gameSceneUI/halo1.png");
 	else
 		judgePic->setTexture("gameSceneUI/halo2.png");
-	judgePic->runAction(FadeOut::create(0.2f));
+	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
 }
 
