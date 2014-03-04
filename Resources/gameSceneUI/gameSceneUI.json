@@ -476,8 +476,8 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.226953074,
-          "positionPercentY": 0.9176019,
+          "positionPercentX": 0.2265625,
+          "positionPercentY": 0.9166667,
           "positionType": 0,
           "rotation": 0,
           "scaleX": 1,
@@ -497,7 +497,7 @@
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "5555"
+          "text": ""
         }
       }
     ],
