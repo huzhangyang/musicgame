@@ -33,14 +33,24 @@ bool ClearScene::init()
 	auto background = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_BG));
 	auto buttonRetry = dynamic_cast<Button*>(UIlayer->getChildByTag(CLEARSCENE_RETRY));
 	auto buttonReturn = dynamic_cast<Button*>(UIlayer->getChildByTag(CLEARSCENE_RETURN));
-	auto labelPerfect = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_PNO));
-	auto labelGood = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_GNO));
-	auto labelMiss = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_MNO));
-	auto labelTotal = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
-	auto labelComplete = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
+	auto labelPerfect = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_PNO));
+	auto labelGood = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_GNO));
+	auto labelMiss = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_MNO));
+	auto labelTotal = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
+	auto labelComplete = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
 	auto labelJudge = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_JUDGE));
 	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
+	auto labelDifficulty = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
 	labelInfo->setText(FileName);
+	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+	if (difficulty == 0)
+	{
+		labelDifficulty->loadTexture("gameSceneUI/easy.png");
+	}
+	else if (difficulty == 1)
+	{
+		labelDifficulty->loadTexture("gameSceneUI/hard.png");
+	}
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	char temp[64];
