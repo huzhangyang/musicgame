@@ -17,7 +17,7 @@ private:
 	void initNote(int type, int length, int pos, int des);
 	void removeNote();
 	void update(float dt);
-	void judge();
+	void judge(float slideAngle = 0);
 	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
 	void onTouchMoved(Touch *pTouch, Event  *pEvent);
 	void onTouchEnded(Touch *pTouch, Event  *pEvent);
@@ -26,6 +26,7 @@ private:
 	EventListenerTouchOneByOne *noteListener;//事件监听器
 	bool isTouched;//是否被触摸
 	bool isActivated;//是否开始生命周期
+	bool isSlided;
 	int length;//总生命长度
 	int desX, desY;//滑动音符的目的地
 	int life;//剩余生命长度

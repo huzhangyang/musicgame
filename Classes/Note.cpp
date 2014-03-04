@@ -31,6 +31,7 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->lifeTouchBegan = 0;
 	this->isActivated = false;
 	this->isTouched = false;
+	this->isSlided = false;
 	this->setPositionX(120 * (pos / 10) + 80);
 	this->setPositionY(60 * (10 - pos % 10) + 5);
 	this->desX = 120 * (des / 10) + 80;
@@ -56,13 +57,14 @@ void Note::initNote(int type, int length, int pos, int des)
 		this->setRotation(atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
 		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
 		noteListener->onTouchMoved = CC_CALLBACK_2(Note::onTouchMoved, this);
+		noteListener->onTouchEnded = CC_CALLBACK_2(Note::onTouchEnded, this);
 		break;
 	}
 	this->setOpacity(200);
 	this->runAction(FadeTo::create(1, 255));
 	judgePic = Sprite::create("gameSceneUI/judge.png");
 	judgePic->setScale(2);
-	judgePic->runAction(ScaleTo::create(TIME_PRELOAD / 60.0, 1));
+	judgePic->runAction(ScaleTo::create(life / 60.0, 1));
 	judgePic->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
 	this->addChild(judgePic);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(noteListener, this->getTag());
@@ -93,7 +95,7 @@ void Note::update(float dt)
 	}
 }
 
-void Note::judge()
+void Note::judge(float slideAngle)
 {
 	float lifePercent;
 	int judgeResult;
@@ -127,19 +129,15 @@ void Note::judge()
 			judgeResult = 2;
 		break;
 	case SLIDE:
-		if (isActivated)
-			lifePercent = (float)(TIME_PRELOAD - life) / TIME_PRELOAD;
-		else
-			lifePercent = (float)life / TIME_PRELOAD;
-		if (lifePercent >= 0.8)//太早或太晚都是miss
+		lifePercent = abs(slideAngle - this->getRotation());
+		if (!isSlided || lifePercent > 36)
 			judgeResult = 0;
-		else if (lifePercent >= 0.2)//正中点前后40%开外只能是good
+		else if (lifePercent > 18)
 			judgeResult = 1;
 		else
 			judgeResult = 2;
 		break;
 	}
-	log("%d %f %d", type, lifePercent, judgeResult);
 	judgePic->setScale(1);
 	if (judgeResult == 0)
 		judgePic->setTexture("gameSceneUI/halo0.png");
@@ -160,13 +158,17 @@ bool Note::onTouchBegan(Touch *touch, Event  *event)
 	{
 		isTouched = true;
 		judgePic->stopAllActions();
-		if (this->type == CLICK)//对普通note，直接进行判定
+		if (type == CLICK)
 			this->judge();
-		else if (isActivated)//对已开始生命周期的长按note,记录此时生命值
-			this->lifeTouchBegan = this->life;
+		else if (type == LONGPRESS)
+		{
+			this->setScale(1.1f);
+			if (isActivated)
+				this->lifeTouchBegan = this->life;
+		}
 		return true;
 	}
-	else if (type == 2)
+	else if (type == SLIDE)
 		return true;
 	return false;
 }
@@ -175,9 +177,9 @@ void Note::onTouchMoved(Touch *touch, Event  *event)
 	Point pos = this->getPosition();
 	Size s = this->getContentSize();
 	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
-	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused())//滑动经过音符内时进行滑动音符的判定
+	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused() && isSlided == false)//滑动经过音符内时标记为划过
 	{
-		this->judge();
+		isSlided = true;
 	}
 }
 void Note::onTouchEnded(Touch *touch, Event  *event)
@@ -185,6 +187,16 @@ void Note::onTouchEnded(Touch *touch, Event  *event)
 	Point pos = this->getPosition();
 	Size s = this->getContentSize();
 	Rect rect = Rect(pos.x - s.width / 2, pos.y - s.height / 2, s.width, s.height);
+	float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
 	if (rect.containsPoint(touch->getLocation()) && !Director::getInstance()->isPaused())//提前松手时进行长按音符的判定
-		this->judge();
+	{
+		if (type == LONGPRESS)
+			this->judge();
+		else if (pos.getDistance(touch->getStartLocation()) >= s.width)
+			this->judge(slideAngle);
+	}
+	else if (type == SLIDE&&isSlided&&pos.getDistance(touch->getStartLocation()) >= s.width);
+	{
+		this->judge(slideAngle);
+	}
 }
