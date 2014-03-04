@@ -195,7 +195,7 @@ void Note::onTouchEnded(Touch *touch, Event  *event)
 		else if (pos.getDistance(touch->getStartLocation()) >= s.width)
 			this->judge(slideAngle);
 	}
-	else if (type == SLIDE&&isSlided&&pos.getDistance(touch->getStartLocation()) >= s.width);
+	else if (type == SLIDE&&isSlided&&pos.getDistance(touch->getStartLocation()) >= s.width)
 	{
 		this->judge(slideAngle);
 	}
