@@ -1,9 +1,9 @@
 #include "MapGenerator.h"
 #include <fstream>
 
-const float BPM = 133.21f;
+const float BPM = 89.02f;
 const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
-const int BEAT_MINLASTTIME = 27;//最小节奏持续帧数
+const int BEAT_MINLASTTIME = 40;//最小节奏持续帧数
 const int FFT_SIZE = 256;
 
 FILE* fout;//输出文件
