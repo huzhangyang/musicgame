@@ -3,9 +3,11 @@
 
 const float BPM = 89.02f;
 const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
-const int BEAT_MINLASTTIME = 40;//最小节奏持续帧数
-const int FFT_SIZE = 256;
-
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#define FFT_SIZE 128
+#else
+#define FFT_SIZE 1024
+#endif
 FILE* fout;//输出文件
 int beatTick, lastbeatTick, beatBar, lastBeatBar;
 int UseMap[10][10];
@@ -15,6 +17,7 @@ void MapGenerator::generateMap(const char* songname)
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
 	std::string mapname = songname;
+	float BEAT_MINLASTTIME = 3600 / BPM;//最小节奏持续帧数
 	int type = 0;
 	for (int i = 1; i <= 9; i++)
 		for (int j = 1; j <= 9; j++)
@@ -99,13 +102,16 @@ void MapGenerator::writeNoteline(int type, int length)
 
 int MapGenerator::getPosX(int posY, int length)
 {
-	for (int i = beatBar / 2 + 1; i <= 9; i++)
+	int startLoc = FFT_SIZE / (8 * beatBar) + 1;
+	if (startLoc > 9)
+		startLoc = CCRANDOM_0_1() * 8 + 1;
+	for (int i = startLoc; i <= 9; i++)
 		if (UseMap[i][posY] == 0)
 		{
 			UseMap[i][posY] = length;
 			return i;
 		}
-	for (int i = beatBar / 2 + 1; i >= 1; i--)
+	for (int i = startLoc; i >= 1; i--)
 		if (UseMap[i][posY] == 0)
 		{
 			UseMap[i][posY] = length;
