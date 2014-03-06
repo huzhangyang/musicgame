@@ -8,6 +8,8 @@ class MapUtils{
 public:
 	static void generateMap(const char* songname);//生成谱面
 	static void loadMap(std::string filename);//加载谱面
+	static void closeMap();//关闭谱面
+	static int getLineNumber();
 	static void getNoteline();//得到下一行谱面
 	static Point getNextPos();//得到下个note的位置
 private:

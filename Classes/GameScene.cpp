@@ -95,6 +95,7 @@ void GameScene::onExitTransitionDidStart()
 	Layer::onExitTransitionDidStart();
 	/////////////////////////////////////////////////////
 	AudioEngine::getInstance()->stop();
+	MapUtils::closeMap();
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -152,6 +153,7 @@ void GameScene::addNewNote(int type, int length, int pos)
 void GameScene::judgeNote(int judgeResult)
 {
 	char temp[64];
+	float all = MapUtils::getLineNumber();
 	switch (judgeResult)
 	{
 	case 0:
@@ -162,14 +164,16 @@ void GameScene::judgeNote(int judgeResult)
 	case 1:
 		counter.combo++;
 		counter.good++;
-		counter.percent += (float)counter.combo / (float)counter.total;
+		counter.percent += 20 * counter.combo / (float)counter.total / all;
+		counter.percent += 40 / all;
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
 	case 2:
 		counter.combo++;
 		counter.perfect++;
-		counter.percent += (float)counter.combo / (float)counter.total;
+		counter.percent += 20 * counter.combo / (float)counter.total / all;
+		counter.percent += 80 / all;
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;

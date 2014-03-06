@@ -62,20 +62,17 @@ bool ClearScene::init()
 	labelMiss->setText(temp);
 	sprintf(temp, "%d", counter.total);
 	labelTotal->setText(temp);
-	float completePercent = counter.percent*0.2 / (float)counter.total;
-	completePercent += (float)counter.perfect / (float)counter.total * 0.8;
-	completePercent += (float)counter.good / (float)counter.total * 0.4;
-	sprintf(temp, "%.2f", completePercent * 100);
+	sprintf(temp, "%.2f", counter.percent);
 	labelComplete->setText(strcat(temp, "%"));
-	if (completePercent >= 0.99)
+	if (counter.percent >= 99)
 		labelJudge->loadTexture("clearSceneUI/S.png");
-	else if (completePercent >= 0.9)
+	else if (counter.percent >= 90)
 		labelJudge->loadTexture("clearSceneUI/A.png");
-	else if (completePercent >= 0.8)
+	else if (counter.percent >= 80)
 		labelJudge->loadTexture("clearSceneUI/B.png");
-	else if (completePercent >= 0.7)
+	else if (counter.percent >= 70)
 		labelJudge->loadTexture("clearSceneUI/C.png");
-	else if (completePercent >= 0.6)
+	else if (counter.percent >= 60)
 		labelJudge->loadTexture("clearSceneUI/D.png");
 	else
 	{

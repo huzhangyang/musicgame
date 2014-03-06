@@ -10,8 +10,9 @@ const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
 #endif
 
 Noteline noteline;
-std::ifstream fin;//输入流
+std::ifstream fin, fin2;//输入流
 FILE* fout;//输出文件
+std::string mapname;
 int beatTick, lastbeatTick, beatBar, lastBeatBar;
 float FramePerBeat;
 int UseMap[10][10];
@@ -64,9 +65,27 @@ void MapUtils::generateMap(const char* songname)
 
 void MapUtils::loadMap(std::string filename)
 {
-	std::string mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
+	mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
 	fin.open(mapname);//打开自动生成测试谱面
 	getNoteline();//读取第一行
+}
+
+void MapUtils::closeMap()
+{
+	fin.close();
+}
+
+int MapUtils::getLineNumber()
+{
+	int ret = 0;
+	std::string temp;
+	fin2.open(mapname);//打开自动生成测试谱面
+	while (getline(fin2, temp))
+	{
+		ret++;
+	}
+	fin2.close();
+	return ret;
 }
 
 void MapUtils::getNoteline()
@@ -83,7 +102,6 @@ void MapUtils::getNoteline()
 	else
 	{
 		noteline.time = 0;//结束标识符
-		fin.close();
 	}
 }
 

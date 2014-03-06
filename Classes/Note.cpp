@@ -49,11 +49,11 @@ void Note::initNote(int type, int length, int pos)
 	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
 		this->length = TIME_PRELOAD;
-		this->setRotation(atan2(MapUtils::getNextPos().x- getPositionX(), MapUtils::getNextPos().y - getPositionY()) * 180 / M_PI);
+		this->setRotation(atan2(MapUtils::getNextPos().x - getPositionX(), MapUtils::getNextPos().y - getPositionY()) * 180 / M_PI);
 		break;
 	}
 	this->setOpacity(200);
-	this->setLocalZOrder(500 - (++counter.total));
+	this->setLocalZOrder(MapUtils::getLineNumber() - (++counter.total));//调整显示和响应顺序
 	if (!noteListener)
 		createNoteListener();
 	else addToNoteListener();
@@ -141,6 +141,7 @@ void Note::judge(float slideAngle)
 		judgePic->setTexture("gameSceneUI/halo2.png");
 	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
+	log("%d %d %d", MapUtils::getLineNumber() - this->getLocalZOrder(), this->type, this->life);
 }
 
 void Note::createNoteListener()
@@ -189,14 +190,14 @@ void Note::createNoteListener()
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
 		float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
-		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())//提前松手时进行长按音符的判定
+		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->life > 0)//提前松手时进行长按音符的判定
 		{
 			if (target->type == LONGPRESS)
 				target->judge();
 			else if (touch->getLocation().getDistance(target->getPosition()) >= s.width)
 				target->judge(slideAngle);
 		}
-		else if (target->type == SLIDE&&target->isSlided&& touch->getLocation().getDistance(target->getPosition()) >= s.width)
+		else if (target->type == SLIDE&&target->isSlided&& touch->getLocation().getDistance(target->getPosition()) >= s.width&& target->life > 0)
 		{
 			target->judge(slideAngle);
 		}
