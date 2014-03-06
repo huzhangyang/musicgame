@@ -193,10 +193,10 @@ void Note::onTouchEnded(Touch *touch, Event  *event)
 	{
 		if (type == LONGPRESS)
 			this->judge();
-		else
+		else if (touch->getLocation().getDistance(this->getPosition()) >= s.width)
 			this->judge(slideAngle);
 	}
-	else if (type == SLIDE&&isSlided)
+	else if (type == SLIDE&&isSlided&& touch->getLocation().getDistance(this->getPosition()) >= s.width)
 	{
 		this->judge(slideAngle);
 	}

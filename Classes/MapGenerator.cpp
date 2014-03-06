@@ -47,7 +47,7 @@ void MapGenerator::generateMap(const char* songname)
 			}
 			else//·ñÔòµã»÷
 			{
-				writeNoteline(type, beatTick - lastbeatTick);
+				writeNoteline(type, (beatTick - lastbeatTick) / 2);
 				log("%d %d", beatTick, beatBar);
 				lastbeatTick = beatTick;
 				type = 0;
