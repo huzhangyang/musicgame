@@ -18,12 +18,10 @@ private:
 	void removeNote();
 	void update(float dt);
 	void judge(float slideAngle = 0);
-	bool onTouchBegan(Touch *pTouch, Event  *pEvent);
-	void onTouchMoved(Touch *pTouch, Event  *pEvent);
-	void onTouchEnded(Touch *pTouch, Event  *pEvent);
+	void createNoteListener();
+	void addToNoteListener();
 	NoteType type;//音符类型
 	Sprite *judgePic;//评级
-	EventListenerTouchOneByOne *noteListener;//事件监听器
 	bool isTouched;//是否被触摸
 	bool isActivated;//是否开始生命周期
 	bool isSlided;

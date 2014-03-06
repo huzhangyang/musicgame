@@ -1,6 +1,8 @@
 #include "Note.h"
 #include "GameScene.h"
 
+EventListenerTouchOneByOne *noteListener;
+
 Note::Note()
 {
 }
@@ -26,7 +28,6 @@ Note* Note::createNote(int type, int length, int pos, int des)
 void Note::initNote(int type, int length, int pos, int des)
 {
 	this->type = (NoteType)type;
-	this->setTag(++counter.total);
 	this->life = TIME_PRELOAD;
 	this->lifeTouchBegan = 0;
 	this->isActivated = false;
@@ -36,38 +37,33 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->setPositionY(60 * (10 - pos % 10) + 5);
 	this->desX = 120 * (des / 10) + 80;
 	this->desY = 60 * (10 - des % 10) + 5;
-	noteListener = EventListenerTouchOneByOne::create();
-	noteListener->setSwallowTouches(true);//一次触摸只对一个有效
+	if (!noteListener)
+		createNoteListener();
+	else addToNoteListener();
 	switch (type)
 	{
 	case CLICK:
 		this->initWithFile("gameSceneUI/note0.png");
 		this->length = TIME_PRELOAD;
-		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
 		break;
 	case LONGPRESS:
 		this->initWithFile("gameSceneUI/note1.png");
 		this->length = length;
-		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
-		noteListener->onTouchEnded = CC_CALLBACK_2(Note::onTouchEnded, this);
 		break;
 	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
 		this->length = TIME_PRELOAD;
 		this->setRotation(atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
-		noteListener->onTouchBegan = CC_CALLBACK_2(Note::onTouchBegan, this);
-		noteListener->onTouchMoved = CC_CALLBACK_2(Note::onTouchMoved, this);
-		noteListener->onTouchEnded = CC_CALLBACK_2(Note::onTouchEnded, this);
 		break;
 	}
 	this->setOpacity(200);
 	this->runAction(FadeTo::create(1, 255));
+	this->setLocalZOrder(500 - (++counter.total));
 	judgePic = Sprite::create("gameSceneUI/judge.png");
 	judgePic->setScale(2);
 	judgePic->runAction(ScaleTo::create(life / 60.0, 1));
 	judgePic->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
 	this->addChild(judgePic);
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(noteListener, this->getTag());
 }
 
 void Note::removeNote()
@@ -102,7 +98,6 @@ void Note::judge(float slideAngle)
 
 	this->stopAllActions();//停止所有动作
 	this->unscheduleAllSelectors();//停止所有计算
-	Director::getInstance()->getEventDispatcher()->removeEventListener(this->noteListener);//取消动作监听
 	this->runAction(Sequence::create(FadeOut::create(0.2f), DelayTime::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
 
 	switch (type)
@@ -150,54 +145,68 @@ void Note::judge(float slideAngle)
 	GameScene::judgeNote(judgeResult);
 }
 
-bool Note::onTouchBegan(Touch *touch, Event  *event)
+void Note::createNoteListener()
 {
-	Point locationInNode = this->convertToNodeSpace(touch->getLocation());
-	Size s = this->getContentSize();
-	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && isTouched == false)
+	auto noteListener = EventListenerTouchOneByOne::create();
+	noteListener->setSwallowTouches(true);//一次触摸只对一个有效
+	noteListener->onTouchBegan = [](Touch *touch, Event  *event)
 	{
-		isTouched = true;
-		judgePic->setOpacity(0);
-		if (type == CLICK)
-			this->judge();
-		else if (type == LONGPRESS)
+		auto target = dynamic_cast<Note*>(event->getCurrentTarget());//获取的当前触摸的目标 
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
+		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->isTouched == false)
 		{
-			this->setScale(1.1f);
-			if (isActivated)
-				this->lifeTouchBegan = this->life;
+			target->isTouched = true;
+			target->judgePic->setOpacity(0);
+			if (target->type == CLICK)
+				target->judge();
+			else if (target->type == LONGPRESS)
+			{
+				target->setScale(1.1f);
+				if (target->isActivated)
+					target->lifeTouchBegan = target->life;
+			}
+			return true;
 		}
-		return true;
-	}
-	else if (type == SLIDE)
-		return true;
-	return false;
+		else if (target->type == SLIDE)
+			return true;
+		return false;
+	};
+	noteListener->onTouchMoved = [](Touch *touch, Event  *event)
+	{
+		auto target = dynamic_cast<Note*>(event->getCurrentTarget());//获取的当前触摸的目标 
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
+		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->isSlided == false)//滑动经过音符内时标记为划过
+		{
+			target->isSlided = true;
+		}
+	};
+	noteListener->onTouchEnded = [](Touch *touch, Event  *event)
+	{
+		auto target = dynamic_cast<Note*>(event->getCurrentTarget());//获取的当前触摸的目标 
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
+		float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
+		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())//提前松手时进行长按音符的判定
+		{
+			if (target->type == LONGPRESS)
+				target->judge();
+			else if (touch->getLocation().getDistance(target->getPosition()) >= s.width)
+				target->judge(slideAngle);
+		}
+		else if (target->type == SLIDE&&target->isSlided&& touch->getLocation().getDistance(target->getPosition()) >= s.width)
+		{
+			target->judge(slideAngle);
+		}
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(noteListener, this);
 }
-void Note::onTouchMoved(Touch *touch, Event  *event)
+
+void Note::addToNoteListener()
 {
-	Point locationInNode = this->convertToNodeSpace(touch->getLocation());
-	Size s = this->getContentSize();
-	Rect rect = Rect(0, 0, s.width, s.height);
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && isSlided == false)//滑动经过音符内时标记为划过
-	{
-		isSlided = true;
-	}
-}
-void Note::onTouchEnded(Touch *touch, Event  *event)
-{
-	Point locationInNode = this->convertToNodeSpace(touch->getLocation());
-	Size s = this->getContentSize();
-	Rect rect = Rect(0, 0, s.width, s.height);
-	float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
-	if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused())//提前松手时进行长按音符的判定
-	{
-		if (type == LONGPRESS)
-			this->judge();
-		else if (touch->getLocation().getDistance(this->getPosition()) >= s.width)
-			this->judge(slideAngle);
-	}
-	else if (type == SLIDE&&isSlided&& touch->getLocation().getDistance(this->getPosition()) >= s.width)
-	{
-		this->judge(slideAngle);
-	}
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(noteListener->clone(), this);
 }

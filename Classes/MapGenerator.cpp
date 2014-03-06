@@ -10,6 +10,7 @@ const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
 #endif
 FILE* fout;//输出文件
 int beatTick, lastbeatTick, beatBar, lastBeatBar;
+float FramePerBeat;
 int UseMap[10][10];
 
 void MapGenerator::generateMap(const char* songname)
@@ -17,7 +18,7 @@ void MapGenerator::generateMap(const char* songname)
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
 	std::string mapname = songname;
-	float BEAT_MINLASTTIME = 3600 / BPM;//最小节奏持续帧数
+	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	int type = 0;
 	for (int i = 1; i <= 9; i++)
 		for (int j = 1; j <= 9; j++)
@@ -35,7 +36,7 @@ void MapGenerator::generateMap(const char* songname)
 		beatBar = getBeat();
 		if (beatBar<0)
 			lastBeatBar = -99;
-		else if (beatTick - lastbeatTick > BEAT_MINLASTTIME)//过了最小生成时间
+		else if (beatTick - lastbeatTick > FramePerBeat)//过了最小生成时间
 		{
 			if (beatBar == lastBeatBar)//beat频域完全相同则是长按
 			{
@@ -122,9 +123,8 @@ int MapGenerator::getPosX(int posY, int length)
 
 int MapGenerator::getPosY(int time)
 {
-	float FramePerBeat = 3600.0 / BPM;
-	auto x = beatTick % (int)(FramePerBeat * 4);
-	switch (x % 16)
+	auto y = beatTick % (int)(FramePerBeat * 4);
+	switch (y % 16)
 	{
 	case 0:return 5;
 	case 1:return 6;
