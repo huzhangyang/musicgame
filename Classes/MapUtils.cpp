@@ -75,13 +75,15 @@ void MapUtils::closeMap()
 	fin.close();
 }
 
-int MapUtils::getLineNumber()
+int MapUtils::getNoteNumber()
 {
+	int difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");
 	int ret = 0;
 	std::string temp;
 	fin2.open(mapname);//打开自动生成测试谱面
 	while (getline(fin2, temp))
 	{
+		if (atoi(temp.substr(6, 7).c_str()) <= difficulty)
 		ret++;
 	}
 	fin2.close();
@@ -91,18 +93,19 @@ int MapUtils::getLineNumber()
 void MapUtils::getNoteline()
 {
 	std::string notestring;
-	if (getline(fin, notestring))
+	int difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");
+	while (getline(fin, notestring))
 	{
 		noteline.time = atoi(notestring.substr(0, 5).c_str());
 		noteline.difficulty = atoi(notestring.substr(6, 7).c_str());
 		noteline.type = atoi(notestring.substr(8, 9).c_str());
 		noteline.length = atoi(notestring.substr(10, 13).c_str());
 		noteline.pos = atoi(notestring.substr(14, 16).c_str());
+		if (noteline.difficulty <= difficulty)
+			break;
 	}
-	else
-	{
+	if (fin.eof())
 		noteline.time = 0;//结束标识符
-	}
 }
 
 Point MapUtils::getNextPos()

@@ -127,14 +127,11 @@ void GameScene::update(float dt)
 	while ((currPos + TIME_PRELOAD >= noteline.time))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
-		if (difficulty >= noteline.difficulty)//当前难度符合则生成否则跳过
-		{
-			int arg1 = noteline.type;
-			int arg2 = noteline.length;
-			int arg3 = noteline.pos;
-			MapUtils::getNoteline();//读取下个音符
-			addNewNote(arg1, arg2, arg3);
-		}
+		int arg1 = noteline.type;
+		int arg2 = noteline.length;
+		int arg3 = noteline.pos;
+		MapUtils::getNoteline();//读取下个音符
+		addNewNote(arg1, arg2, arg3);
 	}
 	if (!AudioEngine::getInstance()->isPlaying())//一首歌结束则切换到结算界面
 	{
@@ -153,7 +150,7 @@ void GameScene::addNewNote(int type, int length, int pos)
 void GameScene::judgeNote(int judgeResult)
 {
 	char temp[64];
-	float all = MapUtils::getLineNumber();
+	float all = MapUtils::getNoteNumber();
 	switch (judgeResult)
 	{
 	case 0:

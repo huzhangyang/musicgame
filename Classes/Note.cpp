@@ -53,7 +53,7 @@ void Note::initNote(int type, int length, int pos)
 		break;
 	}
 	this->setOpacity(200);
-	this->setLocalZOrder(MapUtils::getLineNumber() - (++counter.total));//调整显示和响应顺序
+	this->setLocalZOrder(MapUtils::getNoteNumber() - (++counter.total));//调整显示和响应顺序
 	if (!noteListener)
 		createNoteListener();
 	else addToNoteListener();
@@ -141,7 +141,6 @@ void Note::judge(float slideAngle)
 		judgePic->setTexture("gameSceneUI/halo2.png");
 	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
-	log("%d %d %d", MapUtils::getLineNumber() - this->getLocalZOrder(), this->type, this->life);
 }
 
 void Note::createNoteListener()
