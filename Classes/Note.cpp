@@ -89,12 +89,13 @@ void Note::update(float dt)
 	}
 }
 
-void Note::judge(float slideAngle)
+void Note::judge(float slideAngle, float slideDistance)
 {
 	float lifePercent;
 	int judgeResult;
 
 	this->stopAllActions();//停止所有动作
+	this->isTouched = true;//不再接受新的触摸事件
 	this->unscheduleAllSelectors();//停止所有计算
 	this->runAction(Sequence::create(FadeOut::create(0.2f), DelayTime::create(0.2f), CallFunc::create(CC_CALLBACK_0(Note::removeNote, this)), NULL));//消失特效
 
@@ -123,9 +124,9 @@ void Note::judge(float slideAngle)
 		break;
 	case SLIDE:
 		lifePercent = abs(slideAngle - this->getRotation());
-		if (!isSlided || lifePercent > 36)
+		if (!isSlided || lifePercent > 36 || slideDistance<48)
 			judgeResult = 0;
-		else if (lifePercent > 18)
+		else if (lifePercent > 18 || slideDistance < 96)
 			judgeResult = 1;
 		else
 			judgeResult = 2;
@@ -141,6 +142,7 @@ void Note::judge(float slideAngle)
 		judgePic->setTexture("gameSceneUI/halo2.png");
 	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
+	log("%d %d %d", MapUtils::getNoteNumber() - this->getLocalZOrder(), this->type, this->life, judgeResult);
 }
 
 void Note::createNoteListener()
@@ -153,7 +155,7 @@ void Note::createNoteListener()
 		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
-		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->isTouched == false)
+		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isTouched)
 		{
 			target->isTouched = true;
 			target->judgePic->setOpacity(0);
@@ -167,7 +169,7 @@ void Note::createNoteListener()
 			}
 			return true;
 		}
-		else if (target->type == SLIDE)
+		else if (target->type == SLIDE&& !target->isTouched)
 			return true;
 		return false;
 	};
@@ -177,7 +179,7 @@ void Note::createNoteListener()
 		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
-		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->isSlided == false)//滑动经过音符内时标记为划过
+		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isSlided)//滑动经过音符内时标记为划过
 		{
 			target->isSlided = true;
 		}
@@ -189,17 +191,13 @@ void Note::createNoteListener()
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
 		float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
-		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->life > 0)//提前松手时进行长按音符的判定
+		float slideDistance = touch->getLocation().getDistance(target->getPosition());
+		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->type == LONGPRESS &&target->life > 0)//提前松手时进行长按音符的判定
 		{
-			if (target->type == LONGPRESS)
-				target->judge();
-			else if (touch->getLocation().getDistance(target->getPosition()) >= s.width)
-				target->judge(slideAngle);
+			target->judge();
 		}
-		else if (target->type == SLIDE&&target->isSlided&& touch->getLocation().getDistance(target->getPosition()) >= s.width&& target->life > 0)
-		{
-			target->judge(slideAngle);
-		}
+		else if (target->type == SLIDE&&target->isSlided)
+			target->judge(slideAngle, slideDistance);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(noteListener, this);
 

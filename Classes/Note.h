@@ -17,7 +17,7 @@ private:
 	void initNote(int type, int length, int pos);
 	void removeNote();
 	void update(float dt);
-	void judge(float slideAngle = 0);
+	void judge(float slideAngle = 0, float slideDistance = 0);
 	void createNoteListener();
 	void addToNoteListener();
 	NoteType type;//“Ù∑˚¿‡–Õ

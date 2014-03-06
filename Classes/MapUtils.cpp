@@ -84,7 +84,7 @@ int MapUtils::getNoteNumber()
 	while (getline(fin2, temp))
 	{
 		if (atoi(temp.substr(6, 7).c_str()) <= difficulty)
-		ret++;
+			ret++;
 	}
 	fin2.close();
 	return ret;
@@ -94,17 +94,17 @@ void MapUtils::getNoteline()
 {
 	std::string notestring;
 	int difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");
-	while (getline(fin, notestring))
+	if (getline(fin, notestring))
 	{
 		noteline.time = atoi(notestring.substr(0, 5).c_str());
 		noteline.difficulty = atoi(notestring.substr(6, 7).c_str());
 		noteline.type = atoi(notestring.substr(8, 9).c_str());
 		noteline.length = atoi(notestring.substr(10, 13).c_str());
 		noteline.pos = atoi(notestring.substr(14, 16).c_str());
-		if (noteline.difficulty <= difficulty)
-			break;
+		if (noteline.difficulty > difficulty)
+			getNoteline();
 	}
-	if (fin.eof())
+	else
 		noteline.time = 0;//½áÊø±êÊ¶·û
 }
 
