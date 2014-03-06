@@ -1,13 +1,12 @@
 #include "GameScene.h"
 #include "ClearScene.h"
-#include "Note.h"
 #include "MainScene.h"
-#include <fstream>
+#include "Note.h"
+#include "MapUtils.h"
 
 int difficulty;//当前难度
 std::string FileName;//音乐文件名称
-std::ifstream fin;//输入流
-Noteline noteline;
+
 Counter counter;
 TextBMFont *labelCombo;
 
@@ -87,10 +86,7 @@ void GameScene::onEnterTransitionDidFinish()
 	/////////////////////////////////////////////////////	
 	std::string musicname = "music/" + FileName + ".mp3";
 	AudioEngine::getInstance()->create(musicname.c_str());
-	//fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开手动生成测试谱面
-	std::string mapname = FileUtils::getInstance()->getWritablePath() + FileName + ".gnm";
-	fin.open(mapname);//打开自动生成测试谱面
-	getNoteline();//读取第一行
+	MapUtils::loadMap(FileName.c_str());
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
 
@@ -99,7 +95,6 @@ void GameScene::onExitTransitionDidStart()
 	Layer::onExitTransitionDidStart();
 	/////////////////////////////////////////////////////
 	AudioEngine::getInstance()->stop();
-	fin.close();
 }
 
 void GameScene::menuCloseCallback(Object* pSender)
@@ -132,38 +127,25 @@ void GameScene::update(float dt)
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		if (difficulty >= noteline.difficulty)//当前难度符合则生成否则跳过
-			addNewNote(noteline.type, noteline.length, noteline.pos, noteline.des);
-		getNoteline();//读取下个音符
+		{
+			int arg1 = noteline.type;
+			int arg2 = noteline.length;
+			int arg3 = noteline.pos;
+			MapUtils::getNoteline();//读取下个音符
+			addNewNote(arg1, arg2, arg3);
+		}
 	}
-
 	if (!AudioEngine::getInstance()->isPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
-		fin.close();
 		auto scene = ClearScene::createScene(FileName);
 		Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 	}
 }
 
-void GameScene::getNoteline()
+void GameScene::addNewNote(int type, int length, int pos)
 {
-	std::string notestring;
-	if (getline(fin, notestring))
-	{
-		noteline.time = atoi(notestring.substr(0, 5).c_str());
-		noteline.difficulty = atoi(notestring.substr(6, 7).c_str());
-		noteline.type = atoi(notestring.substr(8, 9).c_str());
-		noteline.length = atoi(notestring.substr(10, 13).c_str());
-		noteline.pos = atoi(notestring.substr(14, 16).c_str());
-		noteline.des = atoi(notestring.substr(17, 19).c_str());
-	}
-	else
-		noteline.time = 0;//结束标识符
-}
-
-void GameScene::addNewNote(int type, int length, int pos, int des)
-{
-	auto note = Note::createNote(type, length, pos, des);
+	auto note = Note::createNote(type, length, pos);
 	UINode->addChild(note);
 }
 

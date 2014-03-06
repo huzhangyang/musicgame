@@ -1,6 +1,6 @@
 #include "MainScene.h"
 #include "GameScene.h"
-#include "MapGenerator.h"
+#include "MapUtils.h"
 
 Scene* MainScene::createScene()
 {
@@ -114,7 +114,7 @@ void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
 			this->createDialog("dialogTable");
 			break;
 		case MAINSCENE_PAPER:
-			MapGenerator::generateMap(musicname.c_str());
+			MapUtils::generateMap(musicname.c_str());
 			this->createDialog("dialogMapCreated");
 			AudioEngine::getInstance()->createLoop("music/main.mp3");
 			AudioEngine::getInstance()->play();

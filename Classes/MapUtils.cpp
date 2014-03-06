@@ -1,4 +1,4 @@
-#include "MapGenerator.h"
+#include "MapUtils.h"
 #include <fstream>
 
 const float BPM = 89.02f;
@@ -8,23 +8,25 @@ const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
 #else
 #define FFT_SIZE 1024
 #endif
+
+Noteline noteline;
+std::ifstream fin;//输入流
 FILE* fout;//输出文件
 int beatTick, lastbeatTick, beatBar, lastBeatBar;
 float FramePerBeat;
 int UseMap[10][10];
 
-void MapGenerator::generateMap(const char* songname)
+void MapUtils::generateMap(const char* songname)
 {
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
 	std::string mapname = songname;
+	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	int type = 0;
 	for (int i = 1; i <= 9; i++)
 		for (int j = 1; j <= 9; j++)
 			UseMap[i][j] = 0;
-
-	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
 	while (AudioEngine::getInstance()->isPlaying())
 	{
@@ -59,7 +61,38 @@ void MapGenerator::generateMap(const char* songname)
 	fclose(fout);
 }
 
-int MapGenerator::getBeat()
+void MapUtils::loadMap(std::string filename)
+{
+	//fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开手动生成测试谱面
+	std::string mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
+	fin.open(mapname);//打开自动生成测试谱面
+	getNoteline();//读取第一行
+}
+
+void MapUtils::getNoteline()
+{
+	std::string notestring;
+	if (getline(fin, notestring))
+	{
+		noteline.time = atoi(notestring.substr(0, 5).c_str());
+		noteline.difficulty = atoi(notestring.substr(6, 7).c_str());
+		noteline.type = atoi(notestring.substr(8, 9).c_str());
+		noteline.length = atoi(notestring.substr(10, 13).c_str());
+		noteline.pos = atoi(notestring.substr(14, 16).c_str());
+	}
+	else
+	{
+		noteline.time = 0;//结束标识符
+		fin.close();
+	}
+}
+
+int MapUtils::getNextPos()
+{
+	return noteline.pos;
+}
+
+int MapUtils::getBeat()
 {
 	int maxBar;
 	float DBavg = 0, DBmax = 0;//每一帧的平均dB和最大dB
@@ -85,23 +118,22 @@ int MapGenerator::getBeat()
 	return -1;
 }
 
-void MapGenerator::writeNoteline(int type, int length)
+void MapUtils::writeNoteline(int type, int length)
 {
-	int time = beatTick;
-	int difficulty = CCRANDOM_0_1() * 2;
-	int posY = getPosY(time);
-	int posX = getPosX(posY, length);
-	int desY = getPosY(time + length);
-	int desX = getPosX(desY, length);
-	fprintf(fout, "%.5d,", time);
-	fprintf(fout, "%.1d,", difficulty);
-	fprintf(fout, "%.1d,", type);
-	fprintf(fout, "%.3d,", length);
-	fprintf(fout, "%.1d%.1d,", posX, posY);
-	fprintf(fout, "%.1d%.1d\n", desX, desY);
+	noteline.time = beatTick;
+	noteline.difficulty = CCRANDOM_0_1() * 2;
+	noteline.type = type;
+	noteline.length = length;
+	noteline.pos = getPosY(noteline.time);
+	noteline.pos += getPosX(noteline.pos, length) * 10;
+	fprintf(fout, "%.5d,", noteline.time);
+	fprintf(fout, "%.1d,", noteline.difficulty);
+	fprintf(fout, "%.1d,", noteline.type);
+	fprintf(fout, "%.3d,", noteline.length);
+	fprintf(fout, "%.2d,", noteline.pos);
 }
 
-int MapGenerator::getPosX(int posY, int length)
+int MapUtils::getPosX(int posY, int length)
 {
 	int startLoc = FFT_SIZE / (8 * beatBar) + 1;
 	if (startLoc > 9)
@@ -121,7 +153,7 @@ int MapGenerator::getPosX(int posY, int length)
 	return 0;
 }
 
-int MapGenerator::getPosY(int time)
+int MapUtils::getPosY(int time)
 {
 	auto y = beatTick % (int)(FramePerBeat * 4);
 	switch (y % 16)

@@ -1,4 +1,5 @@
 #include "Note.h"
+#include "MapUtils.h"
 #include "GameScene.h"
 
 EventListenerTouchOneByOne *noteListener;
@@ -11,12 +12,12 @@ Note::~Note()
 {
 }
 
-Note* Note::createNote(int type, int length, int pos, int des)
+Note* Note::createNote(int type, int length, int pos)
 {
 	Note *note = new Note();
 	if (note)
 	{
-		note->initNote(type, length, pos, des);
+		note->initNote(type, length, pos);
 		note->scheduleUpdate();
 		note->autorelease();
 		return note;
@@ -25,7 +26,7 @@ Note* Note::createNote(int type, int length, int pos, int des)
 	return NULL;
 }
 
-void Note::initNote(int type, int length, int pos, int des)
+void Note::initNote(int type, int length, int pos)
 {
 	this->type = (NoteType)type;
 	this->life = TIME_PRELOAD;
@@ -35,11 +36,6 @@ void Note::initNote(int type, int length, int pos, int des)
 	this->isSlided = false;
 	this->setPositionX(120 * (pos / 10) + 80);
 	this->setPositionY(60 * (10 - pos % 10) + 5);
-	this->desX = 120 * (des / 10) + 80;
-	this->desY = 60 * (10 - des % 10) + 5;
-	if (!noteListener)
-		createNoteListener();
-	else addToNoteListener();
 	switch (type)
 	{
 	case CLICK:
@@ -53,15 +49,17 @@ void Note::initNote(int type, int length, int pos, int des)
 	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
 		this->length = TIME_PRELOAD;
-		this->setRotation(atan2(desX - getPositionX(), desY - getPositionY()) * 180 / M_PI);
+		this->setRotation(atan2(MapUtils::getNextPos() / 10 - getPositionX(), MapUtils::getNextPos() % 10 - getPositionY()) * 180 / M_PI);
 		break;
 	}
 	this->setOpacity(200);
-	this->runAction(FadeTo::create(1, 255));
 	this->setLocalZOrder(500 - (++counter.total));
+	if (!noteListener)
+		createNoteListener();
+	else addToNoteListener();
 	judgePic = Sprite::create("gameSceneUI/judge.png");
 	judgePic->setScale(2);
-	judgePic->runAction(ScaleTo::create(life / 60.0, 1));
+	judgePic->runAction(EaseSineIn::create(ScaleTo::create(life / 60.0, 1)));
 	judgePic->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
 	this->addChild(judgePic);
 }
@@ -80,9 +78,9 @@ void Note::update(float dt)
 		{
 			isActivated = true;
 			life = this->length;
-			judgePic->runAction(ScaleTo::create(life / 60.0, 0));
+			judgePic->runAction(EaseSineOut::create(ScaleTo::create(life / 60.0, 0)));
 			if (type == LONGPRESS)
-				this->runAction(RotateBy::create(life / 60.0, 360));
+				this->runAction(EaseSineInOut::create(RotateBy::create(life / 60.0, 360)));
 			if (isTouched)
 				this->lifeTouchBegan = life;
 		}
@@ -204,6 +202,8 @@ void Note::createNoteListener()
 		}
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(noteListener, this);
+
+
 }
 
 void Note::addToNoteListener()
