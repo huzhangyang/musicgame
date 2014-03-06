@@ -11,6 +11,16 @@ struct Counter
 	float percent;//总分
 };
 extern Counter counter;
+//曲谱结构
+struct Noteline
+{
+	int time;//时间
+	int difficulty;//难度
+	int type;//类型
+	int length;//长音符与滑动音符持续长度
+	int pos;//出现位置
+};
+extern Noteline noteline;
 //开始界面Tag
 const int INTROSCENE_START = 3;
 const int INTROSCENE_ECHO = 6;

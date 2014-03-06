@@ -18,8 +18,6 @@ int UseMap[10][10];
 
 void MapUtils::generateMap(const char* songname)
 {
-	AudioEngine::getInstance()->createNRT(songname);
-	AudioEngine::getInstance()->playNRT();
 	std::string mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
@@ -28,6 +26,9 @@ void MapUtils::generateMap(const char* songname)
 		for (int j = 1; j <= 9; j++)
 			UseMap[i][j] = 0;
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
+	//////////////////初始化/////////////////////
+	AudioEngine::getInstance()->createNRT(songname);
+	AudioEngine::getInstance()->playNRT();
 	while (AudioEngine::getInstance()->isPlaying())
 	{
 		AudioEngine::getInstance()->update();
@@ -63,7 +64,6 @@ void MapUtils::generateMap(const char* songname)
 
 void MapUtils::loadMap(std::string filename)
 {
-	//fin.open(FileUtils::getInstance()->fullPathForFilename(FileName + ".gnm"));//打开手动生成测试谱面
 	std::string mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
 	fin.open(mapname);//打开自动生成测试谱面
 	getNoteline();//读取第一行
@@ -87,9 +87,12 @@ void MapUtils::getNoteline()
 	}
 }
 
-int MapUtils::getNextPos()
+Point MapUtils::getNextPos()
 {
-	return noteline.pos;
+	Point ret;
+	ret.x = 120 * (noteline.pos / 10) + 80;
+	ret.y = 60 * (10 - noteline.pos % 10) + 5;
+	return ret;
 }
 
 int MapUtils::getBeat()
@@ -130,7 +133,7 @@ void MapUtils::writeNoteline(int type, int length)
 	fprintf(fout, "%.1d,", noteline.difficulty);
 	fprintf(fout, "%.1d,", noteline.type);
 	fprintf(fout, "%.3d,", noteline.length);
-	fprintf(fout, "%.2d,", noteline.pos);
+	fprintf(fout, "%.2d\n", noteline.pos);
 }
 
 int MapUtils::getPosX(int posY, int length)

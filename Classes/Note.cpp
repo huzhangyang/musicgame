@@ -49,7 +49,7 @@ void Note::initNote(int type, int length, int pos)
 	case SLIDE:
 		this->initWithFile("gameSceneUI/note2.png");
 		this->length = TIME_PRELOAD;
-		this->setRotation(atan2(MapUtils::getNextPos() / 10 - getPositionX(), MapUtils::getNextPos() % 10 - getPositionY()) * 180 / M_PI);
+		this->setRotation(atan2(MapUtils::getNextPos().x- getPositionX(), MapUtils::getNextPos().y - getPositionY()) * 180 / M_PI);
 		break;
 	}
 	this->setOpacity(200);
