@@ -69,6 +69,7 @@ bool GameScene::init()
 	buttonOption->setEnabled(false);
 	buttonResume->setEnabled(false);
 	labelInfo->setText(FileName);//显示文件名
+	labelScore->setText("");
 	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
 	{
