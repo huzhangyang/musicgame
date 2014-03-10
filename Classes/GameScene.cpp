@@ -8,7 +8,7 @@ int difficulty, notenumber;//当前难度
 std::string FileName;//音乐文件名称
 
 Counter counter;
-TextBMFont *labelCombo;
+TextBMFont *labelCombo, *labelScore;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -54,6 +54,7 @@ bool GameScene::init()
 	buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
 	labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
+	labelScore = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_PERCENT));
 	labelDifficulty = dynamic_cast<ImageView*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
 	loadingBar = dynamic_cast<LoadingBar*>(UIlayer->getChildByTag(GAMESCENE_LOADINGBAR));
 	bgPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
@@ -191,6 +192,8 @@ void GameScene::judgeNote(int judgeResult)
 		labelCombo->setText("CHARMING!!");
 	else if (counter.combo == notenumber *0.1)
 		labelCombo->setText("DECENT!");
+	sprintf(temp, "%.2f", counter.percent);
+	labelScore->setText(strcat(temp, "%"));
 	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//消失特效
 }
 
