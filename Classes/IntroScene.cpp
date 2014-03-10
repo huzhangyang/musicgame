@@ -61,7 +61,7 @@ void IntroScene::playIntro()
 {
 	AudioEngine::getInstance()->play();
 	auto emitter = ParticleSnow::createWithTotalParticles(1000);
-	emitter->setGravity(Point(0, -100));
+	emitter->setGravity(Point(0, -20));
 	emitter->setAutoRemoveOnFinish(true);
 	addChild(emitter, 10);
 }

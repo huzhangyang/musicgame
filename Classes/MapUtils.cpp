@@ -13,7 +13,8 @@ Noteline noteline;
 std::ifstream fin, fin2;//输入流
 FILE* fout;//输出文件
 std::string mapname;
-int beatTick, lastbeatTick, beatBar, lastBeatBar;
+int beatTick = 0, lastbeatTick = 0, beatBar = 0, lastBeatBar = 0;
+int lastX = 0, lastY = 0, trend;//0为往下生成，1为往上生成
 float FramePerBeat;
 int UseMap[10][10];
 
@@ -155,31 +156,42 @@ void MapUtils::writeNoteline(int type, int length)
 	fprintf(fout, "%.1d,", noteline.type);
 	fprintf(fout, "%.3d,", noteline.length);
 	fprintf(fout, "%.2d\n", noteline.pos);
+	lastX = noteline.pos % 10;
+	lastY = noteline.pos / 10;
 }
 
 int MapUtils::getPosX(int posY, int length)
 {
-	int startLoc = FFT_SIZE / (8 * beatBar) + 1;
-	if (startLoc > 9)
-		startLoc = CCRANDOM_0_1() * 8 + 1;
-	for (int i = startLoc; i <= 9; i++)
-		if (UseMap[i][posY] == 0)
-		{
-			UseMap[i][posY] = length;
-			return i;
-		}
-	for (int i = startLoc; i >= 1; i--)
-		if (UseMap[i][posY] == 0)
-		{
-			UseMap[i][posY] = length;
-			return i;
-		}
-	return 0;
+	int x;
+	if (lastY <= 1 || lastY >= 9)
+		x = FFT_SIZE / (8 * beatBar) + 1;
+	else if (lastY != posY)
+		x = lastX;
+	if (x > 9 || x < 1)
+		x = CCRANDOM_0_1() * 8 + 1;
+	return x;
 }
 
 int MapUtils::getPosY(int time)
 {
-	auto y = beatTick % (int)(FramePerBeat * 4);
+	int y;
+	if (lastY <= 1)
+	{
+		trend = 0;
+		y = beatTick % (int)(FramePerBeat * 4);
+	}
+	else if (lastY >= 9)
+	{
+		trend = 1;
+		y = beatTick % (int)(FramePerBeat * 4);
+	}
+	else
+	{
+		if (trend == 0)
+			y = lastY + 1;
+		else y = lastY - 1;
+		return y;
+	}
 	switch (y % 16)
 	{
 	case 0:return 5;
@@ -199,5 +211,7 @@ int MapUtils::getPosY(int time)
 	case 14:return 3;
 	case 15:return 4;
 	}
-	return 0;
+	if (y > 9 || y < 1)
+		y = CCRANDOM_0_1() * 8 + 1;
+	return y;
 }
