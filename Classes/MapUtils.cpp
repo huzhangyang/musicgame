@@ -1,7 +1,7 @@
 #include "MapUtils.h"
 #include <fstream>
 
-const float BPM = 89.02f;
+const float BPM = 139.65f;
 const float BEAT_THRESHOLD = 0.025f;//≈ƒµ„“Ù¡ø∑ß÷µ
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #define FFT_SIZE 128

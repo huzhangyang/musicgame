@@ -100,7 +100,7 @@ void MainScene::createDialog(std::string key)
 	labelWord->setText(strings.at(key).asString());
 }
 
-void MainScene::touchEvent(Object* obj, gui::TouchEventType eventType)
+void MainScene::touchEvent(Object* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();

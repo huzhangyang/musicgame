@@ -105,7 +105,7 @@ void ClearScene::menuCloseCallback(Object* pSender)
 #endif
 }
 
-void ClearScene::touchEvent(Object* obj, gui::TouchEventType eventType)
+void ClearScene::touchEvent(Object* obj, TouchEventType eventType)
 {
 	auto button = dynamic_cast<Button*>(obj);
 	int tag = button->getTag();

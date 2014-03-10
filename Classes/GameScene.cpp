@@ -175,10 +175,10 @@ void GameScene::judgeNote(int judgeResult)
 		labelCombo->setText(temp);
 		break;
 	}
-	labelCombo->runAction(FadeOut::create(1));//消失特效
+	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//消失特效
 }
 
-void GameScene::touchEvent(Object* obj, gui::TouchEventType eventType)
+void GameScene::touchEvent(Object* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();

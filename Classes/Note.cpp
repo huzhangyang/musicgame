@@ -52,7 +52,8 @@ void Note::initNote(int type, int length, int pos)
 		this->setRotation(atan2(MapUtils::getNextPos().x - getPositionX(), MapUtils::getNextPos().y - getPositionY()) * 180 / M_PI);
 		break;
 	}
-	this->setOpacity(200);
+	this->setOpacity(0);
+	this->runAction(FadeTo::create(life / 60.0, 200));
 	this->setLocalZOrder(MapUtils::getNoteNumber() - (++counter.total));//调整显示和响应顺序
 	if (!noteListener)
 		createNoteListener();
@@ -142,7 +143,7 @@ void Note::judge(float slideAngle, float slideDistance)
 		judgePic->setTexture("gameSceneUI/halo2.png");
 	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
-	log("%d %d %d", MapUtils::getNoteNumber() - this->getLocalZOrder(), this->type, this->life, judgeResult);
+	log("%d %d %d %d", MapUtils::getNoteNumber() - this->getLocalZOrder(), this->type, this->life, judgeResult);
 }
 
 void Note::createNoteListener()

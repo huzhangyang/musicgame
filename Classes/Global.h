@@ -22,6 +22,7 @@ struct Noteline
 };
 extern Noteline noteline;
 //开始界面Tag
+const int INTROSCENE_BG = 2;
 const int INTROSCENE_START = 3;
 const int INTROSCENE_ECHO = 6;
 //主界面Tag
@@ -64,6 +65,6 @@ const int CLEARSCENE_RETURN = 15;
 const int CLEARSCENE_DIFFICULTY = 16;
 
 //其它常数
-const int TIME_PRELOAD = 40;//音符提前出现的时间
+const int TIME_PRELOAD = 51;//音符提前出现的时间
 const std::string FILENAME = "test";//曲子文件名
 #endif 
