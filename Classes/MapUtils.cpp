@@ -43,13 +43,12 @@ void MapUtils::generateMap(const char* songname)
 			lastBeatBar = -99;
 		else if (beatTick - lastbeatTick > FramePerBeat)//过了最小生成时间
 		{
-			if (beatBar == lastBeatBar)//beat频域完全相同则是长按
+			if (beatBar <= lastBeatBar + sqrt(FFT_SIZE / 256) && beatBar >= lastBeatBar - sqrt(FFT_SIZE / 256))
 			{
-				type = 1;
-			}
-			else if (beatBar <= lastBeatBar + 1 && beatBar >= lastBeatBar - 1)//频域差别不大则是滑动
-			{
-				type = 2;
+				if (beatTick - lastbeatTick > FramePerBeat * 2)
+					type = 1;
+				else
+					type = 2;
 			}
 			else//否则点击
 			{

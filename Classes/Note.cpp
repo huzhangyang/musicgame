@@ -34,6 +34,7 @@ void Note::initNote(int type, int length, int pos)
 	this->isActivated = false;
 	this->isTouched = false;
 	this->isSlided = false;
+	this->setScale(1.25);
 	this->setPositionX(120 * (pos / 10) + 80);
 	this->setPositionY(60 * (10 - pos % 10) + 5);
 	switch (type)
@@ -164,7 +165,7 @@ void Note::createNoteListener()
 				target->judge();
 			else if (target->type == LONGPRESS)
 			{
-				target->setScale(1.1f);
+				target->setScale(1.5f);
 				if (target->isActivated)
 					target->lifeTouchBegan = target->life;
 			}
