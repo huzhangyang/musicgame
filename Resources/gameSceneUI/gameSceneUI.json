@@ -175,7 +175,7 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 261,
+          "width": 141,
           "x": 650,
           "y": 334,
           "fileNameData": {
@@ -363,7 +363,7 @@
           "ignoreSize": true,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.2578125,
+          "positionPercentX": 0.24609375,
           "positionPercentY": 0.9097222,
           "positionType": 0,
           "rotation": 0,
@@ -376,15 +376,15 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 261,
-          "x": 330,
+          "width": 178,
+          "x": 315,
           "y": 655,
           "fileNameData": {
             "path": "number.fnt",
             "plistFile": null,
             "resourceType": 0
           },
-          "text": ""
+          "text": "99.99%"
         }
       },
       {
