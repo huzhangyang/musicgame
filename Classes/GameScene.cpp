@@ -4,7 +4,7 @@
 #include "Note.h"
 #include "MapUtils.h"
 
-int difficulty;//当前难度
+int difficulty, notenumber;//当前难度
 std::string FileName;//音乐文件名称
 
 Counter counter;
@@ -87,6 +87,8 @@ void GameScene::onEnterTransitionDidFinish()
 	std::string musicname = "music/" + FileName + ".mp3";
 	AudioEngine::getInstance()->create(musicname.c_str());
 	MapUtils::loadMap(FileName.c_str());
+	notenumber = MapUtils::getNoteNumber();
+	labelCombo->setText("READY");
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
 
@@ -110,9 +112,13 @@ void GameScene::menuCloseCallback(Object* pSender)
 void GameScene::startGame(float dt)
 {
 	loadingBar->setPercent(loadingBar->getPercent() + 1);
+	if (loadingBar->getPercent() == 50)
+		labelCombo->runAction(FadeOut::create(1));
 	if (loadingBar->getPercent() == 100)
 	{
 		this->unscheduleAllSelectors();
+		labelCombo->setText("");
+		labelCombo->setOpacity(128);
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
@@ -175,6 +181,16 @@ void GameScene::judgeNote(int judgeResult)
 		labelCombo->setText(temp);
 		break;
 	}
+	if (counter.combo == notenumber *0.5)
+		labelCombo->setText("SENSATIONAL!!!!!");
+	else if (counter.combo == notenumber *0.4)
+		labelCombo->setText("AWESOME!!!!");
+	else if (counter.combo == notenumber *0.3)
+		labelCombo->setText("BEAUTIFUL!!!");
+	else if (counter.combo == notenumber *0.2)
+		labelCombo->setText("CHARMING!!");
+	else if (counter.combo == notenumber *0.1)
+		labelCombo->setText("DECENT!");
 	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//消失特效
 }
 
