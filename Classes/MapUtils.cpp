@@ -4,7 +4,7 @@
 const float BPM = 139.65f;
 const float BEAT_THRESHOLD = 0.025f;//≈ƒµ„“Ù¡ø∑ß÷µ
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#define FFT_SIZE 128
+#define FFT_SIZE 256
 #else
 #define FFT_SIZE 1024
 #endif
@@ -164,11 +164,22 @@ int MapUtils::getPosX(int posY, int length)
 {
 	int x;
 	if (lastY <= 1 || lastY >= 9)
-		x = FFT_SIZE / (8 * beatBar) + 1;
+	{
+		if (beatBar == 0)
+			x = 0;
+		else
+			x = beatBar * 128 / FFT_SIZE;
+	}
 	else if (lastY != posY)
 		x = lastX;
 	if (x > 9 || x < 1)
-		x = CCRANDOM_0_1() * 8 + 1;
+	{
+		do
+		{
+			x = CCRANDOM_0_1() * 8 + 1;
+		} while (UseMap[x][posY]>0);
+	}
+	UseMap[x][posY] = length;
 	return x;
 }
 
