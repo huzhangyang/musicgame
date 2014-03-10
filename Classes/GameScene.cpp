@@ -182,19 +182,19 @@ void GameScene::judgeNote(int judgeResult)
 		labelCombo->setText(temp);
 		break;
 	}
-	if (counter.combo == notenumber *0.5)
+	if (counter.combo == (int)(notenumber *0.5))
 		labelCombo->setText("SENSATIONAL!!!!!");
-	else if (counter.combo == notenumber *0.4)
+	else if (counter.combo == (int)(notenumber *0.4))
 		labelCombo->setText("AWESOME!!!!");
-	else if (counter.combo == notenumber *0.3)
+	else if (counter.combo == (int)(notenumber *0.3))
 		labelCombo->setText("BEAUTIFUL!!!");
-	else if (counter.combo == notenumber *0.2)
+	else if (counter.combo == (int)(notenumber *0.2))
 		labelCombo->setText("CHARMING!!");
-	else if (counter.combo == notenumber *0.1)
+	else if (counter.combo == (int)(notenumber *0.1))
 		labelCombo->setText("DECENT!");
 	sprintf(temp, "%.2f", counter.percent);
 	labelScore->setText(strcat(temp, "%"));
-	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//消失特效
+	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 3), ScaleTo::create(0.2f, 2.5), NULL));//消失特效
 }
 
 void GameScene::touchEvent(Object* obj, TouchEventType eventType)
