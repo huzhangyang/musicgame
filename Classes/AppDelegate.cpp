@@ -1,6 +1,5 @@
 #include "AppDelegate.h"
 #include "IntroScene.h"
-#include "GameScene.h"
 
 AppDelegate::AppDelegate()
 {

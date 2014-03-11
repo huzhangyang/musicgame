@@ -52,8 +52,7 @@ void MapUtils::generateMap(const char* songname)
 			}
 			else//否则点击
 			{
-				writeNoteline(type, (beatTick - lastbeatTick) / 2);
-				log("%d %d", beatTick, beatBar);
+				writeNoteline(type, beatTick - lastbeatTick);
 				lastbeatTick = beatTick;
 				type = 0;
 			}
@@ -147,7 +146,10 @@ void MapUtils::writeNoteline(int type, int length)
 	noteline.time = beatTick;
 	noteline.difficulty = CCRANDOM_0_1() * 2;
 	noteline.type = type;
-	noteline.length = length;
+	if (type == 1)
+		noteline.length = length / 2;
+	else
+		noteline.length = 0;
 	noteline.pos = getPosY(noteline.time);
 	noteline.pos += getPosX(noteline.pos, length) * 10;
 	fprintf(fout, "%.5d,", noteline.time);
@@ -157,26 +159,34 @@ void MapUtils::writeNoteline(int type, int length)
 	fprintf(fout, "%.2d\n", noteline.pos);
 	lastX = noteline.pos % 10;
 	lastY = noteline.pos / 10;
+	log("%d %d %d %d %d", noteline.time, noteline.difficulty, noteline.type, noteline.length, noteline.pos);
 }
 
 int MapUtils::getPosX(int posY, int length)
 {
 	int x;
-	if (lastY <= 1 || lastY >= 9)
+	if (lastY <= 1 || lastY >= 9)//边界值
 	{
 		if (beatBar == 0)
 			x = 0;
 		else
 			x = beatBar * 128 / FFT_SIZE;
+		if (x<1 || x>9)
+			do
+			{
+				x = CCRANDOM_0_1() * 8 + 1;
+			} while (UseMap[x][posY] > 0);
 	}
-	else if (lastY != posY)
-		x = lastX;
-	if (x > 9 || x < 1)
+	else if (lastY != posY)//常规值
 	{
-		do
-		{
-			x = CCRANDOM_0_1() * 8 + 1;
-		} while (UseMap[x][posY]>0);
+		x = lastX;
+	}
+	else
+	{
+		if (lastBeatBar < beatBar&&lastX<9)
+			x = lastX++;
+		else if (lastBeatBar > beatBar&&lastX>1)
+			x = lastX--;
 	}
 	UseMap[x][posY] = length;
 	return x;
@@ -184,13 +194,13 @@ int MapUtils::getPosX(int posY, int length)
 
 int MapUtils::getPosY(int time)
 {
-	int y;
-	if (lastY <= 1)
+	int y = 0;
+	if (lastY <2)
 	{
 		trend = 0;
 		y = beatTick % (int)(FramePerBeat * 4);
 	}
-	else if (lastY >= 9)
+	else if (lastY >8)
 	{
 		trend = 1;
 		y = beatTick % (int)(FramePerBeat * 4);
@@ -198,8 +208,10 @@ int MapUtils::getPosY(int time)
 	else
 	{
 		if (trend == 0)
-			y = lastY + 1;
-		else y = lastY - 1;
+			y = lastY + 2;
+		else y = lastY - 2;
+		if (y > 9)y = 9;
+		if (y < 1)y = 1;
 		return y;
 	}
 	switch (y % 16)
@@ -221,7 +233,5 @@ int MapUtils::getPosY(int time)
 	case 14:return 3;
 	case 15:return 4;
 	}
-	if (y > 9 || y < 1)
-		y = CCRANDOM_0_1() * 8 + 1;
 	return y;
 }

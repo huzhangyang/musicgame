@@ -3,6 +3,7 @@
 #include "GameScene.h"
 
 EventListenerTouchOneByOne *noteListener;
+int notenumber;
 
 Note::Note()
 {
@@ -55,7 +56,7 @@ void Note::initNote(int type, int length, int pos)
 	}
 	this->setOpacity(0);
 	this->runAction(FadeTo::create(life / 60.0, 200));
-	this->setLocalZOrder(MapUtils::getNoteNumber() - (++counter.total));//调整显示和响应顺序
+	this->setLocalZOrder(notenumber - (++counter.total));//调整显示和响应顺序
 	if (!noteListener)
 		createNoteListener();
 	else addToNoteListener();
@@ -126,9 +127,9 @@ void Note::judge(float slideAngle, float slideDistance)
 		break;
 	case SLIDE:
 		lifePercent = abs(slideAngle - this->getRotation());
-		if (!isSlided || lifePercent > 36 || slideDistance<48)
+		if (!isSlided || lifePercent > 36 || slideDistance<50)//没划过、方向太偏、距离太短为miss
 			judgeResult = 0;
-		else if (lifePercent > 18 || slideDistance < 96)
+		else if (lifePercent > 18 || slideDistance < 100)
 			judgeResult = 1;
 		else
 			judgeResult = 2;
@@ -144,7 +145,7 @@ void Note::judge(float slideAngle, float slideDistance)
 		judgePic->setTexture("gameSceneUI/halo2.png");
 	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
-	log("%d %d %d %d", MapUtils::getNoteNumber() - this->getLocalZOrder(), this->type, this->life, judgeResult);
+	log("%d %d %d %d", notenumber - this->getLocalZOrder(), this->type, this->life, judgeResult);
 }
 
 void Note::createNoteListener()
@@ -157,7 +158,7 @@ void Note::createNoteListener()
 		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
-		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isTouched)
+		if (rect.containsPoint(locationInNode) && !target->isTouched)
 		{
 			target->isTouched = true;
 			target->judgePic->setOpacity(0);
@@ -181,7 +182,7 @@ void Note::createNoteListener()
 		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
-		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && !target->isSlided)//滑动经过音符内时标记为划过
+		if (rect.containsPoint(locationInNode) && !target->isSlided)//滑动经过音符内时标记为划过
 		{
 			target->isSlided = true;
 		}
@@ -192,18 +193,37 @@ void Note::createNoteListener()
 		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
-		float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
-		float slideDistance = touch->getLocation().getDistance(target->getPosition());
-		if (rect.containsPoint(locationInNode) && !Director::getInstance()->isPaused() && target->type == LONGPRESS &&target->life > 0)//提前松手时进行长按音符的判定
+		if (rect.containsPoint(locationInNode) && target->type == LONGPRESS &&target->life > 0)//提前松手时进行长按音符的判定
 		{
-			target->judge();
+			if (!target->isActivated)
+			{
+				target->isSlided = false;
+				target->isTouched = false;
+				target->setScale(1.25f);
+				target->lifeTouchBegan = 0;
+				target->judgePic->setOpacity(255);
+			}
+			else
+				target->judge();
 		}
-		else if (target->type == SLIDE&&target->isSlided)
-			target->judge(slideAngle, slideDistance);
+		else if (target->type == SLIDE&&target->isSlided &&target->life > 0)
+		{
+			if (!target->isActivated)
+			{
+				target->isSlided = false;
+				target->isTouched = false;
+				target->judgePic->setOpacity(255);
+			}
+			else
+			{
+				float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
+				float slideDistance = touch->getLocation().getDistance(target->getPosition());
+				target->judge(slideAngle, slideDistance);
+			}
+		}
+
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(noteListener, this);
-
-
 }
 
 void Note::addToNoteListener()

@@ -4,7 +4,8 @@
 #include "Note.h"
 #include "MapUtils.h"
 
-int difficulty, notenumber;//当前难度
+extern int notenumber;//总note数
+int difficulty;//当前难度
 std::string FileName;//音乐文件名称
 
 Counter counter;
@@ -158,7 +159,6 @@ void GameScene::addNewNote(int type, int length, int pos)
 void GameScene::judgeNote(int judgeResult)
 {
 	char temp[64];
-	float all = MapUtils::getNoteNumber();
 	switch (judgeResult)
 	{
 	case 0:
@@ -169,33 +169,33 @@ void GameScene::judgeNote(int judgeResult)
 	case 1:
 		counter.combo++;
 		counter.good++;
-		counter.percent += 20 * counter.combo / (float)counter.total / all;
-		counter.percent += 40 / all;
+		counter.percent += 20 * counter.combo / counter.total / (float)notenumber;
+		counter.percent += 40 / (float)notenumber;
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
 	case 2:
 		counter.combo++;
 		counter.perfect++;
-		counter.percent += 20 * counter.combo / (float)counter.total / all;
-		counter.percent += 80 / all;
+		counter.percent += 20 * counter.combo / counter.total / (float)notenumber;
+		counter.percent += 80 / (float)notenumber;
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
 		break;
 	}
 	if (counter.combo == (int)(notenumber *0.5))
-		labelCombo->setText("SENSATIONAL!!!!!");
+		labelCombo->setText("Sensational!!!!!");
 	else if (counter.combo == (int)(notenumber *0.4))
-		labelCombo->setText("AWESOME!!!!");
+		labelCombo->setText("Awesome!!!!");
 	else if (counter.combo == (int)(notenumber *0.3))
-		labelCombo->setText("BEAUTIFUL!!!");
+		labelCombo->setText("Beautiful!!!");
 	else if (counter.combo == (int)(notenumber *0.2))
-		labelCombo->setText("CHARMING!!");
+		labelCombo->setText("Charming!!");
 	else if (counter.combo == (int)(notenumber *0.1))
-		labelCombo->setText("DECENT!");
+		labelCombo->setText("Decent!");
 	sprintf(temp, "%.2f", counter.percent);
 	labelScore->setText(strcat(temp, "%"));
-	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 3), ScaleTo::create(0.2f, 2.5), NULL));//消失特效
+	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 3), ScaleTo::create(0.2f, 2.5), NULL));//Combo特效
 }
 
 void GameScene::touchEvent(Object* obj, TouchEventType eventType)

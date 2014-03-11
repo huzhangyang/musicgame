@@ -79,6 +79,10 @@ bool ClearScene::init()
 		background->loadTexture("clearSceneUI/QAQ.png");
 		labelJudge->loadTexture("clearSceneUI/F.png");
 	}
+	auto emitter = ParticleRain::createWithTotalParticles(1000);
+	emitter->setGravity(Point(0, -20));
+	emitter->setAutoRemoveOnFinish(true);
+	addChild(emitter, 10);
 	return true;
 }
 
