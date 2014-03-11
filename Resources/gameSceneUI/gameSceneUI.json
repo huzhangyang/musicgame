@@ -175,7 +175,7 @@
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 141,
+          "width": 261,
           "x": 650,
           "y": 334,
           "fileNameData": {
@@ -283,7 +283,7 @@
           "fontName": "迷你简细行楷.ttf",
           "fontSize": 55,
           "hAlignment": 0,
-          "text": "歌曲信息",
+          "text": "",
           "touchScaleEnable": false,
           "vAlignment": 0
         }
@@ -369,14 +369,14 @@
           "rotation": 0,
           "scaleX": 1.2,
           "scaleY": 1.2,
-          "sizePercentX": 0,
-          "sizePercentY": 0,
+          "sizePercentX": 0.1390625,
+          "sizePercentY": 0.09861111,
           "sizeType": 0,
           "tag": 10,
           "touchAble": false,
           "useMergedTexture": false,
           "visible": true,
-          "width": 178,
+          "width": 261,
           "x": 315,
           "y": 655,
           "fileNameData": {
@@ -384,7 +384,7 @@
             "plistFile": null,
             "resourceType": 0
           },
-          "text": "99.99%"
+          "text": ""
         }
       },
       {
