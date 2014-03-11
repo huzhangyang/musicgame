@@ -13,12 +13,15 @@ public:
 	void create(const char* songname);
 	void createLoop(const char* songname);
 	void createNRT(const char* songname);
+	void createSound(const char* songname);
 	int getLength();
 	char* getName();
 	int getPosition();
 	float* getSpectrum(int FFTSize);
 	bool isPlaying();
+	bool isPlayingSound();
 	void play();
+	void playSound();
 	void playNRT();
 	void pause();
 	void release();
@@ -32,7 +35,9 @@ private:
 	System* system;
 	System* systemNRT;
 	Channel* channel;
+	Channel* soundchannel;
 	Sound* sound;
+	Sound* stream;
 	FMOD_RESULT result;
 };
 #endif 

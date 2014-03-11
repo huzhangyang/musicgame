@@ -172,8 +172,8 @@ void Note::createNoteListener()
 			}
 			return true;
 		}
-		else if (target->type == SLIDE&& !target->isTouched)
-			return true;
+		//else if (target->type == SLIDE&& !target->isTouched)
+			//return true;
 		return false;
 	};
 	noteListener->onTouchMoved = [](Touch *touch, Event  *event)

@@ -116,8 +116,6 @@ void MainScene::touchEvent(Object* obj, TouchEventType eventType)
 		case MAINSCENE_PAPER:
 			MapUtils::generateMap(musicname.c_str());
 			this->createDialog("dialogMapCreated");
-			AudioEngine::getInstance()->createLoop("music/main.mp3");
-			AudioEngine::getInstance()->play();
 			break;
 		case MAINSCENE_SHELF:
 			if (FileUtils::getInstance()->isFileExist(mapname))

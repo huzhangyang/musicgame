@@ -31,7 +31,7 @@ void MapUtils::generateMap(const char* songname)
 	//////////////////³õÊ¼»¯/////////////////////
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
-	while (AudioEngine::getInstance()->isPlaying())
+	while (AudioEngine::getInstance()->isPlayingSound())
 	{
 		AudioEngine::getInstance()->update();
 		for (int i = 1; i <= 9; i++)
