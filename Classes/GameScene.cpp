@@ -126,7 +126,7 @@ void GameScene::startGame(float dt)
 	{
 		this->unscheduleAllSelectors();
 		labelCombo->setText("");
-		labelCombo->setOpacity(128);
+		labelCombo->setOpacity(100);
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
