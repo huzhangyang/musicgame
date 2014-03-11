@@ -69,7 +69,7 @@ bool GameScene::init()
 	buttonReturn->setEnabled(false);
 	buttonOption->setEnabled(false);
 	buttonResume->setEnabled(false);
-	labelInfo->setText(FileName);//显示文件名
+	labelInfo->setText("");
 	labelScore->setText("");
 	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
@@ -89,6 +89,11 @@ void GameScene::onEnterTransitionDidFinish()
 	/////////////////////////////////////////////////////	
 	std::string musicname = "music/" + FileName + ".mp3";
 	AudioEngine::getInstance()->create(musicname.c_str());
+	auto title = AudioEngine::getInstance()->getName();
+	if (title != "")
+		labelInfo->setText(title);//显示ID3 TITLE
+	else
+		labelInfo->setText(FileName);//没获取到则显示文件名
 	MapUtils::loadMap(FileName.c_str());
 	notenumber = MapUtils::getNoteNumber();
 	labelCombo->setText("READY");

@@ -171,23 +171,16 @@ int MapUtils::getPosX(int posY, int length)
 			x = 0;
 		else
 			x = beatBar * 128 / FFT_SIZE;
-		if (x<1 || x>9)
-			do
-			{
-				x = CCRANDOM_0_1() * 8 + 1;
-			} while (UseMap[x][posY] > 0);
 	}
 	else if (lastY != posY)//≥£πÊ÷µ
 	{
 		x = lastX;
 	}
-	else
-	{
-		if (lastBeatBar < beatBar&&lastX<9)
-			x = lastX++;
-		else if (lastBeatBar > beatBar&&lastX>1)
-			x = lastX--;
-	}
+	if (x<1 || x>9)
+		do
+		{
+			x = CCRANDOM_0_1() * 8 + 1;
+		} while (UseMap[x][posY] > 0);
 	UseMap[x][posY] = length;
 	return x;
 }

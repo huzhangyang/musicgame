@@ -208,18 +208,9 @@ void Note::createNoteListener()
 		}
 		else if (target->type == SLIDE&&target->isSlided &&target->life > 0)
 		{
-			if (!target->isActivated)
-			{
-				target->isSlided = false;
-				target->isTouched = false;
-				target->judgePic->setOpacity(255);
-			}
-			else
-			{
-				float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
-				float slideDistance = touch->getLocation().getDistance(target->getPosition());
-				target->judge(slideAngle, slideDistance);
-			}
+			float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
+			float slideDistance = touch->getLocation().getDistance(target->getPosition());
+			target->judge(slideAngle, slideDistance);
 		}
 
 	};

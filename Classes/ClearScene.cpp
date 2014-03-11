@@ -24,7 +24,6 @@ bool ClearScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	AudioEngine::getInstance()->createLoop("music/clear.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("clearScene.json");
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10003);
@@ -41,7 +40,12 @@ bool ClearScene::init()
 	auto labelJudge = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_JUDGE));
 	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
 	auto labelDifficulty = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
-	labelInfo->setText(FileName);
+	auto title = AudioEngine::getInstance()->getName();
+	if (title != "")
+		labelInfo->setText(title);//显示ID3 TITLE
+	else
+		labelInfo->setText(FileName);//没获取到则显示文件名
+	AudioEngine::getInstance()->createLoop("music/clear.mp3");
 	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
 	{

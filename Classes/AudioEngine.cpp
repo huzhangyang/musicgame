@@ -93,6 +93,16 @@ int AudioEngine::getLength()
 	return x;
 }
 
+char* AudioEngine::getName()
+{
+	FMOD_TAG *tag=new FMOD_TAG;
+	char* x="";
+	result = sound->getTag("TITLE", 0, tag);
+	if (tag->datatype == FMOD_TAGDATATYPE_STRING)
+		x = (char*)tag->data;
+	return x;
+}
+
 int AudioEngine::getPosition()
 {
 	unsigned int x;

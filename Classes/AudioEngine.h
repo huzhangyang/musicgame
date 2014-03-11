@@ -14,6 +14,7 @@ public:
 	void createLoop(const char* songname);
 	void createNRT(const char* songname);
 	int getLength();
+	char* getName();
 	int getPosition();
 	float* getSpectrum(int FFTSize);
 	bool isPlaying();
