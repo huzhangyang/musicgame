@@ -45,10 +45,12 @@ void MapUtils::generateMap(const char* songname)
 		{
 			if (beatBar <= lastBeatBar + sqrt(FFT_SIZE / 256) && beatBar >= lastBeatBar - sqrt(FFT_SIZE / 256))
 			{
-				if (beatTick - lastbeatTick > FramePerBeat * 2)
+				if (beatTick - lastbeatTick > FramePerBeat * 1.5)
 					type = 1;
-				else
-					type = 2;
+			}
+			else if (beatBar <= lastBeatBar + FFT_SIZE / 256 && beatBar >= lastBeatBar - FFT_SIZE / 256)
+			{
+				type = 2;
 			}
 			else//否则点击
 			{
@@ -147,11 +149,11 @@ void MapUtils::writeNoteline(int type, int length)
 	noteline.difficulty = CCRANDOM_0_1() * 2;
 	noteline.type = type;
 	if (type == 1)
-		noteline.length = length / 2;
+		noteline.length = length / 3;
 	else
-		noteline.length = 0;
+		noteline.length = FramePerBeat * 2;
 	noteline.pos = getPosY(noteline.time);
-	noteline.pos += getPosX(noteline.pos, length) * 10;
+	noteline.pos += getPosX(noteline.pos, noteline.length) * 10;
 	fprintf(fout, "%.5d,", noteline.time);
 	fprintf(fout, "%.1d,", noteline.difficulty);
 	fprintf(fout, "%.1d,", noteline.type);
@@ -164,23 +166,25 @@ void MapUtils::writeNoteline(int type, int length)
 
 int MapUtils::getPosX(int posY, int length)
 {
-	int x;
-	if (lastY <= 1 || lastY >= 9)//边界值
-	{
-		if (beatBar == 0)
-			x = 0;
-		else
-			x = beatBar * 128 / FFT_SIZE;
-	}
-	else if (lastY != posY)//常规值
+	int x = 0;
+	if (lastY == posY + 2 || lastY == posY - 2)//常规值
 	{
 		x = lastX;
 	}
-	if (x<1 || x>9)
-		do
-		{
-			x = CCRANDOM_0_1() * 8 + 1;
-		} while (UseMap[x][posY] > 0);
+	else
+	{
+		x = beatBar * 128 / FFT_SIZE;
+	}
+	if (x > 9)
+		for (x = 5; x <= 9; x++)
+			if (UseMap[x][posY] == 0)break;
+	if (x < 1)
+		for (x = 5; x >= 1; x--)
+			if (UseMap[x][posY] == 0)break;
+	while (UseMap[x][posY] > 0)
+	{
+		x = CCRANDOM_0_1() * 8 + 1;
+	}
 	UseMap[x][posY] = length;
 	return x;
 }
@@ -188,15 +192,28 @@ int MapUtils::getPosX(int posY, int length)
 int MapUtils::getPosY(int time)
 {
 	int y = 0;
-	if (lastY <2)
+	if (lastY <= 1 || lastY >= 9)
 	{
-		trend = 0;
-		y = beatTick % (int)(FramePerBeat * 4);
-	}
-	else if (lastY >8)
-	{
-		trend = 1;
-		y = beatTick % (int)(FramePerBeat * 4);
+		y = time % (int)(FramePerBeat * 4);
+		switch (y % 16)
+		{
+		case 0:trend = 0; return 5;
+		case 1:trend = 0; return 6;
+		case 2:trend = 0; return 7;
+		case 3:trend = 0; return 8;
+		case 4:trend = 1; return 9;
+		case 5:trend = 1; return 8;
+		case 6:trend = 1; return 7;
+		case 7:trend = 1; return 6;
+		case 8:trend = 1; return 5;
+		case 9:trend = 1; return 4;
+		case 10:trend = 1; return 3;
+		case 11:trend = 1; return 2;
+		case 12:trend = 0; return 1;
+		case 13:trend = 0; return 2;
+		case 14:trend = 0; return 3;
+		case 15:trend = 0; return 4;
+		}
 	}
 	else
 	{
@@ -205,26 +222,6 @@ int MapUtils::getPosY(int time)
 		else y = lastY - 2;
 		if (y > 9)y = 9;
 		if (y < 1)y = 1;
-		return y;
-	}
-	switch (y % 16)
-	{
-	case 0:return 5;
-	case 1:return 6;
-	case 2:return 7;
-	case 3:return 8;
-	case 4:return 9;
-	case 5:return 8;
-	case 6:return 7;
-	case 7:return 6;
-	case 8:return 5;
-	case 9:return 4;
-	case 10:return 3;
-	case 11:return 2;
-	case 12:return 1;
-	case 13:return 2;
-	case 14:return 3;
-	case 15:return 4;
 	}
 	return y;
 }

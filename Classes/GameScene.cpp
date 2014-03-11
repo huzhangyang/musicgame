@@ -89,7 +89,6 @@ void GameScene::onEnterTransitionDidFinish()
 	/////////////////////////////////////////////////////	
 	std::string musicname = "music/" + FileName + ".mp3";
 	AudioEngine::getInstance()->create(musicname.c_str());
-	AudioEngine::getInstance()->createSound("music/beat2.wav");
 	auto title = AudioEngine::getInstance()->getName();
 	if (title != "")
 		labelInfo->setText(title);//ÏÔÊ¾ID3 TITLE
@@ -127,7 +126,7 @@ void GameScene::startGame(float dt)
 	{
 		this->unscheduleAllSelectors();
 		labelCombo->setText("");
-		labelCombo->setOpacity(128);
+		labelCombo->setOpacity(100);
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
@@ -187,7 +186,6 @@ void GameScene::judgeNote(int judgeResult)
 		counter.percent += 80 / (float)notenumber;
 		sprintf(temp, "%d", counter.combo);
 		labelCombo->setText(temp);
-		AudioEngine::getInstance()->playSound();
 		break;
 	}
 	if (counter.combo == (int)(notenumber *0.5))

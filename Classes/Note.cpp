@@ -206,7 +206,7 @@ void Note::createNoteListener()
 			else
 				target->judge();
 		}
-		else if (target->type == SLIDE&&target->isSlided &&target->life > 0)
+		else if (target->type == SLIDE&&target->life > 0)
 		{
 			float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
 			float slideDistance = touch->getLocation().getDistance(target->getPosition());
