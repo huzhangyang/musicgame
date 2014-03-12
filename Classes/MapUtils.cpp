@@ -101,7 +101,8 @@ void MapUtils::getNoteline()
 		noteline.difficulty = atoi(notestring.substr(6, 7).c_str());
 		noteline.type = atoi(notestring.substr(8, 9).c_str());
 		noteline.length = atoi(notestring.substr(10, 13).c_str());
-		noteline.pos = atoi(notestring.substr(14, 16).c_str());
+		noteline.posX = atoi(notestring.substr(14, 18).c_str());
+		noteline.posY = atoi(notestring.substr(19, 22).c_str());
 		if (noteline.difficulty > difficulty)
 			getNoteline();
 	}
@@ -112,8 +113,8 @@ void MapUtils::getNoteline()
 Point MapUtils::getNextPos()
 {
 	Point ret;
-	ret.x = 120 * (noteline.pos / 10) + 80;
-	ret.y = 60 * (10 - noteline.pos % 10) + 5;
+	ret.x = noteline.posX;
+	ret.y = noteline.posY;
 	return ret;
 }
 
@@ -152,76 +153,49 @@ void MapUtils::writeNoteline(int type, int length)
 		noteline.length = length / 3;
 	else
 		noteline.length = FramePerBeat * 2;
-	noteline.pos = getPosY(noteline.time);
-	noteline.pos += getPosX(noteline.pos, noteline.length) * 10;
+	noteline.posY = genPosY(noteline.time);
+	noteline.posX = genPosX(noteline.posY, noteline.length);
 	fprintf(fout, "%.5d,", noteline.time);
 	fprintf(fout, "%.1d,", noteline.difficulty);
 	fprintf(fout, "%.1d,", noteline.type);
 	fprintf(fout, "%.3d,", noteline.length);
-	fprintf(fout, "%.2d\n", noteline.pos);
-	lastX = noteline.pos % 10;
-	lastY = noteline.pos / 10;
-	log("%d %d %d %d %d", noteline.time, noteline.difficulty, noteline.type, noteline.length, noteline.pos);
+	fprintf(fout, "%.4d,", noteline.posX);
+	fprintf(fout, "%.4d\n", noteline.posY);
+	lastX = noteline.posX;
+	lastY = noteline.posY;
+	log("%d %d %d %d", noteline.time, noteline.type, noteline.posX, noteline.posY);
 }
 
-int MapUtils::getPosX(int posY, int length)
+int MapUtils::genPosX(int posY, int length)
 {
 	int x = 0;
-	if (lastY == posY + 2 || lastY == posY - 2)//³£¹æÖµ
-	{
-		x = lastX;
-	}
-	else
-	{
-		x = beatBar * 128 / FFT_SIZE;
-	}
-	if (x > 9)
-		for (x = 5; x <= 9; x++)
-			if (UseMap[x][posY] == 0)break;
-	if (x < 1)
-		for (x = 5; x >= 1; x--)
-			if (UseMap[x][posY] == 0)break;
-	while (UseMap[x][posY] > 0)
-	{
-		x = CCRANDOM_0_1() * 8 + 1;
-	}
-	UseMap[x][posY] = length;
+	x = CCRANDOM_0_1() * 1000 + 175;
 	return x;
 }
 
-int MapUtils::getPosY(int time)
+int MapUtils::genPosY(int time)
 {
 	int y = 0;
-	if (lastY <= 1 || lastY >= 9)
+	y = time % (int)(FramePerBeat * 4);
+	if (y < FramePerBeat)
 	{
-		y = time % (int)(FramePerBeat * 4);
-		switch (y % 16)
-		{
-		case 0:trend = 0; return 5;
-		case 1:trend = 0; return 6;
-		case 2:trend = 0; return 7;
-		case 3:trend = 0; return 8;
-		case 4:trend = 1; return 9;
-		case 5:trend = 1; return 8;
-		case 6:trend = 1; return 7;
-		case 7:trend = 1; return 6;
-		case 8:trend = 1; return 5;
-		case 9:trend = 1; return 4;
-		case 10:trend = 1; return 3;
-		case 11:trend = 1; return 2;
-		case 12:trend = 0; return 1;
-		case 13:trend = 0; return 2;
-		case 14:trend = 0; return 3;
-		case 15:trend = 0; return 4;
-		}
+		trend = 0;
+		y = 305 - 240 * y / FramePerBeat;
 	}
-	else
+	else if (y < FramePerBeat * 2)
 	{
-		if (trend == 0)
-			y = lastY + 2;
-		else y = lastY - 2;
-		if (y > 9)y = 9;
-		if (y < 1)y = 1;
+		trend = 1;
+		y = 65 + 240 * (y - FramePerBeat) / FramePerBeat;
+	}
+	else if (y < FramePerBeat * 3)
+	{
+		trend = 1;
+		y = 305 + 240 * (y - FramePerBeat * 2) / FramePerBeat;
+	}
+	else if (y < FramePerBeat * 4)
+	{
+		trend = 0;
+		y = 545 - 240 * (y - FramePerBeat * 3) / FramePerBeat;
 	}
 	return y;
 }

@@ -12,9 +12,9 @@ class Note : public Sprite
 public:
 	Note();
 	virtual ~Note();
-	static Note* createNote(int type, int length, int pos);
+	static Note* createNote(int type, int length, int posX, int posY);
 private:
-	void initNote(int type, int length, int pos);
+	void initNote(int type, int length, int posX, int posY);
 	void removeNote();
 	void update(float dt);
 	void judge(float slideAngle = 0, float slideDistance = 0);

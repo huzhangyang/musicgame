@@ -18,7 +18,8 @@ struct Noteline
 	int difficulty;//难度
 	int type;//类型
 	int length;//长音符与滑动音符持续长度
-	int pos;//出现位置
+	int posX;//X坐标
+	int posY;//Y坐标
 };
 extern Noteline noteline;
 //开始界面Tag

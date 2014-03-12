@@ -24,7 +24,7 @@ public:
 private:
 	void update(float dt);
 	void startGame(float dt);//开始游戏
-	void addNewNote(int type, int length, int pos);//生成新note
+	void addNewNote(int type, int length, int posX, int posY);//生成新note
 	void touchEvent(Object* obj, TouchEventType eventType);
 	Text *labelInfo;
 	LoadingBar *loadingBar;

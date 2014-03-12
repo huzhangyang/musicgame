@@ -13,12 +13,12 @@ Note::~Note()
 {
 }
 
-Note* Note::createNote(int type, int length, int pos)
+Note* Note::createNote(int type, int length, int posX, int posY)
 {
 	Note *note = new Note();
 	if (note)
 	{
-		note->initNote(type, length, pos);
+		note->initNote(type, length, posX, posY);
 		note->scheduleUpdate();
 		note->autorelease();
 		return note;
@@ -27,7 +27,7 @@ Note* Note::createNote(int type, int length, int pos)
 	return NULL;
 }
 
-void Note::initNote(int type, int length, int pos)
+void Note::initNote(int type, int length, int posX, int posY)
 {
 	this->type = (NoteType)type;
 	this->life = TIME_PRELOAD;
@@ -36,8 +36,8 @@ void Note::initNote(int type, int length, int pos)
 	this->isTouched = false;
 	this->isSlided = false;
 	this->setScale(1.25);
-	this->setPositionX(120 * (pos / 10) + 80);
-	this->setPositionY(60 * (10 - pos % 10) + 5);
+	this->setPositionX(posX);
+	this->setPositionY(posY);
 	switch (type)
 	{
 	case CLICK:
@@ -173,7 +173,7 @@ void Note::createNoteListener()
 			return true;
 		}
 		//else if (target->type == SLIDE&& !target->isTouched)
-			//return true;
+		//return true;
 		return false;
 	};
 	noteListener->onTouchMoved = [](Touch *touch, Event  *event)

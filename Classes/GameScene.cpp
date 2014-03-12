@@ -130,6 +130,15 @@ void GameScene::startGame(float dt)
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
+		auto bar = Sprite::create("gameSceneUI/bar.png");
+		bar->setOpacity(128);
+		bar->setPosition(675, 305);
+		UINode->addChild(bar);
+		auto action1 = MoveTo::create(60 / 139.65f, Point(675, 65));
+		auto action2 = MoveTo::create(60 / 139.65f, Point(675, 305));
+		auto action3 = MoveTo::create(60 / 139.65f, Point(675, 545));
+		auto action4 = MoveTo::create(60 / 139.65f, Point(675, 305));
+		bar->runAction(RepeatForever::create(Sequence::create(action1, action2, action3, action4, NULL)));
 	}
 }
 
@@ -143,9 +152,10 @@ void GameScene::update(float dt)
 		if (noteline.time == 0)break;//读到最后跳出
 		int arg1 = noteline.type;
 		int arg2 = noteline.length;
-		int arg3 = noteline.pos;
+		int arg3 = noteline.posX;
+		int arg4 = noteline.posY;
 		MapUtils::getNoteline();//读取下个音符
-		addNewNote(arg1, arg2, arg3);
+		addNewNote(arg1, arg2, arg3, arg4);
 	}
 	if (!AudioEngine::getInstance()->isPlaying())//一首歌结束则切换到结算界面
 	{
@@ -155,9 +165,9 @@ void GameScene::update(float dt)
 	}
 }
 
-void GameScene::addNewNote(int type, int length, int pos)
+void GameScene::addNewNote(int type, int length, int posX, int posY)
 {
-	auto note = Note::createNote(type, length, pos);
+	auto note = Note::createNote(type, length, posX, posY);
 	UINode->addChild(note);
 }
 
