@@ -1,7 +1,6 @@
 #include "MapUtils.h"
 #include <fstream>
 
-const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #define FFT_SIZE 256
 #else
@@ -14,7 +13,7 @@ std::ifstream fin, fin2;//输入流
 FILE* fout;//输出文件
 std::string mapname;
 int type = 0;
-int maxBar, minBar, avgBar;
+int maxBar, minBar, lBar, rBar;
 float FramePerBeat;
 
 void MapUtils::loadMap(std::string filename)
@@ -82,20 +81,44 @@ void MapUtils::generateMap(const char* songname)
 	//////////////////初始化/////////////////////
 	maxBar = 0;
 	minBar = FFT_SIZE;
-	int counter = 0;
+	lBar = 0;
+	rBar = 0;
+	int counter[FFT_SIZE];
+	for (int i = 0; i < FFT_SIZE; i++)
+		counter[i] = 0;
 	while (AudioEngine::getInstance()->isPlayingSound())
 	{
 		AudioEngine::getInstance()->update();
 		analyzeBeat();
 		if (info.beatBar >= 0)
 		{
-			counter++;
+			counter[info.beatBar]++;
 			if (info.beatBar > maxBar)maxBar = info.beatBar;
 			if (info.beatBar < minBar)minBar = info.beatBar;
-			avgBar += info.beatBar;
 		}
 	}
-	avgBar = avgBar / counter;
+	int countFirst = 0, countSecond = 0;
+	for (int i = 0; i < FFT_SIZE; i++)
+	{
+		if (counter[i]>countFirst)
+		{
+			if (abs(lBar - rBar)>(FFT_SIZE / 128))
+			{
+				countSecond = countFirst;
+				lBar = rBar;
+			}
+			countFirst = counter[i];
+			rBar = i;
+		}
+		else if (counter[i] > countSecond)
+		{
+			if (abs(lBar - i) > (FFT_SIZE / 128))
+			{
+				countSecond = counter[i];
+				lBar = i;
+			}
+		}
+	}
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
 	//////////////////一轮扫描/////////////////////
@@ -144,7 +167,7 @@ void MapUtils::analyzeBeat()
 		}
 	}
 	DBavg = DBavg / FFT_SIZE;
-	if ((DBmax / DBavg) < 2.5 || DBmax < BEAT_THRESHOLD)
+	if ((DBmax / DBavg) < 2.5 || (DBmax < 0.025))
 		info.beatBar = -1;
 	delete[] specData;
 }
@@ -164,11 +187,11 @@ void MapUtils::analyzeBeatV2()
 		}
 	}
 	DBavg = DBavg / (maxBar - minBar);
-	if ((DBmax / DBavg) >= 2.5 &&DBmax >= BEAT_THRESHOLD)
+	if ((DBmax / DBavg) >= 2.5 &&DBmax >= 0.025)
 	{
 		info.beatTick = AudioEngine::getInstance()->getPosition();
 		info.difficulty = 1;
-		if ((DBmax / DBavg) >= 5 && DBmax >= BEAT_THRESHOLD * 2)
+		if ((DBmax / DBavg) >= 5 && DBmax >= 0.1)
 			info.difficulty = 0;
 	}
 	else info.beatBar = -1;
@@ -198,10 +221,12 @@ void MapUtils::writeNoteline(int difficulty, int type, int length)
 int MapUtils::genPosX(int posY)
 {
 	int x = 0;
-	if (info.beatBar < avgBar)
-		x = 175 + 500 * (info.beatBar - minBar) / (avgBar - minBar);
+	if (info.beatBar < lBar)
+		x = 175 + 500 * 2 * (info.beatBar - minBar) / (lBar - minBar) / 3;
+	else if (info.beatBar < rBar)
+		x = 175 + 500 * 2 / 3 + 500 * 2 * (info.beatBar - lBar) / (rBar - lBar) / 3;
 	else
-		x = 675 + 500 * (info.beatBar - avgBar) / (maxBar - avgBar);
+		x = 175 + 500 * 4 / 3 + 500 * 2 * (info.beatBar - rBar) / (maxBar - rBar) / 3;
 	return x;
 }
 
