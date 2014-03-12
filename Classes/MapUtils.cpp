@@ -168,7 +168,7 @@ void MapUtils::analyzeBeatV2()
 	{
 		info.beatTick = AudioEngine::getInstance()->getPosition();
 		info.difficulty = 1;
-		if ((DBmax / DBavg) >= 3 && DBmax >= BEAT_THRESHOLD * 3)
+		if ((DBmax / DBavg) >= 5 && DBmax >= BEAT_THRESHOLD * 2)
 			info.difficulty = 0;
 	}
 	else info.beatBar = -1;

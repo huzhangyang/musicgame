@@ -139,7 +139,7 @@ void GameScene::update(float dt)
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
-	while ((currPos + TIME_PRELOAD >= noteline.time))//提前一些生成
+	while ((currPos + 7200 / BPM >= noteline.time))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		int arg1 = noteline.type;
