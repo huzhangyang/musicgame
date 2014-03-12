@@ -69,4 +69,5 @@ const int CLEARSCENE_DIFFICULTY = 16;
 //其它常数
 const int TIME_PRELOAD = 51;//音符提前出现的时间
 const std::string FILENAME = "test";//曲子文件名
+const float BPM = 139.65f;//歌曲速度
 #endif 

@@ -130,15 +130,7 @@ void GameScene::startGame(float dt)
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
-		auto bar = Sprite::create("gameSceneUI/bar.png");
-		bar->setOpacity(128);
-		bar->setPosition(675, 305);
-		UINode->addChild(bar);
-		auto action1 = MoveTo::create(60 / 139.65f, Point(675, 65));
-		auto action2 = MoveTo::create(60 / 139.65f, Point(675, 305));
-		auto action3 = MoveTo::create(60 / 139.65f, Point(675, 545));
-		auto action4 = MoveTo::create(60 / 139.65f, Point(675, 305));
-		bar->runAction(RepeatForever::create(Sequence::create(action1, action2, action3, action4, NULL)));
+		//addScanline();
 	}
 }
 
@@ -169,6 +161,19 @@ void GameScene::addNewNote(int type, int length, int posX, int posY)
 {
 	auto note = Note::createNote(type, length, posX, posY);
 	UINode->addChild(note);
+}
+
+void GameScene::addScanline()
+{
+	auto bar = Sprite::create("gameSceneUI/bar.png");
+	bar->setOpacity(128);
+	bar->setPosition(675, 305);
+	UINode->addChild(bar);
+	auto action1 = MoveTo::create(60.0 / BPM, Point(675, 65));
+	auto action2 = MoveTo::create(60.0 / BPM, Point(675, 305));
+	auto action3 = MoveTo::create(60.0 / BPM, Point(675, 545));
+	auto action4 = MoveTo::create(60.0 / BPM, Point(675, 305));
+	bar->runAction(RepeatForever::create(Sequence::create(action1, action2, action3, action4, NULL)));
 }
 
 void GameScene::judgeNote(int judgeResult)

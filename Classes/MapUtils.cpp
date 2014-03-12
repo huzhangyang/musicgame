@@ -1,7 +1,6 @@
 #include "MapUtils.h"
 #include <fstream>
 
-const float BPM = 139.65f;
 const float BEAT_THRESHOLD = 0.025f;//拍点音量阀值
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #define FFT_SIZE 256
@@ -13,20 +12,17 @@ Noteline noteline;
 std::ifstream fin, fin2;//输入流
 FILE* fout;//输出文件
 std::string mapname;
+
 int beatTick = 0, lastbeatTick = 0, beatBar = 0, lastBeatBar = 0;
-int lastX = 0, lastY = 0, trend;//0为往下生成，1为往上生成
+int lastX = 0, lastY = 0, trend = 0;//0为往下生成，1为往上生成
 float FramePerBeat;
-int UseMap[10][10];
 
 void MapUtils::generateMap(const char* songname)
 {
-	std::string mapname = songname;
+	mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	int type = 0;
-	for (int i = 1; i <= 9; i++)
-		for (int j = 1; j <= 9; j++)
-			UseMap[i][j] = 0;
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
 	//////////////////初始化/////////////////////
 	AudioEngine::getInstance()->createNRT(songname);
@@ -34,10 +30,6 @@ void MapUtils::generateMap(const char* songname)
 	while (AudioEngine::getInstance()->isPlayingSound())
 	{
 		AudioEngine::getInstance()->update();
-		for (int i = 1; i <= 9; i++)
-			for (int j = 1; j <= 9; j++)
-				if (UseMap[i][j] > 0)
-					UseMap[i][j]--;
 		beatBar = getBeat();
 		if (beatBar<0)
 			lastBeatBar = -99;
@@ -163,13 +155,19 @@ void MapUtils::writeNoteline(int type, int length)
 	fprintf(fout, "%.4d\n", noteline.posY);
 	lastX = noteline.posX;
 	lastY = noteline.posY;
-	log("%d %d %d %d", noteline.time, noteline.type, noteline.posX, noteline.posY);
+	//log("%d %d %d %d", noteline.time, noteline.type, noteline.posX, noteline.posY);
 }
 
 int MapUtils::genPosX(int posY, int length)
 {
 	int x = 0;
-	x = CCRANDOM_0_1() * 1000 + 175;
+	x = (beatBar * 128 / FFT_SIZE) * 100 + 175;
+	if (x<175 || x>1175)
+	{
+		log("%s", "invalid");
+		x = CCRANDOM_0_1() * 1000 + 175;
+	}
+
 	return x;
 }
 

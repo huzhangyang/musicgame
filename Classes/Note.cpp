@@ -145,7 +145,7 @@ void Note::judge(float slideAngle, float slideDistance)
 		judgePic->setTexture("gameSceneUI/halo2.png");
 	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
-	log("%d %d %d %d", notenumber - this->getLocalZOrder(), this->type, this->life, judgeResult);
+	//log("%d %d %d %d", notenumber - this->getLocalZOrder(), this->type, this->life, judgeResult);
 }
 
 void Note::createNoteListener()
