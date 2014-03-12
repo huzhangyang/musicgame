@@ -165,7 +165,7 @@ void GameScene::addNewNote(int type, int length, int posX, int posY)
 
 void GameScene::addScanline()
 {
-	auto bar = Sprite::create("gameSceneUI/bar.png");
+	auto bar = Sprite::create("game/bar.png");
 	bar->setOpacity(128);
 	bar->setPosition(675, 305);
 	UINode->addChild(bar);
