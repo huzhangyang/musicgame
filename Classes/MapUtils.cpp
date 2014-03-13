@@ -12,8 +12,7 @@ AnalyzeInfo info;
 std::ifstream fin, fin2;//输入流
 FILE* fout;//输出文件
 std::string mapname;
-int type = 0;
-int maxBar, minBar, lBar, rBar;
+int maxBar, minBar, lBar, rBar, currBar;
 float FramePerBeat;
 
 void MapUtils::loadMap(std::string filename)
@@ -76,9 +75,9 @@ void MapUtils::generateMap(const char* songname)
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
+	//////////////////初始化/////////////////////
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
-	//////////////////初始化/////////////////////
 	maxBar = 0;
 	minBar = FFT_SIZE;
 	lBar = 0;
@@ -93,11 +92,11 @@ void MapUtils::generateMap(const char* songname)
 		if (info.beatBar >= 0)
 		{
 			counter[info.beatBar]++;
-			if (info.beatBar > maxBar)maxBar = info.beatBar;
-			if (info.beatBar < minBar)minBar = info.beatBar;
+			if (info.beatBar > maxBar)maxBar = info.beatBar;//找到所有出现beat的Bar的最大值
+			if (info.beatBar < minBar)minBar = info.beatBar;//找到所有出现beat的Bar的最小值
 		}
 	}
-	int countFirst = 0, countSecond = 0;
+	int countFirst = 0, countSecond = 0;//找到出现beat最多和第二多的Bar
 	for (int i = 0; i < FFT_SIZE; i++)
 	{
 		if (counter[i]>countFirst)
@@ -119,34 +118,46 @@ void MapUtils::generateMap(const char* songname)
 			}
 		}
 	}
+	//////////////////一轮扫描/////////////////////
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
-	//////////////////一轮扫描/////////////////////
+	noteline.type = -1;
+	noteline.time = -1;
 	while (AudioEngine::getInstance()->isPlayingSound())
 	{
 		AudioEngine::getInstance()->update();
 		analyzeBeatV2();
-		if (info.beatBar<0)
-			info.lastBeatBar = -99;
-		else if (info.beatTick - info.lastbeatTick > FramePerBeat)//过了最小生成时间
+		if (info.beatBar >= 0 && abs(info.lastBeatBar - info.beatBar) <= (FFT_SIZE / 128))//不到生成note的时间，通过分析频域决定note类型
 		{
-			if (info.beatBar <= info.lastBeatBar + sqrt(FFT_SIZE / 256) && info.beatBar >= info.lastBeatBar - sqrt(FFT_SIZE / 256))
+			if (info.beatTick - info.lastbeatTick > FramePerBeat)
 			{
-				if (info.beatTick - info.lastbeatTick > FramePerBeat * 1.5)
-					type = 1;
+				if (abs(info.lastBeatBar - info.beatBar) <= sqrt(FFT_SIZE / 256) && (info.beatTick - info.lastbeatTick < FramePerBeat * 2))
+					noteline.type = 1;
+				else
+					noteline.type = 2;
 			}
-			else if (info.beatBar <= info.lastBeatBar + FFT_SIZE / 256 && info.beatBar >= info.lastBeatBar - FFT_SIZE / 256)
+			else
 			{
-				type = 2;
+				noteline.type = 0;
 			}
-			else//否则点击
+			if (noteline.time <= 0)
 			{
-				writeNoteline(info.difficulty, type, info.beatTick - info.lastbeatTick);
-				info.lastbeatTick = info.beatTick;
-				type = 0;
+				noteline.time = info.beatTick;
+				noteline.difficulty = info.difficulty;
+				currBar = info.beatBar;
 			}
-			info.lastBeatBar = info.beatBar;
 		}
+		else if (noteline.type >= 0 && (info.beatTick - info.lastbeatTick >= FramePerBeat / 2))//生成note
+		{
+			noteline.length = info.beatTick - info.lastbeatTick;
+			noteline.posY = genPosY(noteline.time);
+			noteline.posX = genPosX(noteline.posY);
+			writeNoteline();
+			info.lastbeatTick = noteline.time;
+			noteline.type = -1;
+			noteline.time = -1;
+		}
+		info.lastBeatBar = info.beatBar;
 	}
 	//////////////////二轮扫描/////////////////////
 	fclose(fout);
@@ -167,7 +178,7 @@ void MapUtils::analyzeBeat()
 		}
 	}
 	DBavg = DBavg / FFT_SIZE;
-	if ((DBmax / DBavg) < 2.5 || (DBmax < 0.025))
+	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.05)
 		info.beatBar = -1;
 	delete[] specData;
 }
@@ -187,7 +198,7 @@ void MapUtils::analyzeBeatV2()
 		}
 	}
 	DBavg = DBavg / (maxBar - minBar);
-	if ((DBmax / DBavg) >= 2.5 &&DBmax >= 0.025)
+	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.05)
 	{
 		info.beatTick = AudioEngine::getInstance()->getPosition();
 		info.difficulty = 1;
@@ -198,17 +209,8 @@ void MapUtils::analyzeBeatV2()
 	delete[] specData;
 }
 
-void MapUtils::writeNoteline(int difficulty, int type, int length)
+void MapUtils::writeNoteline()
 {
-	noteline.time = info.beatTick;
-	noteline.difficulty = difficulty;
-	noteline.type = type;
-	if (type == 1)
-		noteline.length = length / 3;
-	else
-		noteline.length = FramePerBeat * 2;
-	noteline.posY = genPosY();
-	noteline.posX = genPosX(noteline.posY);
 	fprintf(fout, "%.5d,", noteline.time);
 	fprintf(fout, "%.1d,", noteline.difficulty);
 	fprintf(fout, "%.1d,", noteline.type);
@@ -221,7 +223,7 @@ void MapUtils::writeNoteline(int difficulty, int type, int length)
 int MapUtils::genPosX(int posY)
 {
 	int x = 0;
-	if (info.beatBar < lBar)
+	if (currBar < lBar)
 		x = 175 + 500 * 2 * (info.beatBar - minBar) / (lBar - minBar) / 3;
 	else if (info.beatBar < rBar)
 		x = 175 + 500 * 2 / 3 + 500 * 2 * (info.beatBar - lBar) / (rBar - lBar) / 3;
@@ -230,10 +232,10 @@ int MapUtils::genPosX(int posY)
 	return x;
 }
 
-int MapUtils::genPosY()
+int MapUtils::genPosY(int time)
 {
 	int y = 0;
-	y = info.beatTick % (int)(FramePerBeat * 4);
+	y = time % (int)(FramePerBeat * 4);
 	if (y < FramePerBeat)
 	{
 		y = 305 - 240 * y / FramePerBeat;
