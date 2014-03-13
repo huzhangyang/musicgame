@@ -12,7 +12,7 @@ AnalyzeInfo info;
 std::ifstream fin, fin2;//输入流
 FILE* fout;//输出文件
 std::string mapname;
-int maxBar, minBar, lBar, rBar, currBar;
+int maxBar, minBar, firstBar, currBar;
 float FramePerBeat;
 
 void MapUtils::loadMap(std::string filename)
@@ -80,8 +80,7 @@ void MapUtils::generateMap(const char* songname)
 	AudioEngine::getInstance()->playNRT();
 	maxBar = 0;
 	minBar = FFT_SIZE;
-	lBar = 0;
-	rBar = 0;
+	firstBar = 0;
 	int counter[FFT_SIZE];
 	for (int i = 0; i < FFT_SIZE; i++)
 		counter[i] = 0;
@@ -96,26 +95,13 @@ void MapUtils::generateMap(const char* songname)
 			if (info.beatBar < minBar)minBar = info.beatBar;//找到所有出现beat的Bar的最小值
 		}
 	}
-	int countFirst = 0, countSecond = 0;//找到出现beat最多和第二多的Bar
+	int countFirst = 0; //找到出现beat最多的Bar
 	for (int i = 0; i < FFT_SIZE; i++)
 	{
 		if (counter[i]>countFirst)
 		{
-			if (abs(lBar - rBar)>(FFT_SIZE / 128))
-			{
-				countSecond = countFirst;
-				lBar = rBar;
-			}
 			countFirst = counter[i];
-			rBar = i;
-		}
-		else if (counter[i] > countSecond)
-		{
-			if (abs(lBar - i) > (FFT_SIZE / 128))
-			{
-				countSecond = counter[i];
-				lBar = i;
-			}
+			firstBar = i;
 		}
 	}
 	//////////////////一轮扫描/////////////////////
@@ -129,12 +115,13 @@ void MapUtils::generateMap(const char* songname)
 		analyzeBeatV2();
 		if (info.beatBar >= 0 && abs(info.lastBeatBar - info.beatBar) <= (FFT_SIZE / 128))//不到生成note的时间，通过分析频域决定note类型
 		{
-			if (info.beatTick - info.lastbeatTick > FramePerBeat * 2)
+			if (abs(info.lastBeatBar - info.beatBar) > FFT_SIZE / 256)
 			{
-				if (abs(info.lastBeatBar - info.beatBar) <= sqrt(FFT_SIZE / 256) && (info.beatTick - info.lastbeatTick < FramePerBeat * 4))
-					noteline.type = 1;
-				else
-					noteline.type = 2;
+				noteline.type = 2;
+			}
+			else if (info.beatTick - noteline.time > FramePerBeat&&info.beatTick - noteline.time < FramePerBeat * 2)
+			{
+				noteline.type = 1;
 			}
 			else
 			{
@@ -149,10 +136,16 @@ void MapUtils::generateMap(const char* songname)
 		}
 		else if (noteline.type >= 0)//生成note
 		{
-			noteline.length = info.beatTick - noteline.time;
-			noteline.posY = genPosY(noteline.time);
-			noteline.posX = genPosX(noteline.posY);
-			writeNoteline();
+			if (noteline.time - info.lastbeatTick > FramePerBeat / 4)
+			{
+				noteline.length = info.beatTick - noteline.time;
+				noteline.posY = genPosY(noteline.time);
+				noteline.posX = genPosX(noteline.posY);
+				info.difficulty = 1;
+				if (noteline.time - info.lastbeatTick > FramePerBeat / 2)
+					info.difficulty = 0;
+				writeNoteline();
+			}
 			info.lastbeatTick = noteline.time;
 			info.lastBeatBar = currBar;
 			noteline.type = -1;
@@ -201,9 +194,6 @@ void MapUtils::analyzeBeatV2()
 	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.025)
 	{
 		info.beatTick = AudioEngine::getInstance()->getPosition();
-		info.difficulty = 1;
-		if ((DBmax / DBavg) >= 5 && DBmax >= 0.1)
-			info.difficulty = 0;
 	}
 	else info.beatBar = -1;
 	delete[] specData;
@@ -223,41 +213,49 @@ void MapUtils::writeNoteline()
 int MapUtils::genPosX(int posY)
 {
 	static int hand = 0;//0为中间，1为左手，2为右手
-	static int x = 0;
-	if (noteline.time - info.lastbeatTick < FramePerBeat / 2)//间隔较短，换手操作
+	static int x = 675;
+	if (noteline.time - info.lastbeatTick < FramePerBeat*1.5 || noteline.type == 1)//间隔较短，换手操作
 	{
 		if (hand == 1)
 		{
 			hand = 2;
-			x = 675 + 500 * (currBar - minBar) / (maxBar - minBar);
+			x = 175 + CCRANDOM_0_1() * 500;
 		}
 		else if (hand == 2)
 		{
 			hand = 1;
-			x = 175 + 500 * (currBar - minBar) / (maxBar - minBar);
+			x = 675 + CCRANDOM_0_1() * 500;
 		}
 		else
-			x = 675;
-	}
-	else if (noteline.time - info.lastbeatTick < FramePerBeat)//间隔较长，不换手
-	{
-		if (hand == 1)
-		{
-			x = 175 + 500 * (currBar - minBar) / (maxBar - minBar);
-		}
-		else if (hand == 2)
-		{
-			x = 675 + 500 * (currBar - minBar) / (maxBar - minBar);
-		}
-		else
-			x = 675;
+			x = 675 + CCRANDOM_MINUS1_1() * 500;
 	}
 	else
 	{
-
+		if (currBar < firstBar)
+		{
+			hand = 1;
+		}
+		else if (currBar>firstBar)
+		{
+			hand = 2;
+		}
+		else
+			hand = 0;
+		if (currBar <info.lastBeatBar - FFT_SIZE / 256)
+		{
+			x -= 150;
+			if (x<175)
+				x = 325 + CCRANDOM_0_1() * 350;
+		}
+		else if (currBar>info.lastBeatBar + FFT_SIZE / 256)
+		{
+			x += 150;
+			if (x>1175)
+				x = 675 + CCRANDOM_0_1() * 350;
+		}
+		else
+			x = x;
 	}
-	if (currBar < info.lastBeatBar)
-		x = 175 + 500 * 2 / 3 + 500 * 2 * (currBar - lBar) / (rBar - lBar) / 3;
 	return x;
 }
 

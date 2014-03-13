@@ -68,8 +68,6 @@ bool MainScene::init()
 	buttonCheck->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	buttonCross->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectWords->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectLight->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectBG->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectBox->setEnabled(false);
 	objectDialog->setEnabled(false);
@@ -123,12 +121,12 @@ void MainScene::touchEvent(Object* obj, TouchEventType eventType)
 			this->createDialog("dialogTable");
 			break;
 		case MAINSCENE_PAPER:
-			LoadingNode->setVisible(true);
-			objectLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
-			objectWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
+			//LoadingNode->setVisible(true);
+			//objectLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
+			//objectWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
 			MapUtils::generateMap(musicname.c_str());
-			this->createDialog("dialogMapCreated");
 			//LoadingNode->setVisible(false);
+			this->createDialog("dialogMapCreated");
 			break;
 		case MAINSCENE_SHELF:
 			if (FileUtils::getInstance()->isFileExist(mapname))
