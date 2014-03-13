@@ -129,9 +129,9 @@ void MapUtils::generateMap(const char* songname)
 		analyzeBeatV2();
 		if (info.beatBar >= 0 && abs(info.lastBeatBar - info.beatBar) <= (FFT_SIZE / 128))//不到生成note的时间，通过分析频域决定note类型
 		{
-			if (info.beatTick - info.lastbeatTick > FramePerBeat)
+			if (info.beatTick - info.lastbeatTick > FramePerBeat * 2)
 			{
-				if (abs(info.lastBeatBar - info.beatBar) <= sqrt(FFT_SIZE / 256) && (info.beatTick - info.lastbeatTick < FramePerBeat * 2))
+				if (abs(info.lastBeatBar - info.beatBar) <= sqrt(FFT_SIZE / 256) && (info.beatTick - info.lastbeatTick < FramePerBeat * 4))
 					noteline.type = 1;
 				else
 					noteline.type = 2;
@@ -147,17 +147,17 @@ void MapUtils::generateMap(const char* songname)
 				currBar = info.beatBar;
 			}
 		}
-		else if (noteline.type >= 0 && (info.beatTick - info.lastbeatTick >= FramePerBeat / 2))//生成note
+		else if (noteline.type >= 0)//生成note
 		{
-			noteline.length = info.beatTick - info.lastbeatTick;
+			noteline.length = info.beatTick - noteline.time;
 			noteline.posY = genPosY(noteline.time);
 			noteline.posX = genPosX(noteline.posY);
 			writeNoteline();
 			info.lastbeatTick = noteline.time;
+			info.lastBeatBar = currBar;
 			noteline.type = -1;
 			noteline.time = -1;
 		}
-		info.lastBeatBar = info.beatBar;
 	}
 	//////////////////二轮扫描/////////////////////
 	fclose(fout);
@@ -178,7 +178,7 @@ void MapUtils::analyzeBeat()
 		}
 	}
 	DBavg = DBavg / FFT_SIZE;
-	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.05)
+	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.025)
 		info.beatBar = -1;
 	delete[] specData;
 }
@@ -198,7 +198,7 @@ void MapUtils::analyzeBeatV2()
 		}
 	}
 	DBavg = DBavg / (maxBar - minBar);
-	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.05)
+	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.025)
 	{
 		info.beatTick = AudioEngine::getInstance()->getPosition();
 		info.difficulty = 1;
@@ -222,13 +222,42 @@ void MapUtils::writeNoteline()
 
 int MapUtils::genPosX(int posY)
 {
-	int x = 0;
-	if (currBar < lBar)
-		x = 175 + 500 * 2 * (info.beatBar - minBar) / (lBar - minBar) / 3;
-	else if (info.beatBar < rBar)
-		x = 175 + 500 * 2 / 3 + 500 * 2 * (info.beatBar - lBar) / (rBar - lBar) / 3;
+	static int hand = 0;//0为中间，1为左手，2为右手
+	static int x = 0;
+	if (noteline.time - info.lastbeatTick < FramePerBeat / 2)//间隔较短，换手操作
+	{
+		if (hand == 1)
+		{
+			hand = 2;
+			x = 675 + 500 * (currBar - minBar) / (maxBar - minBar);
+		}
+		else if (hand == 2)
+		{
+			hand = 1;
+			x = 175 + 500 * (currBar - minBar) / (maxBar - minBar);
+		}
+		else
+			x = 675;
+	}
+	else if (noteline.time - info.lastbeatTick < FramePerBeat)//间隔较长，不换手
+	{
+		if (hand == 1)
+		{
+			x = 175 + 500 * (currBar - minBar) / (maxBar - minBar);
+		}
+		else if (hand == 2)
+		{
+			x = 675 + 500 * (currBar - minBar) / (maxBar - minBar);
+		}
+		else
+			x = 675;
+	}
 	else
-		x = 175 + 500 * 4 / 3 + 500 * 2 * (info.beatBar - rBar) / (maxBar - rBar) / 3;
+	{
+
+	}
+	if (currBar < info.lastBeatBar)
+		x = 175 + 500 * 2 / 3 + 500 * 2 * (currBar - lBar) / (rBar - lBar) / 3;
 	return x;
 }
 
