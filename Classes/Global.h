@@ -41,6 +41,9 @@ const int MAINSCENE_CHECKMARK = 3;
 const int MAINSCENE_CROSSMARK = 4;
 const int MAINSCENE_WORD = 5;
 const int MAINSCENE_EXITBG = 6;
+const int MAINSCENE_LOADINGBG = 16;
+const int MAINSCENE_LOADINGLIGHT = 18;
+const int MAINSCENE_LOADINGWORDS = 19;
 //”Œœ∑ΩÁ√ÊTag
 const int GAMESCENE_PAUSE = 5;
 const int GAMESCENE_COMBO = 6;
