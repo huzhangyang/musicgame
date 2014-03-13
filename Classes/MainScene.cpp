@@ -28,12 +28,15 @@ bool MainScene::init()
 	UINode = sceneNode->getChildByTag(10005);
 	ExitNode = sceneNode->getChildByTag(10004);
 	DialogNode = sceneNode->getChildByTag(10006);
+	LoadingNode = sceneNode->getChildByTag(10007);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("mainSceneUI");
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
+	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
 	auto UILayer = UIComponent->getNode();
 	auto ExitLayer = ExitComponent->getNode();
 	auto DialogLayer = DialogComponent->getNode();
+	auto LoadingLayer = LoadingComponent->getNode();
 	auto objectTable = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_TABLE));
 	auto objectPaper = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_PAPER));
 	auto objectShelf = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_SHELF));
@@ -48,6 +51,9 @@ bool MainScene::init()
 	buttonCross = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CROSSMARK));
 	objectDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOGBG));
 	labelWord = dynamic_cast<Text*>(DialogLayer->getChildByTag(MAINSCENE_WORD));
+	objectWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADINGWORDS));
+	objectLight = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADINGLIGHT));
+	objectBG = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADINGBG));
 	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectDialog->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
@@ -62,6 +68,9 @@ bool MainScene::init()
 	buttonCheck->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	buttonCross->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	objectWords->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	objectLight->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	objectBG->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	objectBox->setEnabled(false);
 	objectDialog->setEnabled(false);
 	buttonCheck->setEnabled(false);
@@ -114,8 +123,12 @@ void MainScene::touchEvent(Object* obj, TouchEventType eventType)
 			this->createDialog("dialogTable");
 			break;
 		case MAINSCENE_PAPER:
+			LoadingNode->setVisible(true);
+			objectLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
+			objectWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
 			MapUtils::generateMap(musicname.c_str());
 			this->createDialog("dialogMapCreated");
+			//LoadingNode->setVisible(false);
 			break;
 		case MAINSCENE_SHELF:
 			if (FileUtils::getInstance()->isFileExist(mapname))
