@@ -108,7 +108,7 @@ void GameScene::onExitTransitionDidStart()
 	MapUtils::closeMap();
 }
 
-void GameScene::menuCloseCallback(Object* pSender)
+void GameScene::menuCloseCallback(Ref* pSender)
 {
 	Director::getInstance()->end();
 
@@ -218,7 +218,7 @@ void GameScene::judgeNote(int judgeResult)
 	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 3), ScaleTo::create(0.2f, 2.5), NULL));//ComboÌØÐ§
 }
 
-void GameScene::touchEvent(Object* obj, TouchEventType eventType)
+void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();

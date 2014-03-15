@@ -90,7 +90,7 @@ void MainScene::onExitTransitionDidStart()
 	AudioEngine::getInstance()->stop();
 }
 
-void MainScene::menuCloseCallback(Object* pSender)
+void MainScene::menuCloseCallback(Ref* pSender)
 {
 	Director::getInstance()->end();
 
@@ -107,7 +107,7 @@ void MainScene::createDialog(std::string key)
 	labelWord->setText(strings.at(key).asString());
 }
 
-void MainScene::touchEvent(Object* obj, TouchEventType eventType)
+void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();

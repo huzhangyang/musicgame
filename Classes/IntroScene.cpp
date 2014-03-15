@@ -48,7 +48,7 @@ void IntroScene::onExitTransitionDidStart()
 	AudioEngine::getInstance()->stop();
 }
 
-void IntroScene::menuCloseCallback(Object* pSender)
+void IntroScene::menuCloseCallback(Ref* pSender)
 {
 	Director::getInstance()->end();
 
@@ -66,7 +66,7 @@ void IntroScene::playIntro()
 	addChild(emitter, 10);
 }
 
-void IntroScene::touchEvent(Object* obj, TouchEventType eventType)
+void IntroScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();
