@@ -69,8 +69,7 @@ bool GameScene::init()
 	buttonReturn->setEnabled(false);
 	buttonOption->setEnabled(false);
 	buttonResume->setEnabled(false);
-	labelInfo->setText("");
-	labelScore->setText("");
+	labelScore->setFontName("trends.ttf");
 	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
 	{
@@ -215,7 +214,7 @@ void GameScene::judgeNote(int judgeResult)
 		labelCombo->setText("Decent!");
 	sprintf(temp, "%.2f", counter.percent);
 	labelScore->setText(strcat(temp, "%"));
-	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 3), ScaleTo::create(0.2f, 2.5), NULL));//Combo特效
+	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//Combo特效
 }
 
 void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
