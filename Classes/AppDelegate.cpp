@@ -15,8 +15,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	if (!glview) {
 		glview = GLView::createWithRect("Echo v0.3-alpha", Rect(400, 400, 640, 360));
 		director->setOpenGLView(glview);
-		glview->setDesignResolutionSize(1280, 720, ResolutionPolicy::SHOW_ALL);
 	}
+	glview->setDesignResolutionSize(1280, 720, ResolutionPolicy::SHOW_ALL);
 	director->setDisplayStats(true);
 	director->setAnimationInterval(1.0 / 60);//ÉèÖÃÖ¡ÂÊ
 	auto scene = IntroScene::createScene();

@@ -113,13 +113,13 @@ void MapUtils::generateMap(const char* songname)
 	{
 		AudioEngine::getInstance()->update();
 		analyzeBeatV2();
-		if (info.beatBar >= 0 && abs(info.lastBeatBar - info.beatBar) <= (FFT_SIZE / 128))//不到生成note的时间，通过分析频域决定note类型
+		if (info.beatBar >= 0 && abs(info.lastBeatBar - info.beatBar) <= (FFT_SIZE / 256))//不到生成note的时间，通过分析频域决定note类型
 		{
-			if (abs(info.lastBeatBar - info.beatBar) > FFT_SIZE / 256)
+			if (info.beatTick - noteline.time > FramePerBeat * 2)
 			{
 				noteline.type = 2;
 			}
-			else if (info.beatTick - noteline.time > FramePerBeat&&info.beatTick - noteline.time < FramePerBeat * 2)
+			else if (info.beatTick - noteline.time > FramePerBeat)
 			{
 				noteline.type = 1;
 			}
@@ -141,9 +141,9 @@ void MapUtils::generateMap(const char* songname)
 				noteline.length = info.beatTick - noteline.time;
 				noteline.posY = genPosY(noteline.time);
 				noteline.posX = genPosX(noteline.posY);
-				info.difficulty = 1;
+				noteline.difficulty = 1;
 				if (noteline.time - info.lastbeatTick > FramePerBeat / 2)
-					info.difficulty = 0;
+					noteline.difficulty = 0;
 				writeNoteline();
 			}
 			info.lastbeatTick = noteline.time;
@@ -191,11 +191,11 @@ void MapUtils::analyzeBeatV2()
 		}
 	}
 	DBavg = DBavg / (maxBar - minBar);
-	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.025)
-	{
-		info.beatTick = AudioEngine::getInstance()->getPosition();
-	}
-	else info.beatBar = -1;
+	//if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.025)
+	//{
+	info.beatTick = AudioEngine::getInstance()->getPosition();
+	//}
+	//else info.beatBar = -1;
 	delete[] specData;
 }
 
