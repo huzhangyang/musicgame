@@ -9,7 +9,7 @@ int difficulty;//当前难度
 std::string FileName;//音乐文件名称
 
 Counter counter;
-TextBMFont *labelCombo, *labelScore;
+Text *labelCombo, *labelScore;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -54,8 +54,8 @@ bool GameScene::init()
 	buttonOption = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
 	buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
 	labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_INFO));
-	labelCombo = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
-	labelScore = dynamic_cast<TextBMFont*>(UIlayer->getChildByTag(GAMESCENE_PERCENT));
+	labelCombo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
+	labelScore = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_PERCENT));
 	labelDifficulty = dynamic_cast<ImageView*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
 	loadingBar = dynamic_cast<LoadingBar*>(UIlayer->getChildByTag(GAMESCENE_LOADINGBAR));
 	bgPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
