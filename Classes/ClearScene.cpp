@@ -104,7 +104,7 @@ void ClearScene::onExitTransitionDidStart()
 	AudioEngine::getInstance()->stop();
 }
 
-void ClearScene::menuCloseCallback(Object* pSender)
+void ClearScene::menuCloseCallback(Ref* pSender)
 {
 	Director::getInstance()->end();
 
@@ -113,7 +113,7 @@ void ClearScene::menuCloseCallback(Object* pSender)
 #endif
 }
 
-void ClearScene::touchEvent(Object* obj, TouchEventType eventType)
+void ClearScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto button = dynamic_cast<Button*>(obj);
 	int tag = button->getTag();

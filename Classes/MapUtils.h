@@ -15,9 +15,9 @@ public:
 private:
 	static void analyzeBeat();
 	static void analyzeBeatV2();
-	static void writeNoteline(int difficulty, int type, int length);
+	static void writeNoteline();
 	static int genPosX(int posY);
-	static int genPosY();
+	static int genPosY(int time);
 };
 struct AnalyzeInfo
 {

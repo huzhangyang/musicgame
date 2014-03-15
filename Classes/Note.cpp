@@ -162,7 +162,7 @@ void Note::createNoteListener()
 		if (rect.containsPoint(locationInNode) && !target->isTouched)
 		{
 			target->isTouched = true;
-			target->judgePic->setOpacity(0);
+			target->judgePic->setScale(0);
 			if (target->type == CLICK)
 				target->judge();
 			else if (target->type == LONGPRESS)
@@ -202,7 +202,6 @@ void Note::createNoteListener()
 				target->isTouched = false;
 				target->setScale(1.25f);
 				target->lifeTouchBegan = 0;
-				target->judgePic->setOpacity(255);
 			}
 			else
 				target->judge();

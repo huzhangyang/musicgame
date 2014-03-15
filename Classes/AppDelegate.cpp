@@ -11,9 +11,12 @@ AppDelegate::~AppDelegate()
 
 bool AppDelegate::applicationDidFinishLaunching() {
 	auto director = Director::getInstance();
-	auto eglView = EGLView::getInstance();
-	director->setOpenGLView(eglView);
-	eglView->setDesignResolutionSize(1280, 720, ResolutionPolicy::SHOW_ALL);
+	auto glview = director->getOpenGLView();
+	if (!glview) {
+		glview = GLView::createWithRect("Echo v0.3-alpha", Rect(400, 400, 640, 360));
+		director->setOpenGLView(glview);
+	}
+	glview->setDesignResolutionSize(1280, 720, ResolutionPolicy::SHOW_ALL);
 	director->setDisplayStats(true);
 	director->setAnimationInterval(1.0 / 60);//设置帧率
 	auto scene = IntroScene::createScene();
@@ -27,12 +30,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
 }
 //切入后台
 void AppDelegate::applicationDidEnterBackground() {
-	Director::getInstance()->pause();
+	Director::getInstance()->stopAnimation();
 	AudioEngine::getInstance()->pause();
 
 }
 //切回前台
 void AppDelegate::applicationWillEnterForeground() {
-	Director::getInstance()->resume();
+	Director::getInstance()->startAnimation();
 	AudioEngine::getInstance()->resume();
 }
