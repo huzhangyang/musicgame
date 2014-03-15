@@ -3,6 +3,9 @@ package org.cocos2dx.cpp;
 import android.app.NativeActivity;
 import android.os.Bundle;
 
+// The name of .so is specified in AndroidMenifest.xml. NativityActivity will load it automatically for you.
+// You can use "System.loadLibrary()" to load other .so files.
+
 public class Cocos2dxActivity extends NativeActivity {
 
 	@Override
@@ -28,6 +31,5 @@ public class Cocos2dxActivity extends NativeActivity {
 
 	static {
 		System.loadLibrary("fmodex");
-		System.loadLibrary("musicgame");
 	}
 }
