@@ -13,6 +13,7 @@ public:
 	static Point getNextPos();//得到下个note的位置
 	static void generateMap(const char* songname);//生成谱面
 private:
+	static void generate(const char* songname);
 	static void analyzeBeat();
 	static void analyzeBeatV2();
 	static void writeNoteline();

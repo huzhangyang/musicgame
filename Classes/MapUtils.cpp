@@ -1,8 +1,9 @@
 #include "MapUtils.h"
+#include "MainScene.h"
 #include <fstream>
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#define FFT_SIZE 256
+#define FFT_SIZE 1024
 #else
 #define FFT_SIZE 1024
 #endif
@@ -73,9 +74,15 @@ void MapUtils::generateMap(const char* songname)
 {
 	mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
-	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
-	//////////////////初始化/////////////////////
+	std::thread workthread(generate, songname);
+	workthread.detach();
+}
+
+void MapUtils::generate(const char* songname)
+{
+	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
+	///////////////
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
 	maxBar = 0;
@@ -104,8 +111,8 @@ void MapUtils::generateMap(const char* songname)
 			firstBar = i;
 		}
 	}
+
 	//////////////////一轮扫描/////////////////////
-	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
 	noteline.type = -1;
 	noteline.time = -1;
@@ -153,6 +160,10 @@ void MapUtils::generateMap(const char* songname)
 		}
 	}
 	//////////////////二轮扫描/////////////////////
+	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
+	{ 
+		MainScene::loadingEnd();
+	});
 	fclose(fout);
 }
 
@@ -191,11 +202,11 @@ void MapUtils::analyzeBeatV2()
 		}
 	}
 	DBavg = DBavg / (maxBar - minBar);
-	//if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.025)
-	//{
-	info.beatTick = AudioEngine::getInstance()->getPosition();
-	//}
-	//else info.beatBar = -1;
+	if (DBmax >= 0.01)
+	{
+		info.beatTick = AudioEngine::getInstance()->getPosition();
+	}
+	else info.beatBar = -1;
 	delete[] specData;
 }
 

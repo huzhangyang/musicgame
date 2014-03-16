@@ -18,12 +18,13 @@ public:
 	virtual bool init();
 	virtual void onEnterTransitionDidFinish();
 	virtual void onExitTransitionDidStart();
+	static void loadingEnd();
 	void menuCloseCallback(Ref* pSender);
 	CREATE_FUNC(MainScene);
 private:
 	void touchEvent(Ref* obj, TouchEventType eventType);
 	void createDialog(std::string key);
-	Node *UINode, *ExitNode, *DialogNode, *LoadingNode;
+	Node *UINode, *ExitNode, *DialogNode;
 	Text *labelWord;
 	ImageView *objectBox, *objectDialog, *objectWords, *objectLight, *objectBG;
 	Button *buttonCheck, *buttonCross;
