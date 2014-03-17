@@ -3,7 +3,7 @@
 #include <fstream>
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#define FFT_SIZE 1024
+#define FFT_SIZE 256
 #else
 #define FFT_SIZE 1024
 #endif
@@ -181,7 +181,7 @@ void MapUtils::analyzeBeat()
 		}
 	}
 	DBavg = DBavg / FFT_SIZE;
-	if ((DBmax / DBavg) >= 2.5 && DBmax >= 0.025)
+	if (DBmax >= 0.005)
 		info.beatBar = -1;
 	delete[] specData;
 }

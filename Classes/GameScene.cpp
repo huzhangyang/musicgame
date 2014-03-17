@@ -129,7 +129,7 @@ void GameScene::startGame(float dt)
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
-		//addScanline();
+		addScanline();
 	}
 }
 
@@ -165,13 +165,13 @@ void GameScene::addNewNote(int type, int length, int posX, int posY)
 void GameScene::addScanline()
 {
 	auto bar = Sprite::create("game/bar.png");
-	bar->setOpacity(128);
-	bar->setPosition(675, 305);
+	bar->setOpacity(200);
+	bar->setPosition(655, 305);
 	UINode->addChild(bar);
-	auto action1 = MoveTo::create(60.0 / BPM, Point(675, 65));
-	auto action2 = MoveTo::create(60.0 / BPM, Point(675, 305));
-	auto action3 = MoveTo::create(60.0 / BPM, Point(675, 545));
-	auto action4 = MoveTo::create(60.0 / BPM, Point(675, 305));
+	auto action1 = MoveTo::create(60.0 / BPM, Point(655, 65));
+	auto action2 = MoveTo::create(60.0 / BPM, Point(655, 305));
+	auto action3 = MoveTo::create(60.0 / BPM, Point(655, 545));
+	auto action4 = MoveTo::create(60.0 / BPM, Point(655, 305));
 	bar->runAction(RepeatForever::create(Sequence::create(action1, action2, action3, action4, NULL)));
 }
 

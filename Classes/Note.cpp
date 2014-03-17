@@ -201,9 +201,9 @@ void Note::createNoteListener()
 		{
 			target->slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
 			target->slideDistance = touch->getLocation().getDistance(touch->getStartLocation());
-			auto disX = touch->getLocation().x - touch->getPreviousLocation().x;
+			/*auto disX = touch->getLocation().x - touch->getPreviousLocation().x;
 			auto disY = touch->getLocation().y - touch->getPreviousLocation().y;
-			target->setPosition(target->getPosition().x + disX, target->getPosition().y + disY);
+			target->setPosition(target->getPosition().x + disX, target->getPosition().y + disY);*/
 		}
 	};
 	noteListener->onTouchEnded = [](Touch *touch, Event  *event)
