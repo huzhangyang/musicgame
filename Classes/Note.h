@@ -17,7 +17,7 @@ private:
 	void initNote(int type, int length, int posX, int posY);
 	void removeNote();
 	void update(float dt);
-	void judge(float slideAngle = 0, float slideDistance = 0);
+	void judge();
 	void createNoteListener();
 	void addToNoteListener();
 	NoteType type;//音符类型
@@ -28,6 +28,8 @@ private:
 	int length;//总生命长度
 	int life;//剩余生命长度
 	int lifeTouchBegan;//触摸开始时的生命值
+	float slideAngle;
+	float slideDistance;
 };
 
 #endif 

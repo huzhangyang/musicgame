@@ -56,6 +56,12 @@ void Note::initNote(int type, int length, int posX, int posY)
 		break;
 	}
 	this->setOpacity(0);
+	/*cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note.ExportJson");
+	cocostudio::Armature* armature = cocostudio::Armature::create("note");
+	armature->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
+	this->addChild(armature);
+	armature->getAnimation()->setSpeedScale(0.5);
+	armature->getAnimation()->play("note2");*/
 	this->runAction(FadeTo::create(life / 60.0, 200));
 	this->setLocalZOrder(notenumber - (++counter.total));//调整显示和响应顺序
 	if (!noteListener)
@@ -93,7 +99,7 @@ void Note::update(float dt)
 	}
 }
 
-void Note::judge(float slideAngle, float slideDistance)
+void Note::judge()
 {
 	float lifePercent;
 	int judgeResult;
@@ -127,7 +133,13 @@ void Note::judge(float slideAngle, float slideDistance)
 			judgeResult = 2;
 		break;
 	case SLIDE:
-		lifePercent = abs(slideAngle - this->getRotation());
+		auto rot = this->getRotation();
+		if (rot >= 0 && slideAngle >= 0 || rot<0 && slideAngle<0)
+			lifePercent = abs(rot - slideAngle);
+		else
+			lifePercent = abs(slideAngle) + abs(rot);
+		if (lifePercent > 180)
+			lifePercent = 360 - lifePercent;
 		if (!isSlided || lifePercent > 36 || slideDistance<50)//没划过、方向太偏、距离太短为miss
 			judgeResult = 0;
 		else if (lifePercent > 18 || slideDistance < 100)
@@ -173,8 +185,6 @@ void Note::createNoteListener()
 			}
 			return true;
 		}
-		//else if (target->type == SLIDE&& !target->isTouched)
-		//return true;
 		return false;
 	};
 	noteListener->onTouchMoved = [](Touch *touch, Event  *event)
@@ -183,9 +193,17 @@ void Note::createNoteListener()
 		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
-		if (rect.containsPoint(locationInNode) && !target->isSlided)//滑动经过音符内时标记为划过
+		if (rect.containsPoint(locationInNode) && target->type == SLIDE)//滑动经过音符内时标记为划过
 		{
 			target->isSlided = true;
+		}
+		if (target->isSlided)
+		{
+			target->slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
+			target->slideDistance = touch->getLocation().getDistance(touch->getStartLocation());
+			auto disX = touch->getLocation().x - touch->getPreviousLocation().x;
+			auto disY = touch->getLocation().y - touch->getPreviousLocation().y;
+			target->setPosition(target->getPosition().x + disX, target->getPosition().y + disY);
 		}
 	};
 	noteListener->onTouchEnded = [](Touch *touch, Event  *event)
@@ -208,9 +226,7 @@ void Note::createNoteListener()
 		}
 		else if (target->type == SLIDE&&target->life > 0)
 		{
-			float slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
-			float slideDistance = touch->getLocation().getDistance(target->getPosition());
-			target->judge(slideAngle, slideDistance);
+			target->judge();
 		}
 
 	};

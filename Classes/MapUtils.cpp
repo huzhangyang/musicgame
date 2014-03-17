@@ -111,7 +111,6 @@ void MapUtils::generate(const char* songname)
 			firstBar = i;
 		}
 	}
-
 	//////////////////Ò»ÂÖÉ¨Ãè/////////////////////
 	AudioEngine::getInstance()->playNRT();
 	noteline.type = -1;
@@ -161,7 +160,7 @@ void MapUtils::generate(const char* songname)
 	}
 	//////////////////¶þÂÖÉ¨Ãè/////////////////////
 	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
-	{ 
+	{
 		MainScene::loadingEnd();
 	});
 	fclose(fout);
@@ -202,7 +201,7 @@ void MapUtils::analyzeBeatV2()
 		}
 	}
 	DBavg = DBavg / (maxBar - minBar);
-	if (DBmax >= 0.01)
+	if (DBmax >= 0.001)
 	{
 		info.beatTick = AudioEngine::getInstance()->getPosition();
 	}
