@@ -137,8 +137,8 @@ float* AudioEngine::getSpectrum(int FFTSize)
 	float* specData = new float[FFTSize];
 	float* specLeft = new float[FFTSize];
 	float* specRight = new float[FFTSize];
-	result = soundchannel->getSpectrum(specLeft, FFTSize, 0, FMOD_DSP_FFT_WINDOW_BLACKMANHARRIS);//得到左声道频谱
-	result = soundchannel->getSpectrum(specRight, FFTSize, 1, FMOD_DSP_FFT_WINDOW_BLACKMANHARRIS);//得到右声道频谱
+	result = soundchannel->getSpectrum(specLeft, FFTSize, 0, FMOD_DSP_FFT_WINDOW_HAMMING);//得到左声道频谱
+	result = soundchannel->getSpectrum(specRight, FFTSize, 1, FMOD_DSP_FFT_WINDOW_HAMMING);//得到右声道频谱
 	for (int i = 0; i < FFTSize; i++)
 		specData[i] = (specLeft[i] + specRight[i]) / 2;//平均左右声道
 	return specData;//返回

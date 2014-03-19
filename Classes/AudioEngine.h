@@ -1,5 +1,5 @@
-#ifndef __FMOD_H__
-#define __FMOD_H__
+#ifndef __AUDIOENGINE_H__
+#define __AUDIOENGINE_H__
 
 #include"fmod.hpp"
 #include "cocos2d.h"

@@ -71,5 +71,5 @@ const int CLEARSCENE_DIFFICULTY = 16;
 
 //其它常数
 const std::string FILENAME = "test";//曲子文件名
-const float BPM = 139.65f;//歌曲速度
+const float BPM = 149.61f;//歌曲速度
 #endif 

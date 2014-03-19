@@ -2,6 +2,8 @@
 #include "GameScene.h"
 #include "MapUtils.h"
 
+Node *LoadingNode;
+
 Scene* MainScene::createScene()
 {
 	auto scene = Scene::create();
@@ -107,6 +109,11 @@ void MainScene::createDialog(std::string key)
 	labelWord->setText(strings.at(key).asString());
 }
 
+void MainScene::loadingEnd()
+{
+	LoadingNode->setVisible(false);
+}
+
 void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
@@ -121,11 +128,11 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			this->createDialog("dialogTable");
 			break;
 		case MAINSCENE_PAPER:
-			//LoadingNode->setVisible(true);
-			//objectLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
-			//objectWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
+			LoadingNode->setVisible(true);
+			LoadingNode->runAction(FadeIn::create(1));
+			objectLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
+			objectWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
 			MapUtils::generateMap(musicname.c_str());
-			//LoadingNode->setVisible(false);
 			this->createDialog("dialogMapCreated");
 			break;
 		case MAINSCENE_SHELF:
