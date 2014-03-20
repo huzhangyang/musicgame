@@ -29,9 +29,9 @@
 			<key>format</key>
 			<integer>0</integer>
 			<key>textureFileName</key>
-			<string>note10.png</string>
+			<string>note1.png</string>
 			<key>realTextureFileName</key>
-			<string>note10.png</string>
+			<string>note1.png</string>
 			<key>size</key>
 			<string>{1024,1024}</string>
 		</dict>

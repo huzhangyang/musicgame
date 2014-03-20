@@ -26,6 +26,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #else
 	FileUtils::getInstance()->addSearchPath("../files/");//设置搜索路径
 #endif
+	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note0.ExportJson");
+	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note1.ExportJson");
+	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note2.ExportJson");
 	return true;
 }
 //切入后台
