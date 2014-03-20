@@ -56,6 +56,7 @@ const int GAMESCENE_RESUME = 14;
 const int GAMESCENE_RETRY = 15;
 const int GAMESCENE_OPTION = 16;
 const int GAMESCENE_RETURN = 17;
+const int GAMESCENE_LEVEL = 12;
 //Ω·À„ΩÁ√ÊTag
 const int CLEARSCENE_BG = 2;
 const int CLEARSCENE_TNO = 3;
