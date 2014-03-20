@@ -21,7 +21,12 @@ MusicInfo MapUtils::loadMap(std::string filename)
 {
 	mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
 	fin.open(mapname);//打开自动生成测试谱面
-	//fin >> musicinfo.NoteNumber_Easy >> musicinfo.NoteNumber_Hard >> musicinfo.Level_Easy >> musicinfo.Level_Hard;
+	std::string infostring;
+	getline(fin, infostring);
+	musicinfo.NoteNumber_Easy = atoi(infostring.substr(0, 4).c_str());
+	musicinfo.NoteNumber_Hard = atoi(infostring.substr(5, 9).c_str());
+	musicinfo.Level_Easy = atoi(infostring.substr(10, 11).c_str());
+	musicinfo.Level_Hard = atoi(infostring.substr(12, 13).c_str());;
 	getNoteline();//读取第一行
 	return musicinfo;
 }
@@ -63,6 +68,7 @@ void MapUtils::generateMap(const char* songname)
 	mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
+	fprintf(fout, "//////////////");
 	std::thread workthread(generate, songname);
 	workthread.detach();
 }
@@ -149,8 +155,12 @@ void MapUtils::generate(const char* songname)
 	//////////////////二轮扫描/////////////////////
 	rewind(fout);
 	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 360 / AudioEngine::getInstance()->getLength();
+	if (musicinfo.Level_Easy > 9)
+		musicinfo.Level_Easy = 9;
 	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 360 / AudioEngine::getInstance()->getLength();
-	//fprintf(fout, "%d %d %d %d\n", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
+	if (musicinfo.Level_Hard > 9)
+		musicinfo.Level_Hard = 9;
+	fprintf(fout, "%4d %4d %1d %1d\n", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
 	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
 	{
 		MainScene::loadingEnd();

@@ -215,8 +215,7 @@ void GameScene::judgeNote(int judgeResult)
 	else if (counter.combo == (int)(notenumber *0.1))
 		labelCombo->setText("Decent!");
 	sprintf(temp, "%.2f", counter.percent);
-	//labelScore->setText(strcat(temp, "%"));
-	labelScore->setText("100.00%");
+	labelScore->setText(strcat(temp, "%"));
 	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//ComboÌØĞ§
 }
 
