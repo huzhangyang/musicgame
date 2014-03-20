@@ -9,7 +9,7 @@ int difficulty;//当前难度
 std::string FileName;//音乐文件名称
 
 Counter counter;
-Text *labelCombo, *labelScore;
+Text *labelCombo, *labelScore, *labelInfo, *labelLevel, *labelDifficulty;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -18,12 +18,6 @@ Scene* GameScene::createScene(std::string filename)
 	scene->addChild(layer);
 
 	FileName = filename;
-	counter.total = 0;
-	counter.perfect = 0;
-	counter.good = 0;
-	counter.miss = 0;
-	counter.combo = 0;
-	counter.percent = 0;
 	return scene;
 }
 
@@ -53,10 +47,11 @@ bool GameScene::init()
 	buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
 	buttonOption = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
 	buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
-	labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_INFO));
 	labelCombo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
 	labelScore = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_PERCENT));
-	labelDifficulty = dynamic_cast<ImageView*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
+	labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_INFO));
+	labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_LEVEL));
+	labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
 	loadingBar = dynamic_cast<LoadingBar*>(UIlayer->getChildByTag(GAMESCENE_LOADINGBAR));
 	bgPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
@@ -69,16 +64,6 @@ bool GameScene::init()
 	buttonReturn->setEnabled(false);
 	buttonOption->setEnabled(false);
 	buttonResume->setEnabled(false);
-	labelScore->setFontName("trends.ttf");
-	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
-	if (difficulty == 0)
-	{
-		labelDifficulty->loadTexture("gameSceneUI/easy.png");
-	}
-	else if (difficulty == 1)
-	{
-		labelDifficulty->loadTexture("gameSceneUI/hard.png");
-	}
 	return true;
 }
 
@@ -93,8 +78,24 @@ void GameScene::onEnterTransitionDidFinish()
 		labelInfo->setText(title);//显示ID3 TITLE
 	else
 		labelInfo->setText(FileName);//没获取到则显示文件名
-	MapUtils::loadMap(FileName.c_str());
-	notenumber = MapUtils::getNoteNumber();
+	MusicInfo info = MapUtils::loadMap(FileName.c_str());
+	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+	int level = 0;
+	if (difficulty == 0)
+	{
+		notenumber = info.NoteNumber_Easy;
+		level = info.Level_Easy;
+		labelDifficulty->setText("Easy");
+	}
+	else if (difficulty == 1)
+	{
+		notenumber = info.NoteNumber_Hard;
+		level = info.Level_Hard;
+		labelDifficulty->setText("Hard");
+	}
+	char temp[64];
+	sprintf(temp, "%d", level);
+	labelLevel->setText(temp);
 	labelCombo->setText("READY");
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
@@ -125,6 +126,7 @@ void GameScene::startGame(float dt)
 	{
 		this->unscheduleAllSelectors();
 		labelCombo->setText("");
+		labelScore->setText("0.00%");
 		labelCombo->setOpacity(100);
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
@@ -213,7 +215,8 @@ void GameScene::judgeNote(int judgeResult)
 	else if (counter.combo == (int)(notenumber *0.1))
 		labelCombo->setText("Decent!");
 	sprintf(temp, "%.2f", counter.percent);
-	labelScore->setText(strcat(temp, "%"));
+	//labelScore->setText(strcat(temp, "%"));
+	labelScore->setText("100.00%");
 	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//Combo特效
 }
 

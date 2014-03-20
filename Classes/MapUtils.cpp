@@ -10,37 +10,25 @@
 
 Noteline noteline;
 AnalyzeInfo info;
-std::ifstream fin, fin2;//输入流
+MusicInfo musicinfo;
+std::ifstream fin;//输入流
 FILE* fout;//输出文件
 std::string mapname;
 int maxBar, minBar, firstBar, currBar;
 float FramePerBeat;
 
-void MapUtils::loadMap(std::string filename)
+MusicInfo MapUtils::loadMap(std::string filename)
 {
 	mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
 	fin.open(mapname);//打开自动生成测试谱面
+	//fin >> musicinfo.NoteNumber_Easy >> musicinfo.NoteNumber_Hard >> musicinfo.Level_Easy >> musicinfo.Level_Hard;
 	getNoteline();//读取第一行
+	return musicinfo;
 }
 
 void MapUtils::closeMap()
 {
 	fin.close();
-}
-
-int MapUtils::getNoteNumber()
-{
-	int difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");
-	int ret = 0;
-	std::string temp;
-	fin2.open(mapname);//打开自动生成测试谱面
-	while (getline(fin2, temp))
-	{
-		if (atoi(temp.substr(6, 7).c_str()) <= difficulty)
-			ret++;
-	}
-	fin2.close();
-	return ret;
 }
 
 void MapUtils::getNoteline()
@@ -159,6 +147,10 @@ void MapUtils::generate(const char* songname)
 		}
 	}
 	//////////////////二轮扫描/////////////////////
+	rewind(fout);
+	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 360 / AudioEngine::getInstance()->getLength();
+	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 360 / AudioEngine::getInstance()->getLength();
+	//fprintf(fout, "%d %d %d %d\n", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
 	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
 	{
 		MainScene::loadingEnd();
@@ -217,6 +209,15 @@ void MapUtils::writeNoteline()
 	fprintf(fout, "%.3d,", noteline.length);
 	fprintf(fout, "%.4d,", noteline.posX);
 	fprintf(fout, "%.4d\n", noteline.posY);
+	if (noteline.difficulty == 0)
+	{
+		musicinfo.NoteNumber_Easy++;
+		musicinfo.NoteNumber_Hard++;
+	}
+	else
+	{
+		musicinfo.NoteNumber_Hard++;
+	}
 	log("%d %d %d %d", noteline.time, noteline.type, noteline.posX, noteline.posY);
 }
 
