@@ -36,38 +36,33 @@ void Note::initNote(int type, int length, int posX, int posY)
 	this->isActivated = false;
 	this->isTouched = false;
 	this->isSlided = false;
-	this->setScale(1.25);
+	this->slideAngle = 720;
+	this->slideDistance = 0;
 	this->setPositionX(posX);
 	this->setPositionY(posY);
 	switch (type)
 	{
 	case CLICK:
-		this->initWithFile("game/note0.png");
+		this->initWithFile("note/note0.png");
 		this->length = TIME_PRELOAD;
 		break;
 	case LONGPRESS:
-		this->initWithFile("game/note1.png");
+		this->initWithFile("note/note1.png");
 		this->length = length;
 		break;
 	case SLIDE:
-		this->initWithFile("game/note2.png");
+		this->initWithFile("note/note2.png");
 		this->length = TIME_PRELOAD;
 		this->setRotation(atan2(MapUtils::getNextPos().x - getPositionX(), MapUtils::getNextPos().y - getPositionY()) * 180 / M_PI);
 		break;
 	}
 	this->setOpacity(0);
-	/*cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note.ExportJson");
-	cocostudio::Armature* armature = cocostudio::Armature::create("note");
-	armature->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
-	this->addChild(armature);
-	armature->getAnimation()->setSpeedScale(0.5);
-	armature->getAnimation()->play("note2");*/
 	this->runAction(FadeTo::create(life / 60.0, 200));
 	this->setLocalZOrder(notenumber - (++counter.total));//调整显示和响应顺序
 	if (!noteListener)
 		createNoteListener();
 	else addToNoteListener();
-	judgePic = Sprite::create("game/judge.png");
+	judgePic = Sprite::create("judge/judge.png");
 	judgePic->setScale(2);
 	judgePic->runAction(EaseSineIn::create(ScaleTo::create(life / 60.0, 1)));
 	judgePic->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
@@ -151,11 +146,11 @@ void Note::judge()
 	judgePic->stopAllActions();
 	judgePic->setScale(1);
 	if (judgeResult == 0)
-		judgePic->setTexture("game/halo0.png");
+		judgePic->setTexture("judge/halo0.png");
 	else if (judgeResult == 1)
-		judgePic->setTexture("game/halo1.png");
+		judgePic->setTexture("judge/halo1.png");
 	else
-		judgePic->setTexture("game/halo2.png");
+		judgePic->setTexture("judge/halo2.png");
 	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
 	//log("%d %d %d %d", notenumber - this->getLocalZOrder(), this->type, this->life, judgeResult);
@@ -179,7 +174,7 @@ void Note::createNoteListener()
 				target->judge();
 			else if (target->type == LONGPRESS)
 			{
-				target->setScale(1.5f);
+				target->setScale(1.25);
 				if (target->isActivated)
 					target->lifeTouchBegan = target->life;
 			}
@@ -218,7 +213,7 @@ void Note::createNoteListener()
 			{
 				target->isSlided = false;
 				target->isTouched = false;
-				target->setScale(1.25f);
+				target->setScale(1);
 				target->lifeTouchBegan = 0;
 			}
 			else
