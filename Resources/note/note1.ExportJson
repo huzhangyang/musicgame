@@ -44,7 +44,7 @@
       "name": "note1",
       "mov_data": [
         {
-          "name": "note1in",
+          "name": "in",
           "dr": 61,
           "lp": true,
           "to": 0,
@@ -113,7 +113,7 @@
           ]
         },
         {
-          "name": "note1out",
+          "name": "out",
           "dr": 61,
           "lp": true,
           "to": 0,
@@ -182,6 +182,6 @@
     }
   ],
   "config_file_path": [
-    "note10.plist"
+    "note1.plist"
   ]
 }

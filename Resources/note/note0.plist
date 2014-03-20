@@ -4,7 +4,7 @@
 	<dict>
 		<key>frames</key>
 		<dict>
-			<key>note2.png</key>
+			<key>note0.png</key>
 			<dict>
 				<key>width</key>
 				<integer>150</integer>
@@ -29,9 +29,9 @@
 			<key>format</key>
 			<integer>0</integer>
 			<key>textureFileName</key>
-			<string>note20.png</string>
+			<string>note0.png</string>
 			<key>realTextureFileName</key>
-			<string>note20.png</string>
+			<string>note0.png</string>
 			<key>size</key>
 			<string>{1024,1024}</string>
 		</dict>
