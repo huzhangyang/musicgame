@@ -3,25 +3,42 @@
 //计数器结构
 struct Counter
 {
-	int total;//音符总数
-	int perfect;//完美数
-	int good;//普通击中数
-	int miss;//错过数
-	int combo;//连击数
-	float percent;//总分
+	int total = 0;//音符总数
+	int perfect = 0;//完美数
+	int good = 0;//普通击中数
+	int miss = 0;//错过数
+	int combo = 0;//连击数
+	float percent = 0;//总分
 };
 extern Counter counter;
 //曲谱结构
 struct Noteline
 {
-	int time;//时间
-	int difficulty;//难度
-	int type;//类型
-	int length;//长音符与滑动音符持续长度
-	int posX;//X坐标
-	int posY;//Y坐标
+	int time = 0;//时间
+	int difficulty = 0;//难度
+	int type = 0;//类型
+	int length = 0;//长音符与滑动音符持续长度
+	int posX = 0;//X坐标
+	int posY = 0;//Y坐标
 };
 extern Noteline noteline;
+//音频分析信息结构
+struct AnalyzeInfo
+{
+	int beatTick = 0;
+	int lastbeatTick = 0;
+	int beatBar = 0;
+	int lastBeatBar = 0;
+	int difficulty = 0;
+};
+//文件信息结构
+struct MusicInfo
+{
+	int NoteNumber_Easy = 0;
+	int NoteNumber_Hard = 0;
+	int Level_Easy = 0;
+	int Level_Hard = 0;
+};
 //开始界面Tag
 const int INTROSCENE_BG = 2;
 const int INTROSCENE_START = 3;

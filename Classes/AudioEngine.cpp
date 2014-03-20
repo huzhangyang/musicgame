@@ -104,7 +104,12 @@ void AudioEngine::createSound(const char* songname)
 int AudioEngine::getLength()
 {
 	unsigned int x;
-	result = stream->getLength(&x, FMOD_TIMEUNIT_MS);
+	bool y;
+	result = soundchannel->isPlaying(&y);
+	if (y)
+		result = sound->getLength(&x, FMOD_TIMEUNIT_MS);
+	else
+		result = stream->getLength(&x, FMOD_TIMEUNIT_MS);
 	x = x * 60 / 1000;//»»Ëã³ÉÖ¡Êý
 	return x;
 }
