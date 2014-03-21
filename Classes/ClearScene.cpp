@@ -2,7 +2,7 @@
 #include "MainScene.h"
 #include "GameScene.h"
 
-extern std::string FileName;//音乐文件名称
+std::string FileName;//音乐文件名称
 
 Scene* ClearScene::createScene(std::string filename)
 {

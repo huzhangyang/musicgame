@@ -23,6 +23,8 @@ public:
 	CREATE_FUNC(MainScene);
 private:
 	void touchEvent(Ref* obj, TouchEventType eventType);
+	void checkboxEvent(Ref* obj, CheckBoxEventType eventType);
+	void sliderEvent(Ref* obj, SliderEventType eventType);
 	void createDialog(std::string key);
 };
 

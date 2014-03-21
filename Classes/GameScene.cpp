@@ -5,8 +5,7 @@
 #include "MapUtils.h"
 
 extern int notenumber;//总note数
-int difficulty;//当前难度
-std::string FileName;//音乐文件名称
+extern std::string FileName;//音乐文件名称
 
 Counter counter;
 Layer *OptionLayer;
@@ -36,6 +35,8 @@ bool GameScene::init()
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	addChild(sceneNode);
 	OptionLayer = (Layer*)cocostudio::GUIReader::getInstance()->widgetFromJsonFile("optionUI/optionUI.json");
+	OptionLayer->setLocalZOrder(1);
+	OptionLayer->setVisible(false);
 	addChild(OptionLayer);
 	UINode = sceneNode->getChildByTag(10004);
 	MenuNode = sceneNode->getChildByTag(10005);
@@ -62,6 +63,19 @@ bool GameScene::init()
 	buttonReturn->setEnabled(false);
 	buttonOption->setEnabled(false);
 	buttonResume->setEnabled(false);
+	//////////
+	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
+	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
+	auto boxScanline = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SCANLINE));
+	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
+	boxEasy->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
+	boxHard->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
+	boxScanline->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
+	sliderLag->addEventListenerSlider(this, sliderpercentchangedselector(GameScene::sliderEvent));
+	sliderLag->setEnabled(false);
+	boxEasy->setEnabled(false);
+	boxHard->setEnabled(false);
+	boxScanline->setEnabled(false);
 	return true;
 }
 
@@ -83,7 +97,7 @@ void GameScene::onEnterTransitionDidFinish()
 	else
 		labelInfo->setText(FileName);//没获取到则显示文件名
 	MusicInfo info = MapUtils::loadMap(FileName.c_str());
-	difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+	int difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	int level = 0;
 	if (difficulty == 0)
 	{
@@ -265,6 +279,10 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto buttonReturn = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETURN));
 	auto buttonOption = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_OPTION));
 	auto buttonResume = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RESUME));
+	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
+	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
+	auto boxScanline = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SCANLINE));
+	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
 	Scene* scene;
 	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
@@ -304,10 +322,18 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			break;
 		case GAMESCENE_MENU_OPTION:
+			OptionLayer->setVisible(true);
+			sliderLag->setEnabled(true);
+			boxEasy->setEnabled(true);
+			boxHard->setEnabled(true);
+			boxScanline->setEnabled(true);
+			if (UserDefault::getInstance()->getBoolForKey("scanline"))
+				boxScanline->setSelectedState(true);
 			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
-				UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
+				boxEasy->setSelectedState(true);
 			else
-				UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
+				boxHard->setSelectedState(true);
+			sliderLag->setPercent(UserDefault::getInstance()->getIntegerForKey("lag"));
 			break;
 		case GAMESCENE_MENU_RETURN:
 			MenuNode->setVisible(false);
@@ -321,6 +347,69 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			this->unscheduleUpdate();
 			scene = MainScene::createScene();
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
+			break;
+		}
+	}
+}
+
+void GameScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
+{
+	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
+	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
+	auto widget = dynamic_cast<CheckBox*>(obj);
+	int tag = widget->getTag();
+	if (eventType == CheckBoxEventType::CHECKBOX_STATE_EVENT_SELECTED)
+	{
+		switch (tag)
+		{
+		case MAINSCENE_SETTING_EASY:
+			if (boxHard->getSelectedState() == true)
+				boxHard->setSelectedState(false);
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
+			break;
+		case MAINSCENE_SETTING_HARD:
+			if (boxEasy->getSelectedState() == true)
+				boxEasy->setSelectedState(false);
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
+			break;
+		case MAINSCENE_SETTING_SCANLINE:
+			UserDefault::getInstance()->setBoolForKey("scanline", true);
+			break;
+		}
+	}
+	else if (eventType == CheckBoxEventType::CHECKBOX_STATE_EVENT_UNSELECTED)
+	{
+		switch (tag)
+		{
+		case MAINSCENE_SETTING_EASY:
+			if (boxHard->getSelectedState() == false)
+				boxHard->setSelectedState(true);
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
+			break;
+		case MAINSCENE_SETTING_HARD:
+			if (boxEasy->getSelectedState() == false)
+				boxEasy->setSelectedState(true);
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
+			break;
+		case MAINSCENE_SETTING_SCANLINE:
+			UserDefault::getInstance()->setBoolForKey("scanline", false);
+			break;
+		}
+	}
+}
+
+void GameScene::sliderEvent(Ref* obj, SliderEventType eventType)
+{
+	auto widget = dynamic_cast<Slider*>(obj);
+	int tag = widget->getTag();
+	int percent = widget->getPercent();
+	if (eventType == SliderEventType::SLIDER_PERCENTCHANGED)
+	{
+		switch (tag)
+		{
+		case MAINSCENE_SETTING_SLIDER:
+			UserDefault::getInstance()->setIntegerForKey("lag", widget->getPercent());
+			//TODO
 			break;
 		}
 	}
