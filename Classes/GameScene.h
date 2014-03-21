@@ -27,10 +27,6 @@ private:
 	void addNewNote(int type, int length, int posX, int posY);//Éú³ÉÐÂnote
 	void addScanline();
 	void touchEvent(Ref* obj, TouchEventType eventType);
-	LoadingBar *loadingBar;
-	ImageView *bgPause;
-	Node *UINode, *PauseNode;
-	Button *buttonRetry, *buttonResume, *buttonReturn, *buttonOption;
 };
 
 #endif 

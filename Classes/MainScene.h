@@ -24,10 +24,6 @@ public:
 private:
 	void touchEvent(Ref* obj, TouchEventType eventType);
 	void createDialog(std::string key);
-	Node *UINode, *ExitNode, *DialogNode;
-	Text *labelWord;
-	ImageView *objectBox, *objectDialog, *objectWords, *objectLight, *objectBG;
-	Button *buttonCheck, *buttonCross;
 };
 
 #endif 

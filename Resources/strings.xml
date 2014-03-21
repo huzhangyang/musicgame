@@ -9,6 +9,8 @@
     <string>冯如杯三审加油^_^</string>  
         <key>dialogNoMap</key>  
     <string>没有谱子，没法弹奏啊。</string>  
+          <key>dialogNoSong</key>  
+    <string>没有曲子，没法弹奏啊。</string>  
         <key>dialogMapCreated</key>  
     <string>呼，总算完成创作了！</string>  
 </dict>  

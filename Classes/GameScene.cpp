@@ -9,7 +9,8 @@ int difficulty;//当前难度
 std::string FileName;//音乐文件名称
 
 Counter counter;
-Text *labelCombo, *labelScore, *labelInfo, *labelLevel, *labelDifficulty;
+Layer *OptionLayer;
+Node *MenuNode, *UINode;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -32,29 +33,26 @@ bool GameScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	addChild(sceneNode);
+	OptionLayer = (Layer*)cocostudio::GUIReader::getInstance()->widgetFromJsonFile("optionUI/optionUI.json");
+	addChild(OptionLayer);
 	UINode = sceneNode->getChildByTag(10004);
-	PauseNode = sceneNode->getChildByTag(10005);
+	MenuNode = sceneNode->getChildByTag(10005);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
-	auto PauseComponent = (cocostudio::ComRender*) PauseNode->getComponent("pauseSelectUI");
-	auto UIlayer = UIComponent->getNode();
-	auto Pauselayer = PauseComponent->getNode();
-	auto buttonPause = dynamic_cast<Button*>(UIlayer->getChildByTag(GAMESCENE_PAUSE));
-	bgPause = dynamic_cast<ImageView*>(Pauselayer->getChildByTag(GAMESCENE_PAUSEBG));
-	buttonRetry = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETRY));
-	buttonReturn = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RETURN));
-	buttonOption = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_OPTION));
-	buttonResume = dynamic_cast<Button*>(Pauselayer->getChildByTag(GAMESCENE_RESUME));
-	labelCombo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_COMBO));
-	labelScore = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_PERCENT));
-	labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_INFO));
-	labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_LEVEL));
-	labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(GAMESCENE_DIFFICULTY));
-	loadingBar = dynamic_cast<LoadingBar*>(UIlayer->getChildByTag(GAMESCENE_LOADINGBAR));
-	bgPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	auto PauseComponent = (cocostudio::ComRender*)MenuNode->getComponent("pauseSelectUI");
+	auto UILayer = (Layer*)UIComponent->getNode();
+	auto MenuLayer = (Layer*)PauseComponent->getNode();
+	//////////
+	auto buttonPause = dynamic_cast<Button*>(UILayer->getChildByTag(GAMESCENE_BUTTON_PAUSE));
 	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	//////////
+	auto bgPause = dynamic_cast<ImageView*>(MenuLayer->getChildByTag(GAMESCENE_MENU_BG));
+	auto buttonRetry = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETRY));
+	auto buttonReturn = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETURN));
+	auto buttonOption = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_OPTION));
+	auto buttonResume = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RESUME));
+	bgPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonRetry->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonOption->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
@@ -70,6 +68,12 @@ bool GameScene::init()
 void GameScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
+	auto UILayer = (Layer*)UIComponent->getNode();
+	auto labelCombo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_COMBO));
+	auto labelInfo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_INFO));
+	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_LEVEL));
+	auto labelDifficulty = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_DIFFICULTY));
 	/////////////////////////////////////////////////////	
 	std::string musicname = "music/" + FileName + ".mp3";
 	AudioEngine::getInstance()->create(musicname.c_str());
@@ -119,6 +123,10 @@ void GameScene::menuCloseCallback(Ref* pSender)
 
 void GameScene::startGame(float dt)
 {
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
+	auto UILayer = (Layer*)UIComponent->getNode();
+	auto loadingBar = dynamic_cast<LoadingBar*>(UILayer->getChildByTag(GAMESCENE_LOADINGBAR));
+	auto labelCombo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_COMBO));
 	loadingBar->setPercent(loadingBar->getPercent() + 1);
 	if (loadingBar->getPercent() == 50)
 		labelCombo->runAction(FadeOut::create(1));
@@ -126,7 +134,6 @@ void GameScene::startGame(float dt)
 	{
 		this->unscheduleAllSelectors();
 		labelCombo->setText("");
-		labelScore->setText("0.00%");
 		labelCombo->setOpacity(100);
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
@@ -137,6 +144,9 @@ void GameScene::startGame(float dt)
 
 void GameScene::update(float dt)
 {
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
+	auto UILayer = (Layer*)UIComponent->getNode();
+	auto loadingBar = dynamic_cast<LoadingBar*>(UILayer->getChildByTag(GAMESCENE_LOADINGBAR));
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
@@ -179,6 +189,10 @@ void GameScene::addScanline()
 
 void GameScene::judgeNote(int judgeResult)
 {
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
+	auto UILayer = (Layer*)UIComponent->getNode();
+	auto labelCombo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_COMBO));
+	auto labelScore = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_PERCENT));
 	char temp[64];
 	switch (judgeResult)
 	{
@@ -223,23 +237,30 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();
+	auto MenuComponent = (cocostudio::ComRender*)MenuNode->getComponent("pauseSelectUI");
+	auto MenuLayer = (Layer*)MenuComponent->getNode();
+	auto bgPause = dynamic_cast<ImageView*>(MenuLayer->getChildByTag(GAMESCENE_MENU_BG));
+	auto buttonRetry = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETRY));
+	auto buttonReturn = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETURN));
+	auto buttonOption = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_OPTION));
+	auto buttonResume = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RESUME));
 	Scene* scene;
 	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
 		switch (tag)
 		{
-		case  GAMESCENE_PAUSE:
+		case GAMESCENE_BUTTON_PAUSE:
 			Director::getInstance()->pause();
 			AudioEngine::getInstance()->pause();
-			PauseNode->setVisible(true);
+			MenuNode->setVisible(true);
 			bgPause->setEnabled(true);
 			buttonRetry->setEnabled(true);
 			buttonReturn->setEnabled(true);
 			buttonOption->setEnabled(true);
 			buttonResume->setEnabled(true);
 			break;
-		case GAMESCENE_RESUME:
-			PauseNode->setVisible(false);
+		case GAMESCENE_MENU_RESUME:
+			MenuNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
@@ -248,8 +269,8 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->resume();
 			break;
-		case GAMESCENE_RETRY:
-			PauseNode->setVisible(false);
+		case GAMESCENE_MENU_RETRY:
+			MenuNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
@@ -261,14 +282,14 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			scene = GameScene::createScene(FileName);
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			break;
-		case GAMESCENE_OPTION:
+		case GAMESCENE_MENU_OPTION:
 			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
 				UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
 			else
 				UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
 			break;
-		case GAMESCENE_RETURN:
-			PauseNode->setVisible(false);
+		case GAMESCENE_MENU_RETURN:
+			MenuNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);

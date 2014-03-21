@@ -2,7 +2,8 @@
 #include "GameScene.h"
 #include "MapUtils.h"
 
-Node *LoadingNode;
+Node *LoadingNode, *DialogNode, *ExitNode;
+extern Layer *OptionLayer;
 
 Scene* MainScene::createScene()
 {
@@ -26,8 +27,9 @@ bool MainScene::init()
 	AudioEngine::getInstance()->createLoop("music/main.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
-
-	UINode = sceneNode->getChildByTag(10005);
+	OptionLayer = (Layer*)cocostudio::GUIReader::getInstance()->widgetFromJsonFile("optionUI/optionUI.json");
+	addChild(OptionLayer);
+	auto UINode = sceneNode->getChildByTag(10005);
 	ExitNode = sceneNode->getChildByTag(10004);
 	DialogNode = sceneNode->getChildByTag(10006);
 	LoadingNode = sceneNode->getChildByTag(10007);
@@ -35,46 +37,50 @@ bool MainScene::init()
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
 	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
-	auto UILayer = UIComponent->getNode();
-	auto ExitLayer = ExitComponent->getNode();
-	auto DialogLayer = DialogComponent->getNode();
-	auto LoadingLayer = LoadingComponent->getNode();
-	auto objectTable = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_TABLE));
-	auto objectPaper = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_PAPER));
-	auto objectShelf = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_SHELF));
-	auto objectClock = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CLOCK));
-	auto objectCat = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CAT));
-	auto objectCharacter = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_CHARACTER));
-	auto buttonOption = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_OPTION));
-	auto buttonHelp = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_HELP));
-	auto buttonExit = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_EXIT));
-	objectBox = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_EXITBG));
-	buttonCheck = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CHECKMARK));
-	buttonCross = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_CROSSMARK));
-	objectDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOGBG));
-	labelWord = dynamic_cast<Text*>(DialogLayer->getChildByTag(MAINSCENE_WORD));
-	objectWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADINGWORDS));
-	objectLight = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADINGLIGHT));
-	objectBG = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADINGBG));
-	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectDialog->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectPaper->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectShelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectClock->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectCat->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectCharacter->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	auto UILayer = (Layer*)UIComponent->getNode();
+	auto ExitLayer = (Layer*)ExitComponent->getNode();
+	auto DialogLayer = (Layer*)DialogComponent->getNode();
+	auto LoadingLayer = (Layer*)LoadingComponent->getNode();
+	//////////
+	auto imageTable = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_IMAGE_TABLE));
+	auto imagePaper = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_IMAGE_PAPER));
+	auto imageShelf = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_IMAGE_SHELF));
+	auto imageClock = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_IMAGE_CLOCK));
+	auto imageCat = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_IMAGE_CAT));
+	auto imageCharacter = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_IMAGE_CHARACTER));
+	auto buttonOption = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_BUTTON_OPTION));
+	auto buttonHelp = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_BUTTON_HELP));
+	auto buttonExit = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_BUTTON_EXIT));
+	imageTable->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	imagePaper->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	imageShelf->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	imageClock->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	imageCat->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	imageCharacter->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	buttonOption->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	buttonHelp->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	buttonExit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	buttonCheck->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	buttonCross->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectBox->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectBG->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
-	objectBox->setEnabled(false);
-	objectDialog->setEnabled(false);
-	buttonCheck->setEnabled(false);
-	buttonCross->setEnabled(false);
+	//////////
+	auto bgExit = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BG));
+	auto buttonYes= dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_YES));
+	auto buttonNo = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_NO));
+	bgExit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	buttonYes->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	buttonNo->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	bgExit->setEnabled(false);
+	buttonYes->setEnabled(false);
+	buttonNo->setEnabled(false);
+	//////////
+	auto bgDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG_BG));
+	bgDialog->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	bgDialog->setEnabled(false);
+	//////////
+	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_BG));
+	auto imageWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_WORDS));
+	auto imageLight = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_LIGHT));
+	bgLoading->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	imageLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
+	imageWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
 	return true;
 }
 
@@ -103,9 +109,13 @@ void MainScene::menuCloseCallback(Ref* pSender)
 
 void MainScene::createDialog(std::string key)
 {
+	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
+	auto DialogLayer = (Layer*)DialogComponent->getNode();
+	auto labelWord = dynamic_cast<Text*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG_WORDS));
+	auto bgDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG_BG));
 	ValueMap strings = FileUtils::getInstance()->getValueMapFromFile("strings.xml");
 	DialogNode->setVisible(true);
-	objectDialog->setEnabled(true);
+	bgDialog->setEnabled(true);
 	labelWord->setText(strings.at(key).asString());
 }
 
@@ -120,65 +130,86 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 	int tag = widget->getTag();
 	std::string musicname = "music/" + FILENAME + ".mp3";
 	std::string mapname = FileUtils::getInstance()->getWritablePath() + FILENAME + ".gnm";
+	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
+	auto ExitLayer = (Layer*)ExitComponent->getNode();
+	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
+	auto DialogLayer = (Layer*)DialogComponent->getNode();
+	auto bgExit = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BG));
+	auto buttonYes = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_YES));
+	auto buttonNo = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_NO));
 	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
 		switch (tag)
 		{
-		case MAINSCENE_TABLE:
+		case MAINSCENE_IMAGE_TABLE:
 			this->createDialog("dialogTable");
 			break;
-		case MAINSCENE_PAPER:
-			LoadingNode->setVisible(true);
-			LoadingNode->runAction(FadeIn::create(1));
-			objectLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
-			objectWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
-			MapUtils::generateMap(musicname.c_str());
-			this->createDialog("dialogMapCreated");
+		case MAINSCENE_IMAGE_PAPER:
+			if (!FileUtils::getInstance()->isFileExist(musicname))
+			{
+				this->createDialog("dialogNoSong");
+			}
+			else
+			{
+				LoadingNode->setVisible(true);
+				LoadingNode->runAction(FadeIn::create(1));
+				MapUtils::generateMap(musicname.c_str());
+				this->createDialog("dialogMapCreated");
+			}
 			break;
-		case MAINSCENE_SHELF:
-			if (FileUtils::getInstance()->isFileExist(mapname))
+		case MAINSCENE_IMAGE_SHELF:
+			if (!FileUtils::getInstance()->isFileExist(mapname))
+			{
+				this->createDialog("dialogNoMap");
+
+			}
+			else if (!FileUtils::getInstance()->isFileExist(musicname))
+			{
+				this->createDialog("dialogNoSong");
+			}
+			else
 			{
 				auto scene = GameScene::createScene(FILENAME);
 				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			}
-			else
-				this->createDialog("dialogNoMap");
 			break;
-		case MAINSCENE_CLOCK:
+		case MAINSCENE_IMAGE_CLOCK:
 			this->createDialog("dialogClock");
 			break;
-		case MAINSCENE_CAT:
+		case MAINSCENE_IMAGE_CAT:
 			this->createDialog("dialogCat");
 			break;
-		case MAINSCENE_OPTION:
+		case MAINSCENE_BUTTON_OPTION:
+			//TODO
 			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
 				UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
 			else
 				UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
 			break;
-		case MAINSCENE_HELP:
+		case MAINSCENE_BUTTON_HELP:
 			break;
-		case MAINSCENE_EXIT:
+		case MAINSCENE_BUTTON_EXIT:
 			ExitNode->setVisible(true);
-			objectBox->setEnabled(true);
-			buttonCheck->setEnabled(true);
-			buttonCross->setEnabled(true);
+			bgExit->setEnabled(true);
+			buttonYes->setEnabled(true);
+			buttonNo->setEnabled(true);
 			break;
-		case MAINSCENE_CHECKMARK:
+		case  MAINSCENE_EXIT_BUTTON_YES:
 			Director::getInstance()->popScene();
 			break;
-		case MAINSCENE_CROSSMARK:
+		case  MAINSCENE_EXIT_BUTTON_NO:
 			ExitNode->setVisible(false);
-			objectBox->setEnabled(false);
-			buttonCheck->setEnabled(false);
-			buttonCross->setEnabled(false);
+			bgExit->setEnabled(false);
+			buttonYes->setEnabled(false);
+			buttonNo->setEnabled(false);
 			break;
-		case MAINSCENE_CHARACTER:
+		case MAINSCENE_IMAGE_CHARACTER:
 			this->createDialog("dialogCharacter");
 			break;
-		case MAINSCENE_DIALOGBG:
+		case MAINSCENE_DIALOG_BG:
 			DialogNode->setVisible(false);
-			objectDialog->setEnabled(false);
+			auto bgDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG_BG));
+			bgDialog->setEnabled(false);
 			break;
 		}
 	}
