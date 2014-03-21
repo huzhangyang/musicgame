@@ -25,8 +25,10 @@ private:
 	void update(float dt);
 	void startGame(float dt);//开始游戏
 	void addNewNote(int type, int length, int posX, int posY);//生成新note
-	void addScanline();
+	void addScanline();//添加扫描线
+	void setScanline();//设置扫描线位置
 	void touchEvent(Ref* obj, TouchEventType eventType);
+	Sprite* scanline;
 };
 
 #endif 

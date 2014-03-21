@@ -138,7 +138,8 @@ void GameScene::startGame(float dt)
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
-		addScanline();
+		if (UserDefault::getInstance()->getBoolForKey("scanline"))
+			addScanline();
 	}
 }
 
@@ -150,6 +151,8 @@ void GameScene::update(float dt)
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
+	if (UserDefault::getInstance()->getBoolForKey("scanline"))
+		setScanline();
 	while ((currPos + 7200 / BPM >= noteline.time))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
@@ -176,15 +179,33 @@ void GameScene::addNewNote(int type, int length, int posX, int posY)
 
 void GameScene::addScanline()
 {
-	auto bar = Sprite::create("judge/bar.png");
-	bar->setOpacity(200);
-	bar->setPosition(655, 305);
-	UINode->addChild(bar);
-	auto action1 = MoveTo::create(60.0 / BPM, Point(655, 65));
-	auto action2 = MoveTo::create(60.0 / BPM, Point(655, 305));
-	auto action3 = MoveTo::create(60.0 / BPM, Point(655, 545));
-	auto action4 = MoveTo::create(60.0 / BPM, Point(655, 305));
-	bar->runAction(RepeatForever::create(Sequence::create(action1, action2, action3, action4, NULL)));
+	scanline = Sprite::create("judge/scanline.png");
+	scanline->setOpacity(200);
+	scanline->setPosition(655, 305);
+	UINode->addChild(scanline);
+}
+
+void GameScene::setScanline()
+{
+	float FramePerBeat = 3600 / BPM;
+	int y = AudioEngine::getInstance()->getPosition() % (int)(FramePerBeat * 4);
+	if (y < FramePerBeat)
+	{
+		y = 305 - 240 * y / FramePerBeat;
+	}
+	else if (y < FramePerBeat * 2)
+	{
+		y = 65 + 240 * (y - FramePerBeat) / FramePerBeat;
+	}
+	else if (y < FramePerBeat * 3)
+	{
+		y = 305 + 240 * (y - FramePerBeat * 2) / FramePerBeat;
+	}
+	else if (y < FramePerBeat * 4)
+	{
+		y = 545 - 240 * (y - FramePerBeat * 3) / FramePerBeat;
+	}
+	scanline->setPositionY(y);
 }
 
 void GameScene::judgeNote(int judgeResult)
