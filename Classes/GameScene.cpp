@@ -6,7 +6,7 @@
 
 extern int notenumber;//总note数
 extern std::string FileName;//音乐文件名称
-extern const int TIME_PRELOAD = 7200 / BPM;
+extern int TIME_PRELOAD;
 
 Counter counter;
 Layer *OptionLayer;
@@ -19,6 +19,7 @@ Scene* GameScene::createScene(std::string filename)
 	scene->addChild(layer);
 
 	FileName = filename;
+	TIME_PRELOAD = 7200 / BPM;
 	return scene;
 }
 
@@ -77,6 +78,7 @@ bool GameScene::init()
 	sliderLag->addEventListenerSlider(this, sliderpercentchangedselector(GameScene::sliderEvent));
 	buttonClose->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	bgSetting->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	bgSetting->setEnabled(false);
 	buttonClose->setEnabled(false);
 	sliderLag->setEnabled(false);
 	boxEasy->setEnabled(false);
@@ -292,6 +294,7 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
 	auto buttonClose = dynamic_cast<Button*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_CLOSE));
 	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
+	auto bgSetting = dynamic_cast<ImageView*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_BG));
 	Scene* scene;
 	char temp[64];
 	int lag = UserDefault::getInstance()->getIntegerForKey("lag");
@@ -335,6 +338,7 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			break;
 		case GAMESCENE_MENU_OPTION:
 			OptionLayer->setVisible(true);
+			bgSetting->setEnabled(true);
 			sliderLag->setEnabled(true);
 			boxEasy->setEnabled(true);
 			boxHard->setEnabled(true);
@@ -364,6 +368,7 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			break;
 		case MAINSCENE_SETTING_CLOSE:
 			OptionLayer->setVisible(false);
+			bgSetting->setEnabled(false);
 			sliderLag->setEnabled(false);
 			boxEasy->setEnabled(false);
 			boxHard->setEnabled(false);
@@ -396,6 +401,7 @@ void GameScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
 			break;
 		case MAINSCENE_SETTING_SCANLINE:
 			UserDefault::getInstance()->setBoolForKey("scanline", true);
+				addScanline();
 			break;
 		}
 	}
@@ -415,6 +421,8 @@ void GameScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
 			break;
 		case MAINSCENE_SETTING_SCANLINE:
 			UserDefault::getInstance()->setBoolForKey("scanline", false);
+			if (scanline->getParent() != nullptr)
+				scanline->removeFromParent();
 			break;
 		}
 	}

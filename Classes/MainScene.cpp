@@ -96,6 +96,7 @@ bool MainScene::init()
 	sliderLag->addEventListenerSlider(this, sliderpercentchangedselector(MainScene::sliderEvent));
 	buttonClose->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	bgSetting->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	bgSetting->setEnabled(false);
 	buttonClose->setEnabled(false);
 	sliderLag->setEnabled(false);
 	boxEasy->setEnabled(false);
@@ -164,6 +165,7 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
 	auto buttonClose = dynamic_cast<Button*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_CLOSE));
 	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
+	auto bgSetting = dynamic_cast<ImageView*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_BG));
 	Scene* scene;
 	char temp[64];
 	int lag = UserDefault::getInstance()->getIntegerForKey("lag");
@@ -212,6 +214,7 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			break;
 		case MAINSCENE_BUTTON_OPTION:
 			OptionLayer->setVisible(true);
+			bgSetting->setEnabled(true);
 			sliderLag->setEnabled(true);
 			boxEasy->setEnabled(true);
 			boxHard->setEnabled(true);
@@ -251,7 +254,9 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			bgDialog->setEnabled(false);
 			break;
 		case MAINSCENE_SETTING_CLOSE:
+			
 			OptionLayer->setVisible(false);
+			bgSetting->setEnabled(false);
 			sliderLag->setEnabled(false);
 			boxEasy->setEnabled(false);
 			boxHard->setEnabled(false);

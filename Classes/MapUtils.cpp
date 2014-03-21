@@ -154,10 +154,10 @@ void MapUtils::generate(const char* songname)
 	}
 	//////////////////¶þÂÖÉ¨Ãè/////////////////////
 	rewind(fout);
-	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 360 / AudioEngine::getInstance()->getLength();
+	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 180 / AudioEngine::getInstance()->getLength();
 	if (musicinfo.Level_Easy > 9)
 		musicinfo.Level_Easy = 9;
-	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 360 / AudioEngine::getInstance()->getLength();
+	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 180 / AudioEngine::getInstance()->getLength();
 	if (musicinfo.Level_Hard > 9)
 		musicinfo.Level_Hard = 9;
 	fprintf(fout, "%4d %4d %1d %1d\n", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
