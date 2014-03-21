@@ -4,7 +4,7 @@
 
 EventListenerTouchOneByOne *noteListener;
 int notenumber;
-int TIME_PRELOAD = 7200 / BPM;
+int TIME_PRELOAD;
 
 Note::Note()
 {

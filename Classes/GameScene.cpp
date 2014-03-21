@@ -6,6 +6,7 @@
 
 extern int notenumber;//总note数
 extern std::string FileName;//音乐文件名称
+extern const int TIME_PRELOAD = 7200 / BPM;
 
 Counter counter;
 Layer *OptionLayer;
@@ -68,10 +69,15 @@ bool GameScene::init()
 	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
 	auto boxScanline = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SCANLINE));
 	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
+	auto buttonClose = dynamic_cast<Button*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_CLOSE));
+	auto bgSetting = dynamic_cast<ImageView*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_BG));
 	boxEasy->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
 	boxHard->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
 	boxScanline->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
 	sliderLag->addEventListenerSlider(this, sliderpercentchangedselector(GameScene::sliderEvent));
+	buttonClose->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	bgSetting->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	buttonClose->setEnabled(false);
 	sliderLag->setEnabled(false);
 	boxEasy->setEnabled(false);
 	boxHard->setEnabled(false);
@@ -162,12 +168,13 @@ void GameScene::update(float dt)
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
 	auto UILayer = (Layer*)UIComponent->getNode();
 	auto loadingBar = dynamic_cast<LoadingBar*>(UILayer->getChildByTag(GAMESCENE_LOADINGBAR));
+	int lag = UserDefault::getInstance()->getIntegerForKey("lag") * 60 / 100;
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
 	if (UserDefault::getInstance()->getBoolForKey("scanline"))
 		setScanline();
-	while ((currPos + 7200 / BPM >= noteline.time))//提前一些生成
+	while ((currPos + TIME_PRELOAD + lag >= noteline.time))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		int arg1 = noteline.type;
@@ -283,7 +290,12 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
 	auto boxScanline = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SCANLINE));
 	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
+	auto buttonClose = dynamic_cast<Button*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_CLOSE));
+	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
 	Scene* scene;
+	char temp[64];
+	int lag = UserDefault::getInstance()->getIntegerForKey("lag");
+	sprintf(temp, "%.2f", lag / 100.0);
 	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
 		switch (tag)
@@ -327,13 +339,15 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			boxEasy->setEnabled(true);
 			boxHard->setEnabled(true);
 			boxScanline->setEnabled(true);
+			buttonClose->setEnabled(true);
 			if (UserDefault::getInstance()->getBoolForKey("scanline"))
 				boxScanline->setSelectedState(true);
 			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
 				boxEasy->setSelectedState(true);
 			else
 				boxHard->setSelectedState(true);
-			sliderLag->setPercent(UserDefault::getInstance()->getIntegerForKey("lag"));
+			sliderLag->setPercent(lag);
+			labelLag->setText(temp);
 			break;
 		case GAMESCENE_MENU_RETURN:
 			MenuNode->setVisible(false);
@@ -347,6 +361,14 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			this->unscheduleUpdate();
 			scene = MainScene::createScene();
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
+			break;
+		case MAINSCENE_SETTING_CLOSE:
+			OptionLayer->setVisible(false);
+			sliderLag->setEnabled(false);
+			boxEasy->setEnabled(false);
+			boxHard->setEnabled(false);
+			boxScanline->setEnabled(false);
+			buttonClose->setEnabled(false);
 			break;
 		}
 	}
@@ -401,15 +423,20 @@ void GameScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
 void GameScene::sliderEvent(Ref* obj, SliderEventType eventType)
 {
 	auto widget = dynamic_cast<Slider*>(obj);
+	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
 	int tag = widget->getTag();
 	int percent = widget->getPercent();
+	char temp[64];
+	int lag;
 	if (eventType == SliderEventType::SLIDER_PERCENTCHANGED)
 	{
 		switch (tag)
 		{
 		case MAINSCENE_SETTING_SLIDER:
-			UserDefault::getInstance()->setIntegerForKey("lag", widget->getPercent());
-			//TODO
+			lag = widget->getPercent();
+			UserDefault::getInstance()->setIntegerForKey("lag", lag);
+			sprintf(temp, "%.2f", lag / 100.0);
+			labelLag->setText(temp);
 			break;
 		}
 	}
