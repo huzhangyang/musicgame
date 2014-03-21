@@ -29,7 +29,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note0.ExportJson");
 	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note1.ExportJson");
 	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note2.ExportJson");
-	UserDefault::getInstance()->setBoolForKey("scanline", true);
 	return true;
 }
 //ÇĞÈëºóÌ¨

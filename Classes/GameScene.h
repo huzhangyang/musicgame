@@ -28,6 +28,8 @@ private:
 	void addScanline();//添加扫描线
 	void setScanline();//设置扫描线位置
 	void touchEvent(Ref* obj, TouchEventType eventType);
+	void checkboxEvent(Ref* obj, CheckBoxEventType eventType);
+	void sliderEvent(Ref* obj, SliderEventType eventType);
 	Sprite* scanline;
 };
 

@@ -28,6 +28,8 @@ bool MainScene::init()
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
 	OptionLayer = (Layer*)cocostudio::GUIReader::getInstance()->widgetFromJsonFile("optionUI/optionUI.json");
+	OptionLayer->setLocalZOrder(1);
+	OptionLayer->setVisible(false);
 	addChild(OptionLayer);
 	auto UINode = sceneNode->getChildByTag(10005);
 	ExitNode = sceneNode->getChildByTag(10004);
@@ -62,7 +64,7 @@ bool MainScene::init()
 	buttonExit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	//////////
 	auto bgExit = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BG));
-	auto buttonYes= dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_YES));
+	auto buttonYes = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_YES));
 	auto buttonNo = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_NO));
 	bgExit->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	buttonYes->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
@@ -81,6 +83,19 @@ bool MainScene::init()
 	bgLoading->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	imageLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
 	imageWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
+	//////////
+	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
+	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
+	auto boxScanline = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SCANLINE));
+	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
+	boxEasy->addEventListenerCheckBox(this, checkboxselectedeventselector(MainScene::checkboxEvent));
+	boxHard->addEventListenerCheckBox(this, checkboxselectedeventselector(MainScene::checkboxEvent));
+	boxScanline->addEventListenerCheckBox(this, checkboxselectedeventselector(MainScene::checkboxEvent));
+	sliderLag->addEventListenerSlider(this, sliderpercentchangedselector(MainScene::sliderEvent));
+	sliderLag->setEnabled(false);
+	boxEasy->setEnabled(false);
+	boxHard->setEnabled(false);
+	boxScanline->setEnabled(false);
 	return true;
 }
 
@@ -137,6 +152,10 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto bgExit = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BG));
 	auto buttonYes = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_YES));
 	auto buttonNo = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_NO));
+	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
+	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
+	auto boxScanline = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SCANLINE));
+	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
 	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
 		switch (tag)
@@ -180,11 +199,18 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			this->createDialog("dialogCat");
 			break;
 		case MAINSCENE_BUTTON_OPTION:
-			//TODO
+			OptionLayer->setVisible(true);
+			sliderLag->setEnabled(true);
+			boxEasy->setEnabled(true);
+			boxHard->setEnabled(true);
+			boxScanline->setEnabled(true);
+			if (UserDefault::getInstance()->getBoolForKey("scanline"))
+				boxScanline->setSelectedState(true);
 			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
-				UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
+				boxEasy->setSelectedState(true);
 			else
-				UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
+				boxHard->setSelectedState(true);
+			sliderLag->setPercent(UserDefault::getInstance()->getIntegerForKey("lag"));
 			break;
 		case MAINSCENE_BUTTON_HELP:
 			break;
@@ -210,6 +236,69 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			DialogNode->setVisible(false);
 			auto bgDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG_BG));
 			bgDialog->setEnabled(false);
+			break;
+		}
+	}
+}
+
+void MainScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
+{
+	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
+	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
+	auto widget = dynamic_cast<CheckBox*>(obj);
+	int tag = widget->getTag();
+	if (eventType == CheckBoxEventType::CHECKBOX_STATE_EVENT_SELECTED)
+	{
+		switch (tag)
+		{
+		case MAINSCENE_SETTING_EASY:
+			if (boxHard->getSelectedState() == true)
+				boxHard->setSelectedState(false);
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
+			break;
+		case MAINSCENE_SETTING_HARD:
+			if (boxEasy->getSelectedState() == true)
+				boxEasy->setSelectedState(false);
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
+			break;
+		case MAINSCENE_SETTING_SCANLINE:
+			UserDefault::getInstance()->setBoolForKey("scanline", true);
+			break;
+		}
+	}
+	else if (eventType == CheckBoxEventType::CHECKBOX_STATE_EVENT_UNSELECTED)
+	{
+		switch (tag)
+		{
+		case MAINSCENE_SETTING_EASY:
+			if (boxHard->getSelectedState() == false)
+				boxHard->setSelectedState(true);
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
+			break;
+		case MAINSCENE_SETTING_HARD:
+			if (boxEasy->getSelectedState() == false)
+				boxEasy->setSelectedState(true);
+			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
+			break;
+		case MAINSCENE_SETTING_SCANLINE:
+			UserDefault::getInstance()->setBoolForKey("scanline", false);
+			break;
+		}
+	}
+}
+
+void MainScene::sliderEvent(Ref* obj, SliderEventType eventType)
+{
+	auto widget = dynamic_cast<Slider*>(obj);
+	int tag = widget->getTag();
+	int percent = widget->getPercent();
+	if (eventType == SliderEventType::SLIDER_PERCENTCHANGED)
+	{
+		switch (tag)
+		{
+		case MAINSCENE_SETTING_SLIDER:
+			UserDefault::getInstance()->setIntegerForKey("lag", widget->getPercent());
+			//TODO
 			break;
 		}
 	}

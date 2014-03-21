@@ -169,12 +169,13 @@ void Note::createNoteListener()
 		if (rect.containsPoint(locationInNode) && !target->isTouched)
 		{
 			target->isTouched = true;
+			target->judgePic->stopAllActions();
 			target->judgePic->setScale(0);
 			if (target->type == CLICK)
 				target->judge();
 			else if (target->type == LONGPRESS)
 			{
-				target->setScale(1.25);
+				target->setScale(1.1);
 				if (target->isActivated)
 					target->lifeTouchBegan = target->life;
 			}
