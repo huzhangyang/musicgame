@@ -22,18 +22,19 @@ struct Noteline
 	int posY = 0;//Y坐标
 };
 extern Noteline noteline;
-//音频分析信息结构
-struct AnalyzeInfo
+//Beat信息结构
+struct BeatInfo
 {
-	int beatTick = 0;
-	int lastbeatTick = 0;
-	int beatBar = 0;
-	int lastBeatBar = 0;
-	int difficulty = 0;
+	int beginTime = 0;
+	int beatTime = 0;
+	int beatType = 0;
+	int endTime = 0;
+	float maxPeak = 0;
 };
 //文件信息结构
 struct MusicInfo
 {
+	int length = 0;
 	int NoteNumber_Easy = 0;
 	int NoteNumber_Hard = 0;
 	int Level_Easy = 0;
@@ -79,7 +80,6 @@ const int GAMESCENE_LABEL_LEVEL = 12;
 const int GAMESCENE_MENU_BG = 3;
 const int GAMESCENE_MENU_RESUME = 14;
 const int GAMESCENE_MENU_RETRY = 15;
-const int GAMESCENE_MENU_OPTION = 16;
 const int GAMESCENE_MENU_RETURN = 17;
 //结算界面Tag
 const int CLEARSCENE_BG = 2;

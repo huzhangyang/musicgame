@@ -4,7 +4,7 @@
 
 EventListenerTouchOneByOne *noteListener;
 int notenumber;
-int TIME_PRELOAD = 7200 / BPM;
+int TIME_PRELOAD;
 
 Note::Note()
 {
@@ -175,7 +175,7 @@ void Note::createNoteListener()
 				target->judge();
 			else if (target->type == LONGPRESS)
 			{
-				target->setScale(1.1);
+				target->setScale(1.1f);
 				if (target->isActivated)
 					target->lifeTouchBegan = target->life;
 			}
