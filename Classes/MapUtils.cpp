@@ -71,7 +71,7 @@ void MapUtils::generateMap(const char* songname)
 	mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
-	fprintf(fout, "///////////////");
+	fprintf(fout, "//////////////\n");
 	std::thread workthread(generate, songname);
 	workthread.detach();
 }
@@ -131,7 +131,7 @@ void MapUtils::generate(const char* songname)
 	}
 	for (int i = 1; i < peaks.size(); i++)
 	{
-		if (peaks.at(i)>0.01)//BEAT开始或者持续
+		if (peaks.at(i)>0)//BEAT开始或者持续
 		{
 			if (beatinfo.beginTime == 0)
 				beatinfo.beginTime = (i - 1)*musicinfo.length / peaks.size();//记录开始时间
@@ -152,7 +152,7 @@ void MapUtils::generate(const char* songname)
 				noteline.type = 2;
 			else if (noteline.length > 5)
 				noteline.type = 1;
-			if (noteline.length > 0 && noteline.time - beatinfo.endTime > FramePerBeat / 2)
+			if (noteline.length > 0 && noteline.time - beatinfo.endTime > FramePerBeat / 3)
 			{
 				writeNoteline();
 				beatinfo.endTime = i *musicinfo.length / peaks.size();
@@ -171,7 +171,7 @@ void MapUtils::generate(const char* songname)
 	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 180 / musicinfo.length;
 	if (musicinfo.Level_Hard > 9)
 		musicinfo.Level_Hard = 9;
-	fprintf(fout, "%4d %4d %1d %1d\n", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
+	fprintf(fout, "%4d %4d %1d %1d", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
 	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
 	{
 		MainScene::loadingEnd();

@@ -56,6 +56,7 @@ bool GameScene::init()
 	//////////
 	auto buttonPause = dynamic_cast<Button*>(UILayer->getChildByTag(GAMESCENE_BUTTON_PAUSE));
 	buttonPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
+	buttonPause->setTouchEnabled(false);
 	//////////
 	auto bgPause = dynamic_cast<ImageView*>(MenuLayer->getChildByTag(GAMESCENE_MENU_BG));
 	auto buttonRetry = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETRY));
@@ -134,6 +135,7 @@ void GameScene::startGame(float dt)
 	auto UILayer = (Layer*)UIComponent->getNode();
 	auto loadingBar = dynamic_cast<LoadingBar*>(UILayer->getChildByTag(GAMESCENE_LOADINGBAR));
 	auto labelCombo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_COMBO));
+	auto buttonPause = dynamic_cast<Button*>(UILayer->getChildByTag(GAMESCENE_BUTTON_PAUSE));
 	loadingBar->setPercent(loadingBar->getPercent() + 1);
 	if (loadingBar->getPercent() == 50)
 		labelCombo->runAction(FadeOut::create(1));
@@ -143,9 +145,41 @@ void GameScene::startGame(float dt)
 		labelCombo->setText("");
 		labelCombo->setOpacity(100);
 		AudioEngine::getInstance()->play();
-		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
 		addScanline();
+		buttonPause->setTouchEnabled(true);
+	}
+}
+
+void GameScene::resumeGame(float dt)
+{
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
+	auto UILayer = (Layer*)UIComponent->getNode();
+	auto loadingBar = dynamic_cast<LoadingBar*>(UILayer->getChildByTag(GAMESCENE_LOADINGBAR));
+	auto labelCombo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_COMBO));
+	static int calledtime = 0;
+	loadingBar->setPercent(calledtime++);
+	if (loadingBar->getPercent() == 1)
+	{
+		labelCombo->setText("READY");
+		labelCombo->setOpacity(255);
+	}
+	if (loadingBar->getPercent() == 50)
+		labelCombo->runAction(FadeOut::create(1));
+	if (loadingBar->getPercent() == 100)
+	{
+		this->unscheduleAllSelectors();
+		calledtime = 0;
+		labelCombo->setText("");
+		labelCombo->setOpacity(100);
+		for (auto&i : UINode->getChildren())
+		{
+			i->resume();
+			for (auto&j : i->getChildren())
+				j->resume();
+		}
+		AudioEngine::getInstance()->resume();
+		this->scheduleUpdate();
 	}
 }
 
@@ -281,8 +315,14 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 		switch (tag)
 		{
 		case GAMESCENE_BUTTON_PAUSE:
-			Director::getInstance()->pause();
+			for (auto&i : UINode->getChildren())
+			{
+				i->pause();
+				for (auto&j : i->getChildren())
+					j->pause();
+			}
 			AudioEngine::getInstance()->pause();
+			this->unscheduleUpdate();
 			MenuNode->setVisible(true);
 			bgPause->setEnabled(true);
 			buttonRetry->setEnabled(true);
@@ -295,8 +335,7 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonResume->setEnabled(false);
-			Director::getInstance()->resume();
-			AudioEngine::getInstance()->resume();
+			this->schedule(schedule_selector(GameScene::resumeGame), 0.01f);
 			break;
 		case GAMESCENE_MENU_RETRY:
 			MenuNode->setVisible(false);
@@ -304,9 +343,7 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonResume->setEnabled(false);
-			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
-			this->unscheduleUpdate();
 			scene = GameScene::createScene(FileName);
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			break;
@@ -316,9 +353,7 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
 			buttonResume->setEnabled(false);
-			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
-			this->unscheduleUpdate();
 			scene = MainScene::createScene();
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
 			break;
