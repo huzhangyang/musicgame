@@ -12,13 +12,12 @@ const int THRESHOLD_WINDOW_SIZE = 10;
 const float MULTIPLIER = 1.5;
 
 Noteline noteline;
-AnalyzeInfo info;
+BeatInfo beatinfo;
 MusicInfo musicinfo;
 std::ifstream fin;//输入流
 FILE* fout;//输出文件
 std::string mapname;
 float FramePerBeat;
-int lastBeatTime = 0, beatBar, lastBeatBar;
 
 MusicInfo MapUtils::loadMap(std::string filename)
 {
@@ -26,6 +25,7 @@ MusicInfo MapUtils::loadMap(std::string filename)
 	fin.open(mapname);//打开自动生成测试谱面
 	std::string infostring;
 	getline(fin, infostring);
+	musicinfo.length = AudioEngine::getInstance()->getLength();
 	musicinfo.NoteNumber_Easy = atoi(infostring.substr(0, 4).c_str());
 	musicinfo.NoteNumber_Hard = atoi(infostring.substr(5, 9).c_str());
 	musicinfo.Level_Easy = atoi(infostring.substr(10, 11).c_str());
@@ -90,6 +90,7 @@ void MapUtils::generate(const char* songname)
 	std::vector<float> threshold;
 	std::vector<float> prunnedSpectralFlux;
 	std::vector<float> peaks;
+	musicinfo.length = AudioEngine::getInstance()->getLength();
 	//////////////////扫描开始/////////////////////
 	while (AudioEngine::getInstance()->isPlayingSound())
 	{
@@ -128,34 +129,46 @@ void MapUtils::generate(const char* songname)
 		else
 			peaks.push_back((float)0);
 	}
-	noteline.type = 0;
 	for (int i = 1; i < peaks.size(); i++)
 	{
-		if (peaks.at(i)>0.001)
+		if (peaks.at(i)>0.01)//BEAT开始或者持续
 		{
-			noteline.time = i * 1024 * 60 / 44100;
-			noteline.difficulty = 1;
+			if (beatinfo.beginTime == 0)
+				beatinfo.beginTime = (i - 1)*musicinfo.length / peaks.size();//记录开始时间
+			beatinfo.beatTime = i *musicinfo.length / peaks.size();//记录当前时间
+			if (peaks.at(i) > beatinfo.maxPeak)
+				beatinfo.maxPeak = peaks.at(i);//记录此beat最大峰值
+		}
+		else
+		{
+			noteline.length = beatinfo.beatTime - beatinfo.beginTime;
+			noteline.time = (beatinfo.beatTime + beatinfo.beginTime) / 2;
 			noteline.posY = genPosY(noteline.time);
 			noteline.posX = genPosX(noteline.posY);
-			noteline.length = noteline.time - lastBeatTime;
-			if (noteline.length < FramePerBeat / 2)
-				noteline.type = CCRANDOM_0_1() * 2 + 1;
-			else
+			noteline.difficulty = 0;
+			if (beatinfo.maxPeak < 0.3 && noteline.time - beatinfo.endTime < FramePerBeat)
+				noteline.difficulty = 1;
+			if (noteline.length >3)
+				noteline.type = 2;
+			else if (noteline.length > 5)
+				noteline.type = 1;
+			if (noteline.length > 0 && noteline.time - beatinfo.endTime > FramePerBeat / 2)
 			{
-				if (noteline.length > FramePerBeat)
-					noteline.difficulty = 0;
 				writeNoteline();
+				beatinfo.endTime = i *musicinfo.length / peaks.size();
 				noteline.type = 0;
 			}
-			lastBeatTime = noteline.time;
+			beatinfo.beginTime = 0;
+			beatinfo.beatTime = 0;
+			beatinfo.maxPeak = 0;
 		}
 	}
 	//////////////////扫描结束/////////////////////
 	rewind(fout);
-	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 360 / AudioEngine::getInstance()->getLength();
+	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 180 / musicinfo.length;
 	if (musicinfo.Level_Easy > 9)
 		musicinfo.Level_Easy = 9;
-	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 360 / AudioEngine::getInstance()->getLength();
+	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 180 / musicinfo.length;
 	if (musicinfo.Level_Hard > 9)
 		musicinfo.Level_Hard = 9;
 	fprintf(fout, "%4d %4d %1d %1d\n", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
@@ -191,7 +204,7 @@ int MapUtils::genPosX(int posY)
 	static int hand = 0;//0为中间，1为左手，2为右手
 	static int x = 675;
 	hand = CCRANDOM_0_1() * 3;
-	if (noteline.time - lastBeatTime < FramePerBeat*1.5 || noteline.type == 1)//间隔较短，换手操作
+	if (noteline.time - beatinfo.endTime < FramePerBeat*1.5 || noteline.type == 1)//间隔较短，换手操作
 	{
 		if (hand == 1)
 		{
