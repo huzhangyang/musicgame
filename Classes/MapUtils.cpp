@@ -79,6 +79,8 @@ void MapUtils::generateMap(const char* songname)
 void MapUtils::generate(const char* songname)
 {
 	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
+	musicinfo.NoteNumber_Easy = 0;
+	musicinfo.NoteNumber_Hard = 0;
 	///////////////
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();

@@ -25,6 +25,12 @@ Scene* GameScene::createScene(std::string filename)
 	setting_difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	setting_scanline = UserDefault::getInstance()->getBoolForKey("scanline");
 	setting_lag = UserDefault::getInstance()->getIntegerForKey("lag") * 60 / 100;
+	counter.total = 0;//音符总数
+	counter.perfect = 0;//完美数
+	counter.good = 0;//普通击中数
+	counter.miss = 0;//错过数
+	counter.combo = 0;//连击数
+	counter.percent = 0;//总分
 	return scene;
 }
 
