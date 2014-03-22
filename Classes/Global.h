@@ -79,7 +79,6 @@ const int GAMESCENE_LABEL_LEVEL = 12;
 const int GAMESCENE_MENU_BG = 3;
 const int GAMESCENE_MENU_RESUME = 14;
 const int GAMESCENE_MENU_RETRY = 15;
-const int GAMESCENE_MENU_OPTION = 16;
 const int GAMESCENE_MENU_RETURN = 17;
 //Ω·À„ΩÁ√ÊTag
 const int CLEARSCENE_BG = 2;

@@ -3,7 +3,7 @@
 #include "MapUtils.h"
 
 Node *LoadingNode, *DialogNode, *ExitNode;
-extern Layer *OptionLayer;
+Layer *OptionLayer;
 
 Scene* MainScene::createScene()
 {
@@ -202,7 +202,7 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			}
 			else
 			{
-				auto scene = GameScene::createScene(FILENAME);
+				scene = GameScene::createScene(FILENAME);
 				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			}
 			break;
@@ -254,7 +254,6 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			bgDialog->setEnabled(false);
 			break;
 		case MAINSCENE_SETTING_CLOSE:
-			
 			OptionLayer->setVisible(false);
 			bgSetting->setEnabled(false);
 			sliderLag->setEnabled(false);

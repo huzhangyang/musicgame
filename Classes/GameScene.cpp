@@ -9,8 +9,10 @@ extern std::string FileName;//音乐文件名称
 extern int TIME_PRELOAD;
 
 Counter counter;
-Layer *OptionLayer;
 Node *MenuNode, *UINode;
+int setting_difficulty;
+float setting_lag;
+bool setting_scanline;
 
 Scene* GameScene::createScene(std::string filename)
 {
@@ -20,6 +22,9 @@ Scene* GameScene::createScene(std::string filename)
 
 	FileName = filename;
 	TIME_PRELOAD = 7200 / BPM;
+	setting_difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+	setting_scanline = UserDefault::getInstance()->getBoolForKey("scanline");
+	setting_lag = UserDefault::getInstance()->getIntegerForKey("lag") * 60 / 100;
 	return scene;
 }
 
@@ -36,10 +41,6 @@ bool GameScene::init()
 	/////////////////////////////////////////////////////
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("gameScene.json");
 	addChild(sceneNode);
-	OptionLayer = (Layer*)cocostudio::GUIReader::getInstance()->widgetFromJsonFile("optionUI/optionUI.json");
-	OptionLayer->setLocalZOrder(1);
-	OptionLayer->setVisible(false);
-	addChild(OptionLayer);
 	UINode = sceneNode->getChildByTag(10004);
 	MenuNode = sceneNode->getChildByTag(10005);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
@@ -53,37 +54,16 @@ bool GameScene::init()
 	auto bgPause = dynamic_cast<ImageView*>(MenuLayer->getChildByTag(GAMESCENE_MENU_BG));
 	auto buttonRetry = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETRY));
 	auto buttonReturn = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETURN));
-	auto buttonOption = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_OPTION));
 	auto buttonResume = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RESUME));
 	bgPause->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonRetry->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	buttonOption->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	buttonResume->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
 	bgPause->setEnabled(false);
 	buttonRetry->setEnabled(false);
 	buttonReturn->setEnabled(false);
-	buttonOption->setEnabled(false);
 	buttonResume->setEnabled(false);
 	//////////
-	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
-	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
-	auto boxScanline = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SCANLINE));
-	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
-	auto buttonClose = dynamic_cast<Button*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_CLOSE));
-	auto bgSetting = dynamic_cast<ImageView*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_BG));
-	boxEasy->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
-	boxHard->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
-	boxScanline->addEventListenerCheckBox(this, checkboxselectedeventselector(GameScene::checkboxEvent));
-	sliderLag->addEventListenerSlider(this, sliderpercentchangedselector(GameScene::sliderEvent));
-	buttonClose->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	bgSetting->addTouchEventListener(this, toucheventselector(GameScene::touchEvent));
-	bgSetting->setEnabled(false);
-	buttonClose->setEnabled(false);
-	sliderLag->setEnabled(false);
-	boxEasy->setEnabled(false);
-	boxHard->setEnabled(false);
-	boxScanline->setEnabled(false);
 	return true;
 }
 
@@ -105,15 +85,14 @@ void GameScene::onEnterTransitionDidFinish()
 	else
 		labelInfo->setText(FileName);//没获取到则显示文件名
 	MusicInfo info = MapUtils::loadMap(FileName.c_str());
-	int difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	int level = 0;
-	if (difficulty == 0)
+	if (setting_difficulty == 0)
 	{
 		notenumber = info.NoteNumber_Easy;
 		level = info.Level_Easy;
 		labelDifficulty->setText("Easy");
 	}
-	else if (difficulty == 1)
+	else if (setting_difficulty == 1)
 	{
 		notenumber = info.NoteNumber_Hard;
 		level = info.Level_Hard;
@@ -160,8 +139,7 @@ void GameScene::startGame(float dt)
 		AudioEngine::getInstance()->play();
 		auto x = AudioEngine::getInstance()->isPlaying();
 		this->scheduleUpdate();
-		if (UserDefault::getInstance()->getBoolForKey("scanline"))
-			addScanline();
+		addScanline();
 	}
 }
 
@@ -170,13 +148,11 @@ void GameScene::update(float dt)
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
 	auto UILayer = (Layer*)UIComponent->getNode();
 	auto loadingBar = dynamic_cast<LoadingBar*>(UILayer->getChildByTag(GAMESCENE_LOADINGBAR));
-	int lag = UserDefault::getInstance()->getIntegerForKey("lag") * 60 / 100;
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
-	if (UserDefault::getInstance()->getBoolForKey("scanline"))
-		setScanline();
-	while ((currPos + TIME_PRELOAD + lag >= noteline.time))//提前一些生成
+	setScanline(currPos);
+	while ((currPos + TIME_PRELOAD + setting_lag >= noteline.time))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		int arg1 = noteline.type;
@@ -202,33 +178,39 @@ void GameScene::addNewNote(int type, int length, int posX, int posY)
 
 void GameScene::addScanline()
 {
-	scanline = Sprite::create("judge/scanline.png");
-	scanline->setOpacity(200);
-	scanline->setPosition(655, 305);
-	UINode->addChild(scanline);
+	if (setting_scanline)
+	{
+		scanline = Sprite::create("judge/scanline.png");
+		scanline->setOpacity(200);
+		scanline->setPosition(655, 305);
+		UINode->addChild(scanline);
+	}
 }
 
-void GameScene::setScanline()
+void GameScene::setScanline(int time)
 {
-	float FramePerBeat = 3600 / BPM;
-	int y = AudioEngine::getInstance()->getPosition() % (int)(FramePerBeat * 4);
-	if (y < FramePerBeat)
+	if (setting_scanline)
 	{
-		y = 305 - 240 * y / FramePerBeat;
+		float FramePerBeat = 3600 / BPM;
+		int y = time % (int)(FramePerBeat * 4);
+		if (y < FramePerBeat)
+		{
+			y = 305 - 240 * y / FramePerBeat;
+		}
+		else if (y < FramePerBeat * 2)
+		{
+			y = 65 + 240 * (y - FramePerBeat) / FramePerBeat;
+		}
+		else if (y < FramePerBeat * 3)
+		{
+			y = 305 + 240 * (y - FramePerBeat * 2) / FramePerBeat;
+		}
+		else if (y < FramePerBeat * 4)
+		{
+			y = 545 - 240 * (y - FramePerBeat * 3) / FramePerBeat;
+		}
+		scanline->setPositionY(y);
 	}
-	else if (y < FramePerBeat * 2)
-	{
-		y = 65 + 240 * (y - FramePerBeat) / FramePerBeat;
-	}
-	else if (y < FramePerBeat * 3)
-	{
-		y = 305 + 240 * (y - FramePerBeat * 2) / FramePerBeat;
-	}
-	else if (y < FramePerBeat * 4)
-	{
-		y = 545 - 240 * (y - FramePerBeat * 3) / FramePerBeat;
-	}
-	scanline->setPositionY(y);
 }
 
 void GameScene::judgeNote(int judgeResult)
@@ -286,19 +268,8 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto bgPause = dynamic_cast<ImageView*>(MenuLayer->getChildByTag(GAMESCENE_MENU_BG));
 	auto buttonRetry = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETRY));
 	auto buttonReturn = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RETURN));
-	auto buttonOption = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_OPTION));
 	auto buttonResume = dynamic_cast<Button*>(MenuLayer->getChildByTag(GAMESCENE_MENU_RESUME));
-	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
-	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
-	auto boxScanline = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SCANLINE));
-	auto sliderLag = dynamic_cast<Slider*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SLIDER));
-	auto buttonClose = dynamic_cast<Button*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_CLOSE));
-	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
-	auto bgSetting = dynamic_cast<ImageView*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_BG));
 	Scene* scene;
-	char temp[64];
-	int lag = UserDefault::getInstance()->getIntegerForKey("lag");
-	sprintf(temp, "%.2f", lag / 100.0);
 	if (eventType == TouchEventType::TOUCH_EVENT_ENDED)
 	{
 		switch (tag)
@@ -310,7 +281,6 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			bgPause->setEnabled(true);
 			buttonRetry->setEnabled(true);
 			buttonReturn->setEnabled(true);
-			buttonOption->setEnabled(true);
 			buttonResume->setEnabled(true);
 			break;
 		case GAMESCENE_MENU_RESUME:
@@ -318,7 +288,6 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
-			buttonOption->setEnabled(false);
 			buttonResume->setEnabled(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->resume();
@@ -328,7 +297,6 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
-			buttonOption->setEnabled(false);
 			buttonResume->setEnabled(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
@@ -336,115 +304,17 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			scene = GameScene::createScene(FileName);
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			break;
-		case GAMESCENE_MENU_OPTION:
-			OptionLayer->setVisible(true);
-			bgSetting->setEnabled(true);
-			sliderLag->setEnabled(true);
-			boxEasy->setEnabled(true);
-			boxHard->setEnabled(true);
-			boxScanline->setEnabled(true);
-			buttonClose->setEnabled(true);
-			if (UserDefault::getInstance()->getBoolForKey("scanline"))
-				boxScanline->setSelectedState(true);
-			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
-				boxEasy->setSelectedState(true);
-			else
-				boxHard->setSelectedState(true);
-			sliderLag->setPercent(lag);
-			labelLag->setText(temp);
-			break;
 		case GAMESCENE_MENU_RETURN:
 			MenuNode->setVisible(false);
 			bgPause->setEnabled(false);
 			buttonRetry->setEnabled(false);
 			buttonReturn->setEnabled(false);
-			buttonOption->setEnabled(false);
 			buttonResume->setEnabled(false);
 			Director::getInstance()->resume();
 			AudioEngine::getInstance()->stop();
 			this->unscheduleUpdate();
 			scene = MainScene::createScene();
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
-			break;
-		case MAINSCENE_SETTING_CLOSE:
-			OptionLayer->setVisible(false);
-			bgSetting->setEnabled(false);
-			sliderLag->setEnabled(false);
-			boxEasy->setEnabled(false);
-			boxHard->setEnabled(false);
-			boxScanline->setEnabled(false);
-			buttonClose->setEnabled(false);
-			break;
-		}
-	}
-}
-
-void GameScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
-{
-	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
-	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
-	auto widget = dynamic_cast<CheckBox*>(obj);
-	int tag = widget->getTag();
-	if (eventType == CheckBoxEventType::CHECKBOX_STATE_EVENT_SELECTED)
-	{
-		switch (tag)
-		{
-		case MAINSCENE_SETTING_EASY:
-			if (boxHard->getSelectedState() == true)
-				boxHard->setSelectedState(false);
-			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
-			break;
-		case MAINSCENE_SETTING_HARD:
-			if (boxEasy->getSelectedState() == true)
-				boxEasy->setSelectedState(false);
-			UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
-			break;
-		case MAINSCENE_SETTING_SCANLINE:
-			UserDefault::getInstance()->setBoolForKey("scanline", true);
-				addScanline();
-			break;
-		}
-	}
-	else if (eventType == CheckBoxEventType::CHECKBOX_STATE_EVENT_UNSELECTED)
-	{
-		switch (tag)
-		{
-		case MAINSCENE_SETTING_EASY:
-			if (boxHard->getSelectedState() == false)
-				boxHard->setSelectedState(true);
-			UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
-			break;
-		case MAINSCENE_SETTING_HARD:
-			if (boxEasy->getSelectedState() == false)
-				boxEasy->setSelectedState(true);
-			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
-			break;
-		case MAINSCENE_SETTING_SCANLINE:
-			UserDefault::getInstance()->setBoolForKey("scanline", false);
-			if (scanline->getParent() != nullptr)
-				scanline->removeFromParent();
-			break;
-		}
-	}
-}
-
-void GameScene::sliderEvent(Ref* obj, SliderEventType eventType)
-{
-	auto widget = dynamic_cast<Slider*>(obj);
-	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
-	int tag = widget->getTag();
-	int percent = widget->getPercent();
-	char temp[64];
-	int lag;
-	if (eventType == SliderEventType::SLIDER_PERCENTCHANGED)
-	{
-		switch (tag)
-		{
-		case MAINSCENE_SETTING_SLIDER:
-			lag = widget->getPercent();
-			UserDefault::getInstance()->setIntegerForKey("lag", lag);
-			sprintf(temp, "%.2f", lag / 100.0);
-			labelLag->setText(temp);
 			break;
 		}
 	}

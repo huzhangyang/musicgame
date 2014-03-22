@@ -49,11 +49,11 @@ bool ClearScene::init()
 	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
 	{
-		labelDifficulty->loadTexture("gameSceneUI/easy.png");
+		labelDifficulty->loadTexture("clearSceneUI/easy.png");
 	}
 	else if (difficulty == 1)
 	{
-		labelDifficulty->loadTexture("gameSceneUI/hard.png");
+		labelDifficulty->loadTexture("clearSceneUI/hard.png");
 	}
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));

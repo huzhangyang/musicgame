@@ -8,14 +8,17 @@
 #define FFT_SIZE 1024
 #endif
 
+const int THRESHOLD_WINDOW_SIZE = 10;
+const float MULTIPLIER = 1.5;
+
 Noteline noteline;
 AnalyzeInfo info;
 MusicInfo musicinfo;
 std::ifstream fin;//输入流
 FILE* fout;//输出文件
 std::string mapname;
-int maxBar, minBar, firstBar, currBar;
 float FramePerBeat;
+int lastBeatTime = 0, beatBar, lastBeatBar;
 
 MusicInfo MapUtils::loadMap(std::string filename)
 {
@@ -68,7 +71,7 @@ void MapUtils::generateMap(const char* songname)
 	mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
-	fprintf(fout, "//////////////");
+	fprintf(fout, "///////////////");
 	std::thread workthread(generate, songname);
 	workthread.detach();
 }
@@ -79,85 +82,78 @@ void MapUtils::generate(const char* songname)
 	///////////////
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
-	maxBar = 0;
-	minBar = FFT_SIZE;
-	firstBar = 0;
-	int counter[FFT_SIZE];
-	for (int i = 0; i < FFT_SIZE; i++)
-		counter[i] = 0;
+	float* spectrum = new float[FFT_SIZE];
+	float* lastSpectrum = new float[FFT_SIZE];
+	std::vector<float> spectralFlux;
+	std::vector<float> threshold;
+	std::vector<float> prunnedSpectralFlux;
+	std::vector<float> peaks;
+	//////////////////扫描开始/////////////////////
 	while (AudioEngine::getInstance()->isPlayingSound())
 	{
 		AudioEngine::getInstance()->update();
-		analyzeBeat();
-		if (info.beatBar >= 0)
+		lastSpectrum = spectrum;
+		spectrum = AudioEngine::getInstance()->getSpectrum(FFT_SIZE);
+		float flux = 0;
+		for (int bar = 0; bar < FFT_SIZE - 1; bar++)
 		{
-			counter[info.beatBar]++;
-			if (info.beatBar > maxBar)maxBar = info.beatBar;//找到所有出现beat的Bar的最大值
-			if (info.beatBar < minBar)minBar = info.beatBar;//找到所有出现beat的Bar的最小值
+			float value = (spectrum[bar] - lastSpectrum[bar]);
+			flux += value < 0 ? 0 : value;
 		}
+		spectralFlux.push_back(flux);
 	}
-	int countFirst = 0; //找到出现beat最多的Bar
-	for (int i = 0; i < FFT_SIZE; i++)
+	for (int i = 0; i < spectralFlux.size(); i++)
 	{
-		if (counter[i]>countFirst)
-		{
-			countFirst = counter[i];
-			firstBar = i;
-		}
+		int start = MAX(0, i - THRESHOLD_WINDOW_SIZE);
+		int end = MIN(spectralFlux.size() - 1, i + THRESHOLD_WINDOW_SIZE);
+		float mean = 0;
+		for (int j = start; j <= end; j++)
+			mean += spectralFlux.at(j);
+		mean /= (end - start);
+		threshold.push_back(mean * MULTIPLIER);
 	}
-	//////////////////一轮扫描/////////////////////
-	AudioEngine::getInstance()->playNRT();
-	noteline.type = -1;
-	noteline.time = -1;
-	while (AudioEngine::getInstance()->isPlayingSound())
+	for (int i = 0; i < threshold.size(); i++)
 	{
-		AudioEngine::getInstance()->update();
-		analyzeBeatV2();
-		if (info.beatBar >= 0 && abs(info.lastBeatBar - info.beatBar) <= (FFT_SIZE / 256))//不到生成note的时间，通过分析频域决定note类型
+		if (threshold.at(i) <= spectralFlux.at(i))
+			prunnedSpectralFlux.push_back(spectralFlux.at(i) - threshold.at(i));
+		else
+			prunnedSpectralFlux.push_back((float)0);
+	}
+	for (int i = 0; i < prunnedSpectralFlux.size() - 1; i++)
+	{
+		if (prunnedSpectralFlux.at(i) > prunnedSpectralFlux.at(i + 1))
+			peaks.push_back(prunnedSpectralFlux.at(i));
+		else
+			peaks.push_back((float)0);
+	}
+	noteline.type = 0;
+	for (int i = 1; i < peaks.size(); i++)
+	{
+		if (peaks.at(i)>0.001)
 		{
-			if (info.beatTick - noteline.time > FramePerBeat * 2)
-			{
-				noteline.type = 2;
-			}
-			else if (info.beatTick - noteline.time > FramePerBeat)
-			{
-				noteline.type = 1;
-			}
+			noteline.time = i * 1024 * 60 / 44100;
+			noteline.difficulty = 1;
+			noteline.posY = genPosY(noteline.time);
+			noteline.posX = genPosX(noteline.posY);
+			noteline.length = noteline.time - lastBeatTime;
+			if (noteline.length < FramePerBeat / 2)
+				noteline.type = CCRANDOM_0_1() * 2 + 1;
 			else
 			{
-				noteline.type = 0;
-			}
-			if (noteline.time <= 0)
-			{
-				noteline.time = info.beatTick;
-				noteline.difficulty = info.difficulty;
-				currBar = info.beatBar;
-			}
-		}
-		else if (noteline.type >= 0)//生成note
-		{
-			if (noteline.time - info.lastbeatTick > FramePerBeat / 4)
-			{
-				noteline.length = info.beatTick - noteline.time;
-				noteline.posY = genPosY(noteline.time);
-				noteline.posX = genPosX(noteline.posY);
-				noteline.difficulty = 1;
-				if (noteline.time - info.lastbeatTick > FramePerBeat / 2)
+				if (noteline.length > FramePerBeat)
 					noteline.difficulty = 0;
 				writeNoteline();
+				noteline.type = 0;
 			}
-			info.lastbeatTick = noteline.time;
-			info.lastBeatBar = currBar;
-			noteline.type = -1;
-			noteline.time = -1;
+			lastBeatTime = noteline.time;
 		}
 	}
-	//////////////////二轮扫描/////////////////////
+	//////////////////扫描结束/////////////////////
 	rewind(fout);
-	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 180 / AudioEngine::getInstance()->getLength();
+	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 360 / AudioEngine::getInstance()->getLength();
 	if (musicinfo.Level_Easy > 9)
 		musicinfo.Level_Easy = 9;
-	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 180 / AudioEngine::getInstance()->getLength();
+	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 360 / AudioEngine::getInstance()->getLength();
 	if (musicinfo.Level_Hard > 9)
 		musicinfo.Level_Hard = 9;
 	fprintf(fout, "%4d %4d %1d %1d\n", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
@@ -166,49 +162,6 @@ void MapUtils::generate(const char* songname)
 		MainScene::loadingEnd();
 	});
 	fclose(fout);
-}
-
-void MapUtils::analyzeBeat()
-{
-	float DBavg = 0, DBmax = 0;//每一帧的平均dB和最大dB
-	float* specData = new float[FFT_SIZE];
-	specData = AudioEngine::getInstance()->getSpectrum(FFT_SIZE);
-	for (int bar = 0; bar < FFT_SIZE - 1; bar++)
-	{
-		DBavg += specData[bar];
-		if (specData[bar]>DBmax)
-		{
-			DBmax = specData[bar];
-			info.beatBar = bar;
-		}
-	}
-	DBavg = DBavg / FFT_SIZE;
-	if (DBmax >= 0.005)
-		info.beatBar = -1;
-	delete[] specData;
-}
-
-void MapUtils::analyzeBeatV2()
-{
-	float DBavg = 0, DBmax = 0;//每一帧的平均dB和最大dB
-	float* specData = new float[FFT_SIZE];
-	specData = AudioEngine::getInstance()->getSpectrum(FFT_SIZE);
-	for (int bar = minBar; bar <= maxBar; bar++)
-	{
-		DBavg += specData[bar];
-		if (specData[bar] > DBmax)
-		{
-			DBmax = specData[bar];
-			info.beatBar = bar;
-		}
-	}
-	DBavg = DBavg / (maxBar - minBar);
-	if (DBmax >= 0.001)
-	{
-		info.beatTick = AudioEngine::getInstance()->getPosition();
-	}
-	else info.beatBar = -1;
-	delete[] specData;
 }
 
 void MapUtils::writeNoteline()
@@ -235,7 +188,8 @@ int MapUtils::genPosX(int posY)
 {
 	static int hand = 0;//0为中间，1为左手，2为右手
 	static int x = 675;
-	if (noteline.time - info.lastbeatTick < FramePerBeat*1.5 || noteline.type == 1)//间隔较短，换手操作
+	hand = CCRANDOM_0_1() * 3;
+	if (noteline.time - lastBeatTime < FramePerBeat*1.5 || noteline.type == 1)//间隔较短，换手操作
 	{
 		if (hand == 1)
 		{
@@ -252,23 +206,14 @@ int MapUtils::genPosX(int posY)
 	}
 	else
 	{
-		if (currBar < firstBar)
-		{
-			hand = 1;
-		}
-		else if (currBar>firstBar)
-		{
-			hand = 2;
-		}
-		else
-			hand = 0;
-		if (currBar <info.lastBeatBar - FFT_SIZE / 256)
+		hand = CCRANDOM_0_1() * 3;
+		if (hand == 1)
 		{
 			x -= 150;
 			if (x<175)
 				x = 325 + CCRANDOM_0_1() * 350;
 		}
-		else if (currBar>info.lastBeatBar + FFT_SIZE / 256)
+		else if (hand == 2)
 		{
 			x += 150;
 			if (x>1175)
