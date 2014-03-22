@@ -2,8 +2,7 @@
 #include "GameScene.h"
 #include "MapUtils.h"
 
-Node *LoadingNode, *DialogNode, *ExitNode;
-Layer *OptionLayer;
+Node *LoadingNode, *DialogNode, *ExitNode, *OptionNode;
 
 Scene* MainScene::createScene()
 {
@@ -27,22 +26,21 @@ bool MainScene::init()
 	AudioEngine::getInstance()->createLoop("music/main.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
-	OptionLayer = (Layer*)cocostudio::GUIReader::getInstance()->widgetFromJsonFile("optionUI/optionUI.json");
-	OptionLayer->setLocalZOrder(1);
-	OptionLayer->setVisible(false);
-	addChild(OptionLayer);
 	auto UINode = sceneNode->getChildByTag(10005);
 	ExitNode = sceneNode->getChildByTag(10004);
 	DialogNode = sceneNode->getChildByTag(10006);
 	LoadingNode = sceneNode->getChildByTag(10007);
+	OptionNode = sceneNode->getChildByTag(10008);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("mainSceneUI");
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
 	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
+	auto OptionComponent = (cocostudio::ComRender*) OptionNode->getComponent("optionUI");
 	auto UILayer = (Layer*)UIComponent->getNode();
 	auto ExitLayer = (Layer*)ExitComponent->getNode();
 	auto DialogLayer = (Layer*)DialogComponent->getNode();
 	auto LoadingLayer = (Layer*)LoadingComponent->getNode();
+	auto OptionLayer = (Layer*)OptionComponent->getNode();
 	//////////
 	auto imageTable = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_IMAGE_TABLE));
 	auto imagePaper = dynamic_cast<Button*>(UILayer->getChildByTag(MAINSCENE_IMAGE_PAPER));
@@ -155,6 +153,8 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto ExitLayer = (Layer*)ExitComponent->getNode();
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
 	auto DialogLayer = (Layer*)DialogComponent->getNode();
+	auto OptionComponent = (cocostudio::ComRender*) OptionNode->getComponent("optionUI");
+	auto OptionLayer = (Layer*)OptionComponent->getNode();
 	auto bgExit = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BG));
 	auto bgDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG_BG));
 	auto buttonYes = dynamic_cast<Button*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BUTTON_YES));
@@ -213,7 +213,7 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			this->createDialog("dialogCat");
 			break;
 		case MAINSCENE_BUTTON_OPTION:
-			OptionLayer->setVisible(true);
+			OptionNode->setVisible(true);
 			bgSetting->setEnabled(true);
 			sliderLag->setEnabled(true);
 			boxEasy->setEnabled(true);
@@ -254,7 +254,7 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			bgDialog->setEnabled(false);
 			break;
 		case MAINSCENE_SETTING_CLOSE:
-			OptionLayer->setVisible(false);
+			OptionNode->setVisible(false);
 			bgSetting->setEnabled(false);
 			sliderLag->setEnabled(false);
 			boxEasy->setEnabled(false);
@@ -268,6 +268,8 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 
 void MainScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
 {
+	auto OptionComponent = (cocostudio::ComRender*) OptionNode->getComponent("optionUI");
+	auto OptionLayer = (Layer*)OptionComponent->getNode();
 	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
 	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
 	auto widget = dynamic_cast<CheckBox*>(obj);
@@ -315,6 +317,8 @@ void MainScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
 void MainScene::sliderEvent(Ref* obj, SliderEventType eventType)
 {
 	auto widget = dynamic_cast<Slider*>(obj);
+	auto OptionComponent = (cocostudio::ComRender*) OptionNode->getComponent("optionUI");
+	auto OptionLayer = (Layer*)OptionComponent->getNode();
 	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
 	int tag = widget->getTag();
 	int percent = widget->getPercent();
