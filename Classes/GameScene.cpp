@@ -188,6 +188,8 @@ void GameScene::update(float dt)
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
 	auto UILayer = (Layer*)UIComponent->getNode();
 	auto loadingBar = dynamic_cast<LoadingBar*>(UILayer->getChildByTag(GAMESCENE_LOADINGBAR));
+	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_LEVEL));
+	auto labelInfo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_INFO));
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
@@ -205,7 +207,7 @@ void GameScene::update(float dt)
 	if (!AudioEngine::getInstance()->isPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
-		auto scene = ClearScene::createScene(FileName);
+		auto scene = ClearScene::createScene(labelInfo->getStringValue(), labelLevel->getStringValue());
 		Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 	}
 }

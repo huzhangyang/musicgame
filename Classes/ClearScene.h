@@ -14,7 +14,7 @@ using namespace ui;
 class ClearScene : public cocos2d::Layer
 {
 public:
-	static Scene* createScene(std::string filename);
+	static Scene* createScene(std::string filename, std::string level);
 	virtual bool init();
 	virtual void onEnterTransitionDidFinish();
 	virtual void onExitTransitionDidStart();
@@ -22,6 +22,7 @@ public:
 	CREATE_FUNC(ClearScene);
 private:
 	void touchEvent(Ref* obj, TouchEventType eventType);
+	Node* UINode;
 };
 
 #endif 

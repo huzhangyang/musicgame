@@ -3,12 +3,14 @@
 #include "GameScene.h"
 
 std::string FileName;//音乐文件名称
+std::string Level;
 
-Scene* ClearScene::createScene(std::string filename)
+Scene* ClearScene::createScene(std::string filename, std::string level)
 {
 	auto scene = Scene::create();
 	auto layer = ClearScene::create();
 	FileName = filename;
+	Level = level;
 	scene->addChild(layer);
 	return scene;
 }
@@ -26,7 +28,7 @@ bool ClearScene::init()
 	/////////////////////////////////////////////////////
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("clearScene.json");
 	addChild(sceneNode);
-	auto UINode = sceneNode->getChildByTag(10003);
+	UINode = sceneNode->getChildByTag(10003);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
 	auto UIlayer = UIComponent->getNode();
 	auto background = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_BG));
@@ -39,24 +41,11 @@ bool ClearScene::init()
 	auto labelComplete = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
 	auto labelJudge = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_JUDGE));
 	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
-	auto labelDifficulty = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
-	auto title = AudioEngine::getInstance()->getName();
-	if (title != "")
-		labelInfo->setText(title);//显示ID3 TITLE
-	else
-		labelInfo->setText(FileName);//没获取到则显示文件名
-	AudioEngine::getInstance()->createLoop("music/clear.mp3");
-	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
-	if (difficulty == 0)
-	{
-		labelDifficulty->loadTexture("clearSceneUI/easy.png");
-	}
-	else if (difficulty == 1)
-	{
-		labelDifficulty->loadTexture("clearSceneUI/hard.png");
-	}
+	auto labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
+	auto labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_LEVEL));
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
+	AudioEngine::getInstance()->createLoop("music/clear.mp3");
 	char temp[64];
 	sprintf(temp, "%d", counter.perfect);
 	labelPerfect->setText(temp);
@@ -95,6 +84,22 @@ void ClearScene::onEnterTransitionDidFinish()
 	Layer::onEnterTransitionDidFinish();
 	/////////////////////////////////////////////////////
 	AudioEngine::getInstance()->play();
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
+	auto UIlayer = UIComponent->getNode();
+	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
+	auto labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
+	auto labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_LEVEL));
+	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+	if (difficulty == 0)
+	{
+		labelDifficulty->setText("Easy");
+	}
+	else if (difficulty == 1)
+	{
+		labelDifficulty->setText("Hard");
+	}
+	labelLevel->setText(Level);
+	labelInfo->setText(FileName);//没获取到则显示文件名
 }
 
 void ClearScene::onExitTransitionDidStart()
