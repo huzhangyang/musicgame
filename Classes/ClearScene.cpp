@@ -40,11 +40,18 @@ bool ClearScene::init()
 	auto labelTotal = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
 	auto labelComplete = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
 	auto labelJudge = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_JUDGE));
-	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
 	auto labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
-	auto labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_LEVEL));
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
+	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+	if (difficulty == 0)
+	{
+		labelDifficulty->setText("Easy");
+	}
+	else if (difficulty == 1)
+	{
+		labelDifficulty->setText("Hard");
+	}
 	AudioEngine::getInstance()->createLoop("music/clear.mp3");
 	char temp[64];
 	sprintf(temp, "%d", counter.perfect);
@@ -87,17 +94,7 @@ void ClearScene::onEnterTransitionDidFinish()
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("GUIComponent");
 	auto UIlayer = UIComponent->getNode();
 	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
-	auto labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
 	auto labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_LEVEL));
-	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
-	if (difficulty == 0)
-	{
-		labelDifficulty->setText("Easy");
-	}
-	else if (difficulty == 1)
-	{
-		labelDifficulty->setText("Hard");
-	}
 	labelLevel->setText(Level);
 	labelInfo->setText(FileName);//没获取到则显示文件名
 }
