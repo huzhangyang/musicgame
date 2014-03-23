@@ -95,6 +95,6 @@ const int CLEARSCENE_DIFFICULTY = 16;
 const int CLEARSCENE_LEVEL = 17;
 
 //其它常数
-const std::string FILENAME = "test";//曲子文件名
-const float BPM = 84.00f;//歌曲速度
+const std::string FILENAME = "Vivere La Vita";//曲子文件名
+const float BPM = 150.00f;//歌曲速度
 #endif 
