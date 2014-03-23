@@ -93,6 +93,7 @@ const int CLEARSCENE_JUDGE = 13;
 const int CLEARSCENE_RETRY = 14;
 const int CLEARSCENE_RETURN = 15;
 const int CLEARSCENE_DIFFICULTY = 16;
+const int CLEARSCENE_LEVEL = 17;
 
 //其它常数
 const std::string FILENAME = "test";//曲子文件名
