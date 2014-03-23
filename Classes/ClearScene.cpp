@@ -57,7 +57,7 @@ bool ClearScene::init()
 	labelTotal->setText(temp);
 	sprintf(temp, "%.2f", counter.percent);
 	labelComplete->setText(strcat(temp, "%"));
-	if (counter.percent >= 99)
+	if (counter.combo = counter.total&&counter.percent > 95)
 		labelJudge->loadTexture("clearSceneUI/S.png");
 	else if (counter.percent >= 90)
 		labelJudge->loadTexture("clearSceneUI/A.png");
