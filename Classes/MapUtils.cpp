@@ -81,6 +81,10 @@ void MapUtils::generate(const char* songname)
 	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	musicinfo.NoteNumber_Easy = 0;
 	musicinfo.NoteNumber_Hard = 0;
+	beatinfo.beginTime = 0;
+	beatinfo.endTime = 0;
+	beatinfo.beatTime = 0;
+	beatinfo.maxPeak = 0;
 	///////////////
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
@@ -143,18 +147,21 @@ void MapUtils::generate(const char* songname)
 		{
 			noteline.length = beatinfo.beatTime - beatinfo.beginTime;
 			noteline.time = (beatinfo.beatTime + beatinfo.beginTime) / 2;
-			noteline.posY = genPosY(noteline.time);
-			noteline.posX = genPosX(noteline.posY);
-			noteline.difficulty = 0;
-			if (beatinfo.maxPeak < 0.3 && noteline.time - beatinfo.endTime < FramePerBeat)
-				noteline.difficulty = 1;
-			if (noteline.length >3)
-				noteline.type = 2;
-			else if (noteline.length > 5)
+			noteline.difficulty = 1;
+			if (beatinfo.maxPeak > 0.01 && beatinfo.beginTime - beatinfo.endTime > FramePerBeat / 2)
+				noteline.difficulty = 0;
+			if (noteline.length > 3)
+			{
 				noteline.type = 1;
+				noteline.length *= FramePerBeat / 8;
+			}
+			if (noteline.length > 1 && beatinfo.beginTime - beatinfo.endTime < FramePerBeat / 8)
+				noteline.type = 2;
 			if (noteline.length > 0 && noteline.time - beatinfo.endTime > FramePerBeat / 3)
 			{
 				writeNoteline();
+				//if (beatinfo.maxPeak > 0.6)
+				//writeNoteline();
 				beatinfo.endTime = i *musicinfo.length / peaks.size();
 				noteline.type = 0;
 			}
@@ -181,6 +188,8 @@ void MapUtils::generate(const char* songname)
 
 void MapUtils::writeNoteline()
 {
+	noteline.posY = genPosY(noteline.time);
+	noteline.posX = genPosX(noteline.posY);
 	fprintf(fout, "%.5d,", noteline.time);
 	fprintf(fout, "%.1d,", noteline.difficulty);
 	fprintf(fout, "%.1d,", noteline.type);
