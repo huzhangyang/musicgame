@@ -27,7 +27,6 @@ struct BeatInfo
 {
 	int beginTime = 0;
 	int beatTime = 0;
-	int beatType = 0;
 	int endTime = 0;
 	float maxPeak = 0;
 };

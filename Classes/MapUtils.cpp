@@ -71,7 +71,7 @@ void MapUtils::generateMap(const char* songname)
 	mapname = songname;
 	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
-	fprintf(fout, "///////////////");
+	fprintf(fout, "//////////////\n");
 	std::thread workthread(generate, songname);
 	workthread.detach();
 }
@@ -81,6 +81,10 @@ void MapUtils::generate(const char* songname)
 	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	musicinfo.NoteNumber_Easy = 0;
 	musicinfo.NoteNumber_Hard = 0;
+	beatinfo.beginTime = 0;
+	beatinfo.endTime = 0;
+	beatinfo.beatTime = 0;
+	beatinfo.maxPeak = 0;
 	///////////////
 	AudioEngine::getInstance()->createNRT(songname);
 	AudioEngine::getInstance()->playNRT();
@@ -131,7 +135,7 @@ void MapUtils::generate(const char* songname)
 	}
 	for (int i = 1; i < peaks.size(); i++)
 	{
-		if (peaks.at(i)>0.01)//BEAT开始或者持续
+		if (peaks.at(i)>0)//BEAT开始或者持续
 		{
 			if (beatinfo.beginTime == 0)
 				beatinfo.beginTime = (i - 1)*musicinfo.length / peaks.size();//记录开始时间
@@ -143,18 +147,21 @@ void MapUtils::generate(const char* songname)
 		{
 			noteline.length = beatinfo.beatTime - beatinfo.beginTime;
 			noteline.time = (beatinfo.beatTime + beatinfo.beginTime) / 2;
-			noteline.posY = genPosY(noteline.time);
-			noteline.posX = genPosX(noteline.posY);
-			noteline.difficulty = 0;
-			if (beatinfo.maxPeak < 0.3 && noteline.time - beatinfo.endTime < FramePerBeat)
-				noteline.difficulty = 1;
-			if (noteline.length >3)
-				noteline.type = 2;
-			else if (noteline.length > 5)
+			noteline.difficulty = 1;
+			if (beatinfo.maxPeak > 0.01 && beatinfo.beginTime - beatinfo.endTime > FramePerBeat / 2)
+				noteline.difficulty = 0;
+			if (noteline.length > 3)
+			{
 				noteline.type = 1;
-			if (noteline.length > 0 && noteline.time - beatinfo.endTime > FramePerBeat / 2)
+				noteline.length *= FramePerBeat / 8;
+			}
+			if (noteline.length > 1 && beatinfo.beginTime - beatinfo.endTime < FramePerBeat / 8)
+				noteline.type = 2;
+			if (noteline.length > 0 && noteline.time - beatinfo.endTime > FramePerBeat / 3)
 			{
 				writeNoteline();
+				//if (beatinfo.maxPeak > 0.6)
+				//writeNoteline();
 				beatinfo.endTime = i *musicinfo.length / peaks.size();
 				noteline.type = 0;
 			}
@@ -171,7 +178,7 @@ void MapUtils::generate(const char* songname)
 	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 180 / musicinfo.length;
 	if (musicinfo.Level_Hard > 9)
 		musicinfo.Level_Hard = 9;
-	fprintf(fout, "%4d %4d %1d %1d\n", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
+	fprintf(fout, "%4d %4d %1d %1d", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
 	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
 	{
 		MainScene::loadingEnd();
@@ -181,6 +188,8 @@ void MapUtils::generate(const char* songname)
 
 void MapUtils::writeNoteline()
 {
+	noteline.posY = genPosY(noteline.time);
+	noteline.posX = genPosX(noteline.posY);
 	fprintf(fout, "%.5d,", noteline.time);
 	fprintf(fout, "%.1d,", noteline.difficulty);
 	fprintf(fout, "%.1d,", noteline.type);
