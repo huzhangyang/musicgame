@@ -191,8 +191,9 @@ void MapUtils::generate(const char* songname)
 
 void MapUtils::writeNoteline()
 {
+	int lastY = noteline.posY;
 	noteline.posY = genPosY(noteline.time);
-	noteline.posX = genPosX(noteline.posY);
+	noteline.posX = genPosX(abs(noteline.posY - lastY));
 	fprintf(fout, "%.5d,", noteline.time);
 	fprintf(fout, "%.1d,", noteline.difficulty);
 	fprintf(fout, "%.1d,", noteline.type);
@@ -211,16 +212,12 @@ void MapUtils::writeNoteline()
 	log("%d %d %d %d", noteline.time, noteline.type, noteline.posX, noteline.posY);
 }
 
-int MapUtils::genPosX(int posY)
+int MapUtils::genPosX(int absY)
 {
 	static int hand = 0;//0为中间，1为左手，2为右手
 	static int x = 675;
-	int lasttime = 0;
-	if (noteline.difficulty == 0)
-		lasttime = beatinfo.lastEasyTime;
-	else
-		lasttime = beatinfo.lastHardTime;
-	if (noteline.time - lasttime < FramePerBeat / 2 || noteline.type == 1)//间隔较短，换手操作
+	static int trend = CCRANDOM_0_1() * 3;//0为不变，1为向左，2为向右
+	if (absY < 120 || noteline.type == 1)//间隔较短，换手操作
 	{
 		if (hand == 1)
 		{
@@ -235,38 +232,53 @@ int MapUtils::genPosX(int posY)
 		else
 			x = 675 + CCRANDOM_MINUS1_1() * 500;
 	}
-	else if (noteline.time - lasttime > FramePerBeat || noteline.type == 2)//间隔较长，重新计算坐标
+	else if (absY > 240)//间隔较长，重新计算trend
 	{
 		hand = CCRANDOM_0_1() * 3;
+		trend = CCRANDOM_0_1() * 3;
+		int lastx = x;
 		if (hand == 1)
 		{
-			x = 175 + CCRANDOM_0_1() * 500;
+			do
+			{
+				x = 175 + CCRANDOM_0_1() * 500;
+			} while (abs(x - lastx) < 150);
 		}
 		else if (hand == 2)
 		{
-
-			x = 675 + CCRANDOM_0_1() * 500;
+			do
+			{
+				x = 675 + CCRANDOM_0_1() * 500;
+			} while (abs(x - lastx) < 150);
 		}
 		else
-			x = 675 + CCRANDOM_MINUS1_1() * 500;
+			do
+			{
+				x = 675 + CCRANDOM_MINUS1_1() * 500;
+			} while (abs(x - lastx) < 150);
 	}
 	else//间隔适中，计算相对位置
 	{
-		int trend = CCRANDOM_0_1() * 3;
 		if (trend == 1)
 		{
 			x -= 150;
-			if (x<175)
-				x = 325 + CCRANDOM_0_1() * 350;
+			if (x < 175)
+			{
+				x = 175 + CCRANDOM_0_1() * 500;
+				trend = 2;
+			}
 		}
 		else if (trend == 2)
 		{
 			x += 150;
 			if (x>1175)
-				x = 675 + CCRANDOM_0_1() * 350;
+			{
+				x = 675 + CCRANDOM_0_1() * 500;
+				trend = 1;
+			}
 		}
 		else
-			x = x;
+			x = x;//这里要注意啊，出现重叠了
 		if (x<500)
 			hand = 1;
 		else if (x>850)
