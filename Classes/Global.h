@@ -26,8 +26,9 @@ extern Noteline noteline;
 struct BeatInfo
 {
 	int beginTime = 0;
-	int beatTime = 0;
 	int endTime = 0;
+	int lastEasyTime = 0;
+	int lastHardTime = 0;
 	float maxPeak = 0;
 };
 //文件信息结构
