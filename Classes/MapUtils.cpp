@@ -215,32 +215,51 @@ int MapUtils::genPosX(int posY)
 {
 	static int hand = 0;//0为中间，1为左手，2为右手
 	static int x = 675;
-	//hand = CCRANDOM_0_1() * 3;
-	if (noteline.time - beatinfo.lastHardTime < FramePerBeat*1.5 || noteline.type == 1)//间隔较短，换手操作
+	int lasttime = 0;
+	if (noteline.difficulty == 0)
+		lasttime = beatinfo.lastEasyTime;
+	else
+		lasttime = beatinfo.lastHardTime;
+	if (noteline.time - lasttime < FramePerBeat / 2 || noteline.type == 1)//间隔较短，换手操作
 	{
 		if (hand == 1)
 		{
 			hand = 2;
-			x = 175 + CCRANDOM_0_1() * 500;
+			x = 675 + CCRANDOM_0_1() * 500;
 		}
 		else if (hand == 2)
 		{
 			hand = 1;
+			x = 175 + CCRANDOM_0_1() * 500;
+		}
+		else
+			x = 675 + CCRANDOM_MINUS1_1() * 500;
+	}
+	else if (noteline.time - lasttime > FramePerBeat || noteline.type == 2)//间隔较长，重新计算坐标
+	{
+		hand = CCRANDOM_0_1() * 3;
+		if (hand == 1)
+		{
+			x = 175 + CCRANDOM_0_1() * 500;
+		}
+		else if (hand == 2)
+		{
+
 			x = 675 + CCRANDOM_0_1() * 500;
 		}
 		else
 			x = 675 + CCRANDOM_MINUS1_1() * 500;
 	}
-	else
+	else//间隔适中，计算相对位置
 	{
-		hand = CCRANDOM_0_1() * 3;
-		if (hand == 1)
+		int trend = CCRANDOM_0_1() * 3;
+		if (trend == 1)
 		{
 			x -= 150;
 			if (x<175)
 				x = 325 + CCRANDOM_0_1() * 350;
 		}
-		else if (hand == 2)
+		else if (trend == 2)
 		{
 			x += 150;
 			if (x>1175)
@@ -248,6 +267,12 @@ int MapUtils::genPosX(int posY)
 		}
 		else
 			x = x;
+		if (x<500)
+			hand = 1;
+		else if (x>850)
+			hand = 2;
+		else
+			hand = 0;
 	}
 	return x;
 }
