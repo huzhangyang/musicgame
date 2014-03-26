@@ -102,6 +102,6 @@ const int SELECTSCENE_DIFFICULTY = 9;
 const int SELECTSCENE_SCORE = 10;
 
 //其它常数
-const std::string FILENAME = "Vivere La Vita";//曲子文件名
-const float BPM = 150.00f;//歌曲速度
+const std::string FILENAME = "The blocks";//曲子文件名
+const float BPM = 120.00f;//歌曲速度
 #endif 
