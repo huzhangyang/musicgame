@@ -1,16 +1,16 @@
 ﻿<dict>  
     <key>dialogCharacter</key>  
-    <string>失忆症神马的果然还是…</string>  
+    <string>我是…谁…？</string>  
     <key>dialogCat</key>  
-    <string>咩？诶，我不是猫么</string>  
+    <string>请关注本游戏的进展喵</string>  
         <key>dialogTable</key>  
-    <string>我只是桌子不要碰我啊尼玛</string>  
+    <string>普通的桌子，上面是…</string>  
         <key>dialogClock</key>  
-    <string>冯如杯三审加油^_^</string>  
+    <string>什么也想不起来了……</string>  
         <key>dialogNoMap</key>  
     <string>没有谱子，没法弹奏啊。</string>  
           <key>dialogNoSong</key>  
-    <string>没有曲子，没法弹奏啊。</string>  
+    <string>没有曲子，找不到灵感。</string>  
         <key>dialogMapCreated</key>  
-    <string>呼，总算完成创作了！</string>  
+    <string>完成了，快试一下吧！</string>  
 </dict>  

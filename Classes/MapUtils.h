@@ -16,7 +16,7 @@ private:
 	static void analyzeBeat();
 	static void analyzeBeatV2();
 	static void writeNoteline();
-	static int genPosX(int posY);
+	static int genPosX(int absY);
 	static int genPosY(int time);
 };
 #endif 

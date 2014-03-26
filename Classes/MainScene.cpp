@@ -78,7 +78,6 @@ bool MainScene::init()
 	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_BG));
 	auto imageWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_WORDS));
 	auto imageLight = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_LIGHT));
-	bgLoading->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	imageLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
 	imageWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
 	//////////

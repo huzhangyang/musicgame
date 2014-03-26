@@ -83,7 +83,8 @@ void MapUtils::generate(const char* songname)
 	musicinfo.NoteNumber_Hard = 0;
 	beatinfo.beginTime = 0;
 	beatinfo.endTime = 0;
-	beatinfo.beatTime = 0;
+	beatinfo.lastEasyTime = 0;
+	beatinfo.lastHardTime = 0;
 	beatinfo.maxPeak = 0;
 	///////////////
 	AudioEngine::getInstance()->createNRT(songname);
@@ -135,47 +136,49 @@ void MapUtils::generate(const char* songname)
 	}
 	for (int i = 1; i < peaks.size(); i++)
 	{
-		if (peaks.at(i)>0)//BEAT开始或者持续
+		if (peaks.at(i)>0.01)//BEAT开始或者持续
 		{
 			if (beatinfo.beginTime == 0)
 				beatinfo.beginTime = (i - 1)*musicinfo.length / peaks.size();//记录开始时间
-			beatinfo.beatTime = i *musicinfo.length / peaks.size();//记录当前时间
+			beatinfo.endTime = i *musicinfo.length / peaks.size();//记录当前时间
 			if (peaks.at(i) > beatinfo.maxPeak)
 				beatinfo.maxPeak = peaks.at(i);//记录此beat最大峰值
 		}
 		else
 		{
-			noteline.length = beatinfo.beatTime - beatinfo.beginTime;
-			noteline.time = (beatinfo.beatTime + beatinfo.beginTime) / 2;
+			noteline.length = beatinfo.endTime - beatinfo.beginTime;
+			noteline.time = (beatinfo.endTime + beatinfo.beginTime) / 2;
 			noteline.difficulty = 1;
-			if (beatinfo.maxPeak > 0.01 && beatinfo.beginTime - beatinfo.endTime > FramePerBeat / 2)
+			if (beatinfo.maxPeak > 0.1 && beatinfo.beginTime - beatinfo.lastEasyTime >= FramePerBeat / 1.5)
 				noteline.difficulty = 0;
 			if (noteline.length > 3)
 			{
 				noteline.type = 1;
 				noteline.length *= FramePerBeat / 8;
 			}
-			if (noteline.length > 1 && beatinfo.beginTime - beatinfo.endTime < FramePerBeat / 8)
+			if (noteline.length > 1 && beatinfo.beginTime - beatinfo.lastHardTime < FramePerBeat / 8)
 				noteline.type = 2;
-			if (noteline.length > 0 && noteline.time - beatinfo.endTime > FramePerBeat / 3)
-			{
+			if (noteline.length > 0 && noteline.time - beatinfo.lastHardTime > FramePerBeat / 3)
+			{//生成
 				writeNoteline();
-				//if (beatinfo.maxPeak > 0.6)
-				//writeNoteline();
-				beatinfo.endTime = i *musicinfo.length / peaks.size();
+				if (beatinfo.maxPeak > 1.5&&noteline.difficulty == 1)
+					writeNoteline();
+				beatinfo.lastHardTime = i *musicinfo.length / peaks.size();
+				if (noteline.difficulty == 0)
+					beatinfo.lastEasyTime = i *musicinfo.length / peaks.size();
 				noteline.type = 0;
 			}
 			beatinfo.beginTime = 0;
-			beatinfo.beatTime = 0;
+			beatinfo.endTime = 0;
 			beatinfo.maxPeak = 0;
 		}
 	}
 	//////////////////扫描结束/////////////////////
 	rewind(fout);
-	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * 180 / musicinfo.length;
+	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * BPM / musicinfo.length;
 	if (musicinfo.Level_Easy > 9)
 		musicinfo.Level_Easy = 9;
-	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * 180 / musicinfo.length;
+	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * BPM / musicinfo.length;
 	if (musicinfo.Level_Hard > 9)
 		musicinfo.Level_Hard = 9;
 	fprintf(fout, "%4d %4d %1d %1d", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
@@ -188,8 +191,9 @@ void MapUtils::generate(const char* songname)
 
 void MapUtils::writeNoteline()
 {
+	int lastY = noteline.posY;
 	noteline.posY = genPosY(noteline.time);
-	noteline.posX = genPosX(noteline.posY);
+	noteline.posX = genPosX(abs(noteline.posY - lastY));
 	fprintf(fout, "%.5d,", noteline.time);
 	fprintf(fout, "%.1d,", noteline.difficulty);
 	fprintf(fout, "%.1d,", noteline.type);
@@ -208,43 +212,79 @@ void MapUtils::writeNoteline()
 	log("%d %d %d %d", noteline.time, noteline.type, noteline.posX, noteline.posY);
 }
 
-int MapUtils::genPosX(int posY)
+int MapUtils::genPosX(int absY)
 {
 	static int hand = 0;//0为中间，1为左手，2为右手
 	static int x = 675;
-	hand = CCRANDOM_0_1() * 3;
-	if (noteline.time - beatinfo.endTime < FramePerBeat*1.5 || noteline.type == 1)//间隔较短，换手操作
+	static int trend = CCRANDOM_0_1() * 3;//0为不变，1为向左，2为向右
+	if (absY < 120 || noteline.type == 1)//间隔较短，换手操作
 	{
 		if (hand == 1)
 		{
 			hand = 2;
-			x = 175 + CCRANDOM_0_1() * 500;
+			x = 675 + CCRANDOM_0_1() * 500;
 		}
 		else if (hand == 2)
 		{
 			hand = 1;
-			x = 675 + CCRANDOM_0_1() * 500;
+			x = 175 + CCRANDOM_0_1() * 500;
 		}
 		else
 			x = 675 + CCRANDOM_MINUS1_1() * 500;
 	}
-	else
+	else if (absY > 240)//间隔较长，重新计算trend
 	{
 		hand = CCRANDOM_0_1() * 3;
+		trend = CCRANDOM_0_1() * 3;
+		int lastx = x;
 		if (hand == 1)
 		{
-			x -= 150;
-			if (x<175)
-				x = 325 + CCRANDOM_0_1() * 350;
+			do
+			{
+				x = 175 + CCRANDOM_0_1() * 500;
+			} while (abs(x - lastx) < 150);
 		}
 		else if (hand == 2)
 		{
-			x += 150;
-			if (x>1175)
-				x = 675 + CCRANDOM_0_1() * 350;
+			do
+			{
+				x = 675 + CCRANDOM_0_1() * 500;
+			} while (abs(x - lastx) < 150);
 		}
 		else
-			x = x;
+			do
+			{
+				x = 675 + CCRANDOM_MINUS1_1() * 500;
+			} while (abs(x - lastx) < 150);
+	}
+	else//间隔适中，计算相对位置
+	{
+		if (trend == 1)
+		{
+			x -= 150;
+			if (x < 175)
+			{
+				x = 175 + CCRANDOM_0_1() * 500;
+				trend = 2;
+			}
+		}
+		else if (trend == 2)
+		{
+			x += 150;
+			if (x>1175)
+			{
+				x = 675 + CCRANDOM_0_1() * 500;
+				trend = 1;
+			}
+		}
+		else
+			x = x;//这里要注意啊，出现重叠了
+		if (x<500)
+			hand = 1;
+		else if (x>850)
+			hand = 2;
+		else
+			hand = 0;
 	}
 	return x;
 }

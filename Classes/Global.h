@@ -26,8 +26,9 @@ extern Noteline noteline;
 struct BeatInfo
 {
 	int beginTime = 0;
-	int beatTime = 0;
 	int endTime = 0;
+	int lastEasyTime = 0;
+	int lastHardTime = 0;
 	float maxPeak = 0;
 };
 //文件信息结构
@@ -101,6 +102,6 @@ const int SELECTSCENE_DIFFICULTY = 9;
 const int SELECTSCENE_SCORE = 10;
 
 //其它常数
-const std::string FILENAME = "test";//曲子文件名
-const float BPM = 84.00f;//歌曲速度
+const std::string FILENAME = "Vivere La Vita";//曲子文件名
+const float BPM = 150.00f;//歌曲速度
 #endif 

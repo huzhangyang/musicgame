@@ -13,7 +13,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	auto director = Director::getInstance();
 	auto glview = director->getOpenGLView();
 	if (!glview) {
-		glview = GLView::createWithRect("Echo v0.3-alpha", Rect(400, 400, 640, 360));
+		glview = GLView::createWithRect("Echo v0.4", Rect(300, 300, 960, 540));
 		director->setOpenGLView(glview);
 	}
 	glview->setDesignResolutionSize(1280, 720, ResolutionPolicy::SHOW_ALL);
