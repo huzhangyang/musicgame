@@ -93,6 +93,12 @@ const int CLEARSCENE_RETRY = 14;
 const int CLEARSCENE_RETURN = 15;
 const int CLEARSCENE_DIFFICULTY = 16;
 const int CLEARSCENE_LEVEL = 17;
+//选曲界面Tag
+const int SELECTSCENE_LIST = 5;
+const int SELECTSCENE_SONGINFORMATION = 6;
+const int SELECTSCENE_LEVEL = 8;
+const int SELECTSCENE_DIFFICULTY = 9;
+const int SELECTSCENE_SCORE = 10;
 
 //其它常数
 const std::string FILENAME = "test";//曲子文件名
