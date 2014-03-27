@@ -133,8 +133,6 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();
-	std::string musicname = "music/" + FILENAME + ".mp3";
-	std::string mapname = FileUtils::getInstance()->getWritablePath() + FILENAME + ".gnm";
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
 	auto ExitLayer = (Layer*)ExitComponent->getNode();
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");

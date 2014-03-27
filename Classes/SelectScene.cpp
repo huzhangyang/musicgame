@@ -44,11 +44,12 @@ bool SelectScene::init()
 	//////////
 	buttonReturn->addTouchEventListener(this, toucheventselector(SelectScene::touchEvent));
 	list->addEventListenerListView(this, listvieweventselector(SelectScene::listViewEvent));
-	list->setItemModel(info);
+	list->setItemModel(bg);
 	//////////
 	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_BG));
 	auto imageWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_WORDS));
 	auto imageLight = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_LIGHT));
+	bgLoading->setEnabled(false);
 	imageLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
 	imageWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
 	return true;
@@ -78,7 +79,8 @@ void SelectScene::onEnterTransitionDidFinish()
 			{
 				if (index > 0)
 					list->pushBackDefaultItem();
-				((Text*)list->getItem(index++))->setText(fileName);
+				auto x = list->getItem(index);
+				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(fileName);
 			}
 		}
 		else if (selectMode == 1)
@@ -89,7 +91,7 @@ void SelectScene::onEnterTransitionDidFinish()
 			{
 				if (index > 0)
 					list->pushBackDefaultItem();
-				((Text*)list->getItem(index++))->setText(fileName);
+				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(fileName);
 			}
 		}
 	}
@@ -130,19 +132,23 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 {
 	auto list = dynamic_cast<ListView*>(obj);
 	auto index = list->getCurSelectedIndex();
-	auto info = dynamic_cast<Text*>(list->getItem(index));
-
+	auto bg = dynamic_cast<ImageView*>(((Node*)list)->getChildByTag(SELECTSCENE_BG));
+	auto info = dynamic_cast<Text*>(bg->getChildByTag(SELECTSCENE_INFO));
+	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
+	auto LoadingLayer = (Layer*)LoadingComponent->getNode();
+	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_BG));
 	Scene* scene;
 	switch (eventType)
 	{
 
 	case ListViewEventType::LISTVIEW_ONSELECTEDITEM_END:
-		if (selectMode == 0)
+		if (selectMode == 0 && info->getStringValue() != "")
 		{
 			LoadingNode->setVisible(true);
-			MapUtils::generateMap(info->getStringValue().c_str());
+			bgLoading->setEnabled(true);
+			MapUtils::generateMap(info->getStringValue());
 		}
-		else if (selectMode == 1)
+		else if (selectMode == 1 && info->getStringValue()!="")
 		{
 			scene = GameScene::createScene(info->getStringValue());
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));

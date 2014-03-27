@@ -66,18 +66,19 @@ Point MapUtils::getNextPos()
 	return ret;
 }
 
-void MapUtils::generateMap(const char* songname)
+void MapUtils::generateMap(std::string name)
 {
-	mapname = songname;
-	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
+	
+	mapname = FileUtils::getInstance()->getWritablePath() + name + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
 	fprintf(fout, "//////////////\n");
-	std::thread workthread(generate, songname);
+	std::thread workthread(generate, name);
 	workthread.detach();
 }
 
-void MapUtils::generate(const char* songname)
+void MapUtils::generate(std::string name)
 {
+	std::string musicname = "music/" + name + ".mp3";
 	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	musicinfo.NoteNumber_Easy = 0;
 	musicinfo.NoteNumber_Hard = 0;
@@ -87,7 +88,7 @@ void MapUtils::generate(const char* songname)
 	beatinfo.lastHardTime = 0;
 	beatinfo.maxPeak = 0;
 	///////////////
-	AudioEngine::getInstance()->createNRT(songname);
+	AudioEngine::getInstance()->createNRT(musicname.c_str());
 	AudioEngine::getInstance()->playNRT();
 	float* spectrum = new float[FFT_SIZE];
 	float* lastSpectrum = new float[FFT_SIZE];
