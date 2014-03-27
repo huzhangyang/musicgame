@@ -2,11 +2,14 @@
 #include "MainScene.h"
 #include "GameScene.h"
 
-Scene* SelectScene::createScene()
+int selectMode;
+
+Scene* SelectScene::createScene(int mode)
 {
 	auto scene = Scene::create();
 	auto layer = SelectScene::create();
 	scene->addChild(layer);
+	selectMode = mode;
 	return scene;
 }
 
@@ -26,24 +29,54 @@ bool SelectScene::init()
 	auto UINode = sceneNode->getChildByTag(10003);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
 	auto UILayer = UIComponent->getNode();
-	auto list = dynamic_cast<ListView*>(UILayer->getChildByTag(SELECTSCENE_LIST));
+	list = dynamic_cast<ListView*>(UILayer->getChildByTag(SELECTSCENE_LIST));
 	auto info = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LIST)->getChildByTag(SELECTSCENE_INFO));
 	auto level = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LEVEL));
 	auto difficulty = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_DIFFICULTY));
 	auto score = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_SCORE));
+	auto buttonReturn = dynamic_cast<Button*>(UILayer->getChildByTag(SELECTSCENE_RETURN));
 	//////////
-	list->setItemModel(info);
+	buttonReturn->addTouchEventListener(this, toucheventselector(SelectScene::touchEvent));
 	list->addEventListenerListView(this, listvieweventselector(SelectScene::listViewEvent));
-	((Text*)list->getItem(0))->setText(FILENAME);
-	list->pushBackDefaultItem();
-	((Text*)list->getItem(1))->setText("YOYOYO");
-	list->pushBackDefaultItem();
-	((Text*)list->getItem(2))->setText("HAHAHA");
-	list->pushBackDefaultItem();
-	((Text*)list->getItem(3))->setText("HEYHEY");
-	list->pushBackDefaultItem();
-	((Text*)list->getItem(4))->setText("LYC");
+	list->setItemModel(info);
 	return true;
+}
+
+void SelectScene::onEnterTransitionDidFinish()
+{
+	Layer::onEnterTransitionDidFinish();
+	/////////////////////////////////////////////////////
+	auto files = FileUtils::getInstance()->getValueVectorFromFile("files.xml");
+	int index = 0;
+	for (auto& file : files)
+	{
+		auto fileInfo = file.asValueMap();
+		auto fileName = fileInfo.at("name").asString();
+		auto fileBPM = fileInfo.at("BPM").asFloat();
+		auto fileScore = fileInfo.at("score").asFloat();
+		if (selectMode == 0)
+		{
+			std::string musicname = "music/" + fileName + ".mp3";
+			if (FileUtils::getInstance()->isFileExist(musicname))
+			{
+				if (index > 0)
+					list->pushBackDefaultItem();
+				((Text*)list->getItem(index++))->setText(fileName);
+			}
+		}
+		else if (selectMode == 1)
+		{
+			std::string musicname = "music/" + fileName + ".mp3";
+			std::string mapname = FileUtils::getInstance()->getWritablePath() + fileName + ".gnm";
+			if (FileUtils::getInstance()->isFileExist(mapname) && FileUtils::getInstance()->isFileExist(musicname))
+			{
+				if (index > 0)
+					list->pushBackDefaultItem();
+				((Text*)list->getItem(index++))->setText(fileName);
+			}
+		}
+	}
+	//AudioEngine::getInstance()->play();
 }
 
 void SelectScene::onExitTransitionDidStart()
@@ -66,9 +99,12 @@ void SelectScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();
+	Scene* scene;
 	switch (eventType)
 	{
 	case TouchEventType::TOUCH_EVENT_ENDED:
+		scene = MainScene::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 		break;
 	}
 }
@@ -78,8 +114,7 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 	auto list = dynamic_cast<ListView*>(obj);
 	auto index = list->getCurSelectedIndex();
 	auto info = dynamic_cast<Text*>(list->getItem(index));
-	std::string musicname = "music/" + FILENAME + ".mp3";
-	std::string mapname = FileUtils::getInstance()->getWritablePath() + FILENAME + ".gnm";
+
 	Scene* scene;
 	switch (eventType)
 	{

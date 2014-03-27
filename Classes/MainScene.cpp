@@ -178,33 +178,15 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			this->createDialog("dialogTable");
 			break;
 		case MAINSCENE_IMAGE_PAPER:
-			if (!FileUtils::getInstance()->isFileExist(musicname))
-			{
-				this->createDialog("dialogNoSong");
-			}
-			else
-			{
-				LoadingNode->setVisible(true);
-				LoadingNode->runAction(FadeIn::create(1));
-				MapUtils::generateMap(musicname.c_str());
-				this->createDialog("dialogMapCreated");
-			}
+			scene = SelectScene::createScene(0);
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
+			//LoadingNode->setVisible(true);
+			//MapUtils::generateMap(musicname.c_str());
+			//this->createDialog("dialogMapCreated");
 			break;
 		case MAINSCENE_IMAGE_SHELF:
-			if (!FileUtils::getInstance()->isFileExist(mapname))
-			{
-				this->createDialog("dialogNoMap");
-
-			}
-			else if (!FileUtils::getInstance()->isFileExist(musicname))
-			{
-				this->createDialog("dialogNoSong");
-			}
-			else
-			{
-				scene = SelectScene::createScene();
-				Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
-			}
+			scene = SelectScene::createScene(1);
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 			break;
 		case MAINSCENE_IMAGE_CLOCK:
 			this->createDialog("dialogClock");

@@ -95,7 +95,7 @@ void ClearScene::onEnterTransitionDidFinish()
 	auto UIlayer = UIComponent->getNode();
 	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
 	auto labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_LEVEL));
-	labelLevel->setText(Level);
+	labelLevel->setText("LV."+Level);
 	labelInfo->setText(FileName);//没获取到则显示文件名
 }
 
