@@ -96,7 +96,12 @@ const int CLEARSCENE_DIFFICULTY = 16;
 const int CLEARSCENE_LEVEL = 17;
 //Ñ¡Çú½çÃæTag
 const int SELECTSCENE_LIST = 5;
+<<<<<<< HEAD
 const int SELECTSCENE_INFO = 6;
+=======
+const int SELECTSCENE_SONGINFORMATION = 6;
+const int SELECTSCENE_SONGINFORMATIONBG = 7;
+>>>>>>> origin/master
 const int SELECTSCENE_LEVEL = 8;
 const int SELECTSCENE_DIFFICULTY = 9;
 const int SELECTSCENE_SCORE = 10;
