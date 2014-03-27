@@ -1,5 +1,5 @@
 #include "MapUtils.h"
-#include "MainScene.h"
+#include "SelectScene.h"
 #include <fstream>
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
@@ -186,7 +186,7 @@ void MapUtils::generate(const char* songname)
 	fprintf(fout, "%4d %4d %1d %1d", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
 	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
 	{
-		MainScene::loadingEnd();
+		SelectScene::loadingEnd();
 	});
 	fclose(fout);
 }

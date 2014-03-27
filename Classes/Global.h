@@ -59,9 +59,6 @@ const int MAINSCENE_DIALOG_WORDS = 5;
 const int MAINSCENE_EXIT_BUTTON_YES = 3;
 const int MAINSCENE_EXIT_BUTTON_NO = 4;
 const int MAINSCENE_EXIT_BG = 6;
-const int MAINSCENE_LOADING_BG = 16;
-const int MAINSCENE_LOADING_LIGHT = 18;
-const int MAINSCENE_LOADING_WORDS = 19;
 const int MAINSCENE_SETTING_EASY = 20;
 const int MAINSCENE_SETTING_HARD = 21;
 const int MAINSCENE_SETTING_SLIDER = 22;
@@ -96,16 +93,15 @@ const int CLEARSCENE_DIFFICULTY = 16;
 const int CLEARSCENE_LEVEL = 17;
 //选曲界面Tag
 const int SELECTSCENE_LIST = 5;
-<<<<<<< HEAD
 const int SELECTSCENE_INFO = 6;
-=======
-const int SELECTSCENE_SONGINFORMATION = 6;
-const int SELECTSCENE_SONGINFORMATIONBG = 7;
->>>>>>> origin/master
+const int SELECTSCENE_BG = 7;
 const int SELECTSCENE_LEVEL = 8;
 const int SELECTSCENE_DIFFICULTY = 9;
 const int SELECTSCENE_SCORE = 10;
 const int SELECTSCENE_RETURN = 11;
+const int SELECTSCENE_LOADING_BG = 16;
+const int SELECTSCENE_LOADING_LIGHT = 18;
+const int SELECTSCENE_LOADING_WORDS = 19;
 //其它常数
 const std::string FILENAME = "The Blocks";//曲子文件名
 const float BPM = 120.00f;//歌曲速度

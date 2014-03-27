@@ -1,8 +1,10 @@
 #include "SelectScene.h"
 #include "MainScene.h"
 #include "GameScene.h"
+#include "MapUtils.h"
 
 int selectMode;
+Node *LoadingNode;
 
 Scene* SelectScene::createScene(int mode)
 {
@@ -27,10 +29,14 @@ bool SelectScene::init()
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("selectScene.json");
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10003);
+	LoadingNode = sceneNode->getChildByTag(10007);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
+	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
 	auto UILayer = UIComponent->getNode();
+	auto LoadingLayer = (Layer*)LoadingComponent->getNode();
 	list = dynamic_cast<ListView*>(UILayer->getChildByTag(SELECTSCENE_LIST));
-	auto info = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LIST)->getChildByTag(SELECTSCENE_INFO));
+	auto bg = dynamic_cast<ImageView*>(UILayer->getChildByTag(SELECTSCENE_LIST)->getChildByTag(SELECTSCENE_BG));
+	auto info = dynamic_cast<Text*>(bg->getChildByTag(SELECTSCENE_INFO));
 	auto level = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LEVEL));
 	auto difficulty = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_DIFFICULTY));
 	auto score = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_SCORE));
@@ -39,7 +45,18 @@ bool SelectScene::init()
 	buttonReturn->addTouchEventListener(this, toucheventselector(SelectScene::touchEvent));
 	list->addEventListenerListView(this, listvieweventselector(SelectScene::listViewEvent));
 	list->setItemModel(info);
+	//////////
+	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_BG));
+	auto imageWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_WORDS));
+	auto imageLight = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_LIGHT));
+	imageLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
+	imageWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
 	return true;
+}
+
+void SelectScene::loadingEnd()
+{
+	LoadingNode->setVisible(false);
 }
 
 void SelectScene::onEnterTransitionDidFinish()
@@ -118,11 +135,18 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 	Scene* scene;
 	switch (eventType)
 	{
-	case ListViewEventType::LISTVIEW_ONSELECTEDITEM_START:
-		break;
+
 	case ListViewEventType::LISTVIEW_ONSELECTEDITEM_END:
-		scene = GameScene::createScene(info->getStringValue());
-		Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
+		if (selectMode == 0)
+		{
+			LoadingNode->setVisible(true);
+			MapUtils::generateMap(info->getStringValue().c_str());
+		}
+		else if (selectMode == 1)
+		{
+			scene = GameScene::createScene(info->getStringValue());
+			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
+		}
 		break;
 	}
 }

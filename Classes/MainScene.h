@@ -18,7 +18,6 @@ public:
 	virtual bool init();
 	virtual void onEnterTransitionDidFinish();
 	virtual void onExitTransitionDidStart();
-	static void loadingEnd();
 	void menuCloseCallback(Ref* pSender);
 	CREATE_FUNC(MainScene);
 private:
