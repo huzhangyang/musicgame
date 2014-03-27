@@ -1,5 +1,6 @@
 #include "MainScene.h"
 #include "GameScene.h"
+#include "SelectScene.h"
 #include "MapUtils.h"
 
 Node *LoadingNode, *DialogNode, *ExitNode, *OptionNode;
@@ -201,8 +202,8 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			}
 			else
 			{
-				scene = GameScene::createScene(FILENAME);
-				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
+				scene = SelectScene::createScene();
+				Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 			}
 			break;
 		case MAINSCENE_IMAGE_CLOCK:
