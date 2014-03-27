@@ -146,10 +146,11 @@ void MapUtils::generate(const char* songname)
 		}
 		else
 		{
-			noteline.length = beatinfo.endTime - beatinfo.beginTime;
+			if (noteline.type != 1)
+				noteline.length = beatinfo.endTime - beatinfo.beginTime;
 			noteline.time = (beatinfo.endTime + beatinfo.beginTime) / 2;
 			noteline.difficulty = 1;
-			if (beatinfo.maxPeak > 0.1 && beatinfo.beginTime - beatinfo.lastEasyTime >= FramePerBeat / 1.5)
+			if (beatinfo.maxPeak > 0.1 && beatinfo.beginTime - beatinfo.lastEasyTime >= FramePerBeat / 2)
 				noteline.difficulty = 0;
 			if (noteline.length > 3)
 			{
@@ -158,16 +159,17 @@ void MapUtils::generate(const char* songname)
 			}
 			if (noteline.length > 1 && beatinfo.beginTime - beatinfo.lastHardTime < FramePerBeat / 8)
 				noteline.type = 2;
-			if (noteline.length > 0 && noteline.time - beatinfo.lastHardTime > FramePerBeat / 3)
+			if (noteline.length > 0 && noteline.time - beatinfo.lastHardTime > FramePerBeat / 4)
 			{//生成
 				writeNoteline();
-				if (beatinfo.maxPeak > 1.5&&noteline.difficulty == 1)
+				if (beatinfo.maxPeak > 1.5&&noteline.difficulty == 1 && noteline.type == 0)
 					writeNoteline();
 				beatinfo.lastHardTime = i *musicinfo.length / peaks.size();
 				if (noteline.difficulty == 0)
 					beatinfo.lastEasyTime = i *musicinfo.length / peaks.size();
 				noteline.type = 0;
 			}
+
 			beatinfo.beginTime = 0;
 			beatinfo.endTime = 0;
 			beatinfo.maxPeak = 0;
@@ -217,7 +219,7 @@ int MapUtils::genPosX(int absY)
 	static int hand = 0;//0为中间，1为左手，2为右手
 	static int x = 675;
 	static int trend = CCRANDOM_0_1() * 3;//0为不变，1为向左，2为向右
-	if (absY < 120 || noteline.type == 1)//间隔较短，换手操作
+	if (absY < 150 || noteline.type == 1)//间隔较短，换手操作
 	{
 		if (hand == 1)
 		{
@@ -232,7 +234,7 @@ int MapUtils::genPosX(int absY)
 		else
 			x = 675 + CCRANDOM_MINUS1_1() * 500;
 	}
-	else if (absY > 240)//间隔较长，重新计算trend
+	else if (absY > 300)//间隔较长，重新计算trend
 	{
 		hand = CCRANDOM_0_1() * 3;
 		trend = CCRANDOM_0_1() * 3;
