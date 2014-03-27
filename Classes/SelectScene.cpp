@@ -55,11 +55,6 @@ bool SelectScene::init()
 	return true;
 }
 
-void SelectScene::loadingEnd()
-{
-	LoadingNode->setVisible(false);
-}
-
 void SelectScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
@@ -114,6 +109,15 @@ void SelectScene::menuCloseCallback(Ref* pSender)
 #endif
 }
 
+void SelectScene::loadingEnd()
+{
+	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
+	auto LoadingLayer = (Layer*)LoadingComponent->getNode();
+	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_BG));
+	LoadingNode->setVisible(false);
+	bgLoading->setEnabled(false);
+}
+
 void SelectScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
@@ -132,7 +136,7 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 {
 	auto list = dynamic_cast<ListView*>(obj);
 	auto index = list->getCurSelectedIndex();
-	auto bg = dynamic_cast<ImageView*>(((Node*)list)->getChildByTag(SELECTSCENE_BG));
+	auto bg = list->getItem(index);
 	auto info = dynamic_cast<Text*>(bg->getChildByTag(SELECTSCENE_INFO));
 	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
 	auto LoadingLayer = (Layer*)LoadingComponent->getNode();

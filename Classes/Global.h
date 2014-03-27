@@ -103,6 +103,5 @@ const int SELECTSCENE_LOADING_BG = 16;
 const int SELECTSCENE_LOADING_LIGHT = 18;
 const int SELECTSCENE_LOADING_WORDS = 19;
 //其它常数
-const std::string FILENAME = "The Blocks";//曲子文件名
 const float BPM = 120.00f;//歌曲速度
 #endif 

@@ -67,8 +67,7 @@ Point MapUtils::getNextPos()
 }
 
 void MapUtils::generateMap(std::string name)
-{
-	
+{	
 	mapname = FileUtils::getInstance()->getWritablePath() + name + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//´ò¿ª²âÊÔÆ×Ãæ
 	fprintf(fout, "//////////////\n");
