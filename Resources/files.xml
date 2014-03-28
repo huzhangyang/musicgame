@@ -17,7 +17,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Black Lair</string>  
         <key>BPM</key>  
@@ -25,7 +25,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Bloody Purity</string>  
         <key>BPM</key>  
@@ -33,7 +33,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Chemical Star</string>  
         <key>BPM</key>  
@@ -41,7 +41,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-    	<dict>  
+    <dict>  
         <key>name</key>  
         <string>D R G</string>  
         <key>BPM</key>  
@@ -49,7 +49,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Darkness</string>  
         <key>BPM</key>  
@@ -57,7 +57,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>East West Wobble</string>  
         <key>BPM</key>  
@@ -65,7 +65,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Freedom Dive</string>  
         <key>BPM</key>  
@@ -73,7 +73,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Future world</string>  
         <key>BPM</key>  
@@ -81,8 +81,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Halcyon</string>  
         <key>BPM</key>  
@@ -90,7 +89,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Halloween Party</string>  
         <key>BPM</key>  
@@ -98,7 +97,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>HolyKnight</string>  
         <key>BPM</key>  
@@ -106,7 +105,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Just a trip</string>  
         <key>BPM</key>  
@@ -114,7 +113,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>L</string>  
         <key>BPM</key>  
@@ -122,7 +121,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>L2</string>  
         <key>BPM</key>  
@@ -130,7 +129,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Laplace</string>  
         <key>BPM</key>  
@@ -138,7 +137,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Morpho</string>  
         <key>BPM</key>  
@@ -146,7 +145,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Oriens</string>  
         <key>BPM</key>  
@@ -154,7 +153,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Parousia</string>  
         <key>BPM</key>  
@@ -162,7 +161,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Prismatic Lollipops</string>  
         <key>BPM</key>  
@@ -170,7 +169,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Qualia</string>  
         <key>BPM</key>  
@@ -178,7 +177,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Saika II</string>  
         <key>BPM</key>  
@@ -186,7 +185,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Secret Garden</string>  
         <key>BPM</key>  
@@ -194,7 +193,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Skuld</string>  
         <key>BPM</key>  
@@ -202,7 +201,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-            <dict>  
+    <dict>  
         <key>name</key>  
         <string>Slit</string>  
         <key>BPM</key>  
@@ -210,7 +209,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-     <dict>  
+    <dict>  
         <key>name</key>  
         <string>Slit2</string>  
         <key>BPM</key>  
@@ -218,7 +217,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>The black Case</string>  
         <key>BPM</key>  
@@ -226,7 +225,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>The Blocks</string>  
         <key>BPM</key>  
@@ -234,7 +233,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>The Last illusion</string>  
         <key>BPM</key>  
@@ -242,7 +241,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>To Further Dream</string>  
         <key>BPM</key>  
@@ -250,7 +249,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Twenty One</string>  
         <key>BPM</key>  
@@ -258,7 +257,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Ververg</string>  
         <key>BPM</key>  
@@ -266,7 +265,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Warlords of Atlantis</string>  
         <key>BPM</key>  
@@ -274,7 +273,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>LVBNR5</string>  
         <key>BPM</key>  
@@ -282,7 +281,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Rain of Fire</string>  
         <key>BPM</key>  
@@ -290,7 +289,7 @@
         <key>score</key>  
         <string>0.00</string>  
     </dict>  
-        <dict>  
+    <dict>  
         <key>name</key>  
         <string>Vivere La Vita</string>  
         <key>BPM</key>  

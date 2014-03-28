@@ -68,7 +68,6 @@ void SelectScene::onEnterTransitionDidFinish()
 	auto labelScore = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_SCORE));
 	/////////////////////////////////////////////////////
 	auto files = FileUtils::getInstance()->getValueVectorFromFile("files.xml");
-
 	int index = 0;
 	for (auto& file : files)
 	{
