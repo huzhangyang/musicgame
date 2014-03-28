@@ -122,6 +122,34 @@
           }
         }
       ]
+    },
+    {
+      "__type": "ComGameObjectSurrogate:#EditorCommon.JsonModel",
+      "classname": "CCNode",
+      "name": null,
+      "canedit": true,
+      "objecttag": 10007,
+      "rotation": 0,
+      "scalex": 1,
+      "scaley": 1,
+      "visible": 0,
+      "x": 0,
+      "y": 0,
+      "zorder": 1,
+      "gameobjects": [],
+      "components": [
+        {
+          "__type": "ComGUIAdapterSurrogate:#EditorCommon.JsonModel.Component",
+          "classname": "GUIComponent",
+          "name": "helpUI",
+          "file": null,
+          "fileData": {
+            "path": "mainSceneUI/helpUI/helpUI.json",
+            "plistFile": "",
+            "resourceType": 0
+          }
+        }
+      ]
     }
   ],
   "CanvasSize": {
