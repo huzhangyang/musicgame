@@ -43,15 +43,15 @@ void Note::initNote(int type, int length, int posX, int posY)
 	switch (type)
 	{
 	case CLICK:
-		this->initWithFile("note/note0.png");
+		this->initWithFile("game/note0.png");
 		this->length = TIME_PRELOAD;
 		break;
 	case LONGPRESS:
-		this->initWithFile("note/note1.png");
+		this->initWithFile("game/note1.png");
 		this->length = length;
 		break;
 	case SLIDE:
-		this->initWithFile("note/note2.png");
+		this->initWithFile("game/note2.png");
 		this->length = TIME_PRELOAD;
 		this->setRotation(atan2(MapUtils::getNextPos().x - getPositionX(), MapUtils::getNextPos().y - getPositionY()) * 180 / M_PI);
 		break;
@@ -62,7 +62,7 @@ void Note::initNote(int type, int length, int posX, int posY)
 	if (!noteListener)
 		createNoteListener();
 	else addToNoteListener();
-	judgePic = Sprite::create("judge/judge.png");
+	judgePic = Sprite::create("game/judge.png");
 	judgePic->setScale(2);
 	judgePic->runAction(EaseSineIn::create(ScaleTo::create(life / 60.0, 1)));
 	judgePic->setPosition(this->getContentSize().width / 2, this->getContentSize().height / 2);
@@ -146,11 +146,11 @@ void Note::judge()
 	judgePic->stopAllActions();
 	judgePic->setScale(1);
 	if (judgeResult == 0)
-		judgePic->setTexture("judge/halo0.png");
+		judgePic->setTexture("game/halo0.png");
 	else if (judgeResult == 1)
-		judgePic->setTexture("judge/halo1.png");
+		judgePic->setTexture("game/halo1.png");
 	else
-		judgePic->setTexture("judge/halo2.png");
+		judgePic->setTexture("game/halo2.png");
 	judgePic->runAction(FadeOut::create(0.4f));
 	GameScene::judgeNote(judgeResult);
 	//log("%d %d %d %d", notenumber - this->getLocalZOrder(), this->type, this->life, judgeResult);

@@ -21,7 +21,7 @@ bool MainScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	AudioEngine::getInstance()->createLoop("music/main.mp3");
+	AudioEngine::getInstance()->createLoop("bgm/main.mp3");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10005);

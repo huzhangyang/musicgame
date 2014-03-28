@@ -40,19 +40,9 @@ bool ClearScene::init()
 	auto labelTotal = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
 	auto labelComplete = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
 	auto labelJudge = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_JUDGE));
-	auto labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
-	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
-	if (difficulty == 0)
-	{
-		labelDifficulty->setText("Easy");
-	}
-	else if (difficulty == 1)
-	{
-		labelDifficulty->setText("Hard");
-	}
-	AudioEngine::getInstance()->createLoop("music/clear.mp3");
+	AudioEngine::getInstance()->createLoop("bgm/clear.mp3");
 	char temp[64];
 	sprintf(temp, "%d", counter.perfect);
 	labelPerfect->setText(temp);
@@ -95,6 +85,20 @@ void ClearScene::onEnterTransitionDidFinish()
 	auto UIlayer = UIComponent->getNode();
 	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
 	auto labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_LEVEL));
+	auto labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
+	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+	if (difficulty == 0)
+	{
+		labelDifficulty->setText("Easy");
+		labelDifficulty->setColor(Color3B(45, 65, 30));
+		labelLevel->setColor(Color3B(45, 65, 30));
+	}
+	else if (difficulty == 1)
+	{
+		labelDifficulty->setText("Hard");
+		labelDifficulty->setColor(Color3B(150, 15, 15));
+		labelLevel->setColor(Color3B(150, 15, 15));
+	}
 	labelLevel->setText("LV."+Level);
 	labelInfo->setText(FileName);//没获取到则显示文件名
 }

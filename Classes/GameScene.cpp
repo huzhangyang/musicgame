@@ -97,12 +97,16 @@ void GameScene::onEnterTransitionDidFinish()
 		notenumber = info.NoteNumber_Easy;
 		labelLevel->setText(info.Level_Easy);
 		labelDifficulty->setText("Easy");
+		labelLevel->setColor(Color3B(45, 65, 30));
+		labelDifficulty->setColor(Color3B(45, 65, 30));
 	}
 	else if (setting_difficulty == 1)
 	{
 		notenumber = info.NoteNumber_Hard;
 		labelLevel->setText(info.Level_Hard);
 		labelDifficulty->setText("Hard");
+		labelLevel->setColor(Color3B(150, 15, 15));
+		labelDifficulty->setColor(Color3B(150, 15, 15));
 	}
 	labelCombo->setText("READY");
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
@@ -218,7 +222,7 @@ void GameScene::addScanline()
 {
 	if (setting_scanline)
 	{
-		scanline = Sprite::create("judge/scanline.png");
+		scanline = Sprite::create("game/scanline.png");
 		scanline->setOpacity(200);
 		scanline->setPosition(655, 305);
 		UINode->addChild(scanline);

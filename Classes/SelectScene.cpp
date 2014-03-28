@@ -112,11 +112,15 @@ void SelectScene::onEnterTransitionDidFinish()
 		{
 			labelDifficulty->setText("Easy");
 			labelLevel->setText("LV." + musicinfo.Level_Easy);
+			labelLevel->setColor(Color3B(45, 65, 30));
+			labelDifficulty->setColor(Color3B(45, 65, 30));
 		}
 		else if (difficulty == 1)
 		{
 			labelDifficulty->setText("Hard");
 			labelLevel->setText("LV." + musicinfo.Level_Hard);
+			labelLevel->setColor(Color3B(150, 15, 15));
+			labelDifficulty->setColor(Color3B(150, 15, 15));
 		}
 	}
 	std::string musicname = "music/" + FileName + ".mp3";

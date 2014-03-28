@@ -24,11 +24,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 	FileUtils::getInstance()->addSearchPath("/mnt/sdcard/");//设置搜索路径
 #else
-	FileUtils::getInstance()->addSearchPath("../files/");//设置搜索路径
+	FileUtils::getInstance()->addSearchPath("../");//设置搜索路径
 #endif
-	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note0.ExportJson");
-	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note1.ExportJson");
-	cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("note/note2.ExportJson");
 	return true;
 }
 //切入后台
