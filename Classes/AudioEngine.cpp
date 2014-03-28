@@ -22,7 +22,7 @@ void AudioEngine::init()
 {
 	channel = 0;
 	result = FMOD::System_Create(&system);
-	result = system->init(5, FMOD_INIT_NORMAL, 0);
+	result = system->init(1, FMOD_INIT_NORMAL, 0);
 }
 
 void AudioEngine::initNRT()

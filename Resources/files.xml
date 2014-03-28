@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>  
+<plist version="1.0">  
+<array>  
+    <dict>  
+        <key>name</key>  
+        <string>The Blocks</string>  
+        <key>BPM</key>  
+        <string>120.00</string>  
+        <key>score</key>  
+        <string>0.00</string>  
+    </dict>  
+    <dict>  
+        <key>name</key>  
+        <string>L</string>  
+        <key>BPM</key>  
+        <string>155.00</string>  
+        <key>score</key>  
+        <string>0.00</string>  
+    </dict>  
+        <dict>  
+        <key>name</key>  
+        <string>Slit</string>  
+        <key>BPM</key>  
+        <string>165.00</string>  
+        <key>score</key>  
+        <string>0.00</string>  
+    </dict>  
+</array>  
+</plist>  

@@ -1,6 +1,6 @@
 #include "GameScene.h"
 #include "ClearScene.h"
-#include "MainScene.h"
+#include "SelectScene.h"
 #include "Note.h"
 #include "MapUtils.h"
 
@@ -92,22 +92,18 @@ void GameScene::onEnterTransitionDidFinish()
 	else
 		labelInfo->setText(FileName);//没获取到则显示文件名
 	MusicInfo info = MapUtils::loadMap(FileName.c_str());
-	int level = 0;
 	if (setting_difficulty == 0)
 	{
 		notenumber = info.NoteNumber_Easy;
-		level = info.Level_Easy;
+		labelLevel->setText(info.Level_Easy);
 		labelDifficulty->setText("Easy");
 	}
 	else if (setting_difficulty == 1)
 	{
 		notenumber = info.NoteNumber_Hard;
-		level = info.Level_Hard;
+		labelLevel->setText(info.Level_Hard);
 		labelDifficulty->setText("Hard");
 	}
-	char temp[64];
-	sprintf(temp, "%d", level);
-	labelLevel->setText(temp);
 	labelCombo->setText("READY");
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
@@ -356,7 +352,7 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			buttonReturn->setEnabled(false);
 			buttonResume->setEnabled(false);
 			AudioEngine::getInstance()->stop();
-			scene = MainScene::createScene();
+			scene = SelectScene::createScene(1);
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
 			break;
 		}

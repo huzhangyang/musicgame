@@ -10,9 +10,9 @@ public:
 	static void closeMap();//关闭谱面
 	static void getNoteline();//得到当前难度下的下一行谱面
 	static Point getNextPos();//得到下个note的位置
-	static void generateMap(const char* songname);//生成谱面
+	static void generateMap(std::string name);//生成谱面
 private:
-	static void generate(const char* songname);
+	static void generate(std::string name);
 	static void analyzeBeat();
 	static void analyzeBeatV2();
 	static void writeNoteline();

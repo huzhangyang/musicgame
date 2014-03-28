@@ -1,8 +1,6 @@
 #include "MainScene.h"
 #include "GameScene.h"
-#include "MapUtils.h"
-
-Node *LoadingNode, *DialogNode, *ExitNode, *OptionNode;
+#include "SelectScene.h"
 
 Scene* MainScene::createScene()
 {
@@ -29,17 +27,14 @@ bool MainScene::init()
 	auto UINode = sceneNode->getChildByTag(10005);
 	ExitNode = sceneNode->getChildByTag(10004);
 	DialogNode = sceneNode->getChildByTag(10006);
-	LoadingNode = sceneNode->getChildByTag(10007);
 	OptionNode = sceneNode->getChildByTag(10008);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("mainSceneUI");
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
-	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
 	auto OptionComponent = (cocostudio::ComRender*) OptionNode->getComponent("optionUI");
 	auto UILayer = (Layer*)UIComponent->getNode();
 	auto ExitLayer = (Layer*)ExitComponent->getNode();
 	auto DialogLayer = (Layer*)DialogComponent->getNode();
-	auto LoadingLayer = (Layer*)LoadingComponent->getNode();
 	auto OptionLayer = (Layer*)OptionComponent->getNode();
 	//////////
 	auto imageTable = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_IMAGE_TABLE));
@@ -74,12 +69,6 @@ bool MainScene::init()
 	auto bgDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG_BG));
 	bgDialog->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	bgDialog->setEnabled(false);
-	//////////
-	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_BG));
-	auto imageWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_WORDS));
-	auto imageLight = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(MAINSCENE_LOADING_LIGHT));
-	imageLight->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1), FadeOut::create(1), NULL)));
-	imageWords->runAction(RepeatForever::create(RotateBy::create(5, 360)));
 	//////////
 	auto boxEasy = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_EASY));
 	auto boxHard = dynamic_cast<CheckBox*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_HARD));
@@ -137,17 +126,10 @@ void MainScene::createDialog(std::string key)
 	labelWord->setText(strings.at(key).asString());
 }
 
-void MainScene::loadingEnd()
-{
-	LoadingNode->setVisible(false);
-}
-
 void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 {
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();
-	std::string musicname = "music/" + FILENAME + ".mp3";
-	std::string mapname = FileUtils::getInstance()->getWritablePath() + FILENAME + ".gnm";
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
 	auto ExitLayer = (Layer*)ExitComponent->getNode();
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
@@ -177,33 +159,12 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			this->createDialog("dialogTable");
 			break;
 		case MAINSCENE_IMAGE_PAPER:
-			if (!FileUtils::getInstance()->isFileExist(musicname))
-			{
-				this->createDialog("dialogNoSong");
-			}
-			else
-			{
-				LoadingNode->setVisible(true);
-				LoadingNode->runAction(FadeIn::create(1));
-				MapUtils::generateMap(musicname.c_str());
-				this->createDialog("dialogMapCreated");
-			}
+			scene = SelectScene::createScene(0);
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 			break;
 		case MAINSCENE_IMAGE_SHELF:
-			if (!FileUtils::getInstance()->isFileExist(mapname))
-			{
-				this->createDialog("dialogNoMap");
-
-			}
-			else if (!FileUtils::getInstance()->isFileExist(musicname))
-			{
-				this->createDialog("dialogNoSong");
-			}
-			else
-			{
-				scene = GameScene::createScene(FILENAME);
-				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
-			}
+			scene = SelectScene::createScene(1);
+			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 			break;
 		case MAINSCENE_IMAGE_CLOCK:
 			this->createDialog("dialogClock");

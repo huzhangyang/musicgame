@@ -1,5 +1,5 @@
 #include "MapUtils.h"
-#include "MainScene.h"
+#include "SelectScene.h"
 #include <fstream>
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
@@ -27,9 +27,9 @@ MusicInfo MapUtils::loadMap(std::string filename)
 	getline(fin, infostring);
 	musicinfo.length = AudioEngine::getInstance()->getLength();
 	musicinfo.NoteNumber_Easy = atoi(infostring.substr(0, 4).c_str());
-	musicinfo.NoteNumber_Hard = atoi(infostring.substr(5, 9).c_str());
-	musicinfo.Level_Easy = atoi(infostring.substr(10, 11).c_str());
-	musicinfo.Level_Hard = atoi(infostring.substr(12, 13).c_str());;
+	musicinfo.NoteNumber_Hard = atoi(infostring.substr(5, 4).c_str());
+	musicinfo.Level_Easy = infostring.substr(10, 1);
+	musicinfo.Level_Hard = infostring.substr(12, 1);
 	getNoteline();//读取第一行
 	return musicinfo;
 }
@@ -46,11 +46,11 @@ void MapUtils::getNoteline()
 	if (getline(fin, notestring))
 	{
 		noteline.time = atoi(notestring.substr(0, 5).c_str());
-		noteline.difficulty = atoi(notestring.substr(6, 7).c_str());
-		noteline.type = atoi(notestring.substr(8, 9).c_str());
-		noteline.length = atoi(notestring.substr(10, 13).c_str());
-		noteline.posX = atoi(notestring.substr(14, 18).c_str());
-		noteline.posY = atoi(notestring.substr(19, 22).c_str());
+		noteline.difficulty = atoi(notestring.substr(6, 1).c_str());
+		noteline.type = atoi(notestring.substr(8, 1).c_str());
+		noteline.length = atoi(notestring.substr(10, 3).c_str());
+		noteline.posX = atoi(notestring.substr(14, 4).c_str());
+		noteline.posY = atoi(notestring.substr(19, 4).c_str());
 		if (noteline.difficulty > difficulty)
 			getNoteline();
 	}
@@ -66,19 +66,19 @@ Point MapUtils::getNextPos()
 	return ret;
 }
 
-void MapUtils::generateMap(const char* songname)
+void MapUtils::generateMap(std::string name)
 {
-	mapname = songname;
-	mapname = FileUtils::getInstance()->getWritablePath() + mapname.substr(mapname.find_last_of('/') + 1, mapname.find_last_of('.') - mapname.find_last_of('/') - 1) + ".gnm";
+	mapname = FileUtils::getInstance()->getWritablePath() + name + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
 	fprintf(fout, "//////////////\n");
-	std::thread workthread(generate, songname);
+	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
+	std::thread workthread(generate, name);
 	workthread.detach();
 }
 
-void MapUtils::generate(const char* songname)
+void MapUtils::generate(std::string name)
 {
-	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
+	std::string musicname = "music/" + name + ".mp3";
 	musicinfo.NoteNumber_Easy = 0;
 	musicinfo.NoteNumber_Hard = 0;
 	beatinfo.beginTime = 0;
@@ -87,7 +87,7 @@ void MapUtils::generate(const char* songname)
 	beatinfo.lastHardTime = 0;
 	beatinfo.maxPeak = 0;
 	///////////////
-	AudioEngine::getInstance()->createNRT(songname);
+	AudioEngine::getInstance()->createNRT(musicname.c_str());
 	AudioEngine::getInstance()->playNRT();
 	float* spectrum = new float[FFT_SIZE];
 	float* lastSpectrum = new float[FFT_SIZE];
@@ -146,10 +146,11 @@ void MapUtils::generate(const char* songname)
 		}
 		else
 		{
-			noteline.length = beatinfo.endTime - beatinfo.beginTime;
+			if (noteline.type != 1)
+				noteline.length = beatinfo.endTime - beatinfo.beginTime;
 			noteline.time = (beatinfo.endTime + beatinfo.beginTime) / 2;
 			noteline.difficulty = 1;
-			if (beatinfo.maxPeak > 0.1 && beatinfo.beginTime - beatinfo.lastEasyTime >= FramePerBeat / 1.5)
+			if (beatinfo.maxPeak > 0.1 && beatinfo.beginTime - beatinfo.lastEasyTime >= FramePerBeat / 2)
 				noteline.difficulty = 0;
 			if (noteline.length > 3)
 			{
@@ -158,16 +159,17 @@ void MapUtils::generate(const char* songname)
 			}
 			if (noteline.length > 1 && beatinfo.beginTime - beatinfo.lastHardTime < FramePerBeat / 8)
 				noteline.type = 2;
-			if (noteline.length > 0 && noteline.time - beatinfo.lastHardTime > FramePerBeat / 3)
+			if (noteline.length > 0 && noteline.time - beatinfo.lastHardTime > FramePerBeat / 4)
 			{//生成
 				writeNoteline();
-				if (beatinfo.maxPeak > 1.5&&noteline.difficulty == 1)
+				if (beatinfo.maxPeak > 1.5&&noteline.difficulty == 1 && noteline.type == 0)
 					writeNoteline();
 				beatinfo.lastHardTime = i *musicinfo.length / peaks.size();
 				if (noteline.difficulty == 0)
 					beatinfo.lastEasyTime = i *musicinfo.length / peaks.size();
 				noteline.type = 0;
 			}
+
 			beatinfo.beginTime = 0;
 			beatinfo.endTime = 0;
 			beatinfo.maxPeak = 0;
@@ -175,16 +177,24 @@ void MapUtils::generate(const char* songname)
 	}
 	//////////////////扫描结束/////////////////////
 	rewind(fout);
-	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * BPM / musicinfo.length;
-	if (musicinfo.Level_Easy > 9)
-		musicinfo.Level_Easy = 9;
-	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * BPM / musicinfo.length;
-	if (musicinfo.Level_Hard > 9)
-		musicinfo.Level_Hard = 9;
-	fprintf(fout, "%4d %4d %1d %1d", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
+	int easy, hard;
+	char temp[64];
+	easy = musicinfo.NoteNumber_Easy * BPM / musicinfo.length;
+	sprintf(temp, "%d", easy);
+	if (easy > 9)
+		musicinfo.Level_Easy = "X";
+	else
+		musicinfo.Level_Easy = temp;
+	hard = musicinfo.NoteNumber_Hard * BPM / musicinfo.length;
+	sprintf(temp, "%d", hard);
+	if (hard > 9)
+		musicinfo.Level_Hard = "X";
+	else
+		musicinfo.Level_Hard = temp;
+	fprintf(fout, "%4d %4d %1s %1s", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy.c_str(), musicinfo.Level_Hard.c_str());
 	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
 	{
-		MainScene::loadingEnd();
+		SelectScene::loadingEnd();
 	});
 	fclose(fout);
 }
@@ -217,7 +227,7 @@ int MapUtils::genPosX(int absY)
 	static int hand = 0;//0为中间，1为左手，2为右手
 	static int x = 675;
 	static int trend = CCRANDOM_0_1() * 3;//0为不变，1为向左，2为向右
-	if (absY < 120 || noteline.type == 1)//间隔较短，换手操作
+	if (absY < 150 || noteline.type == 1)//间隔较短，换手操作
 	{
 		if (hand == 1)
 		{
@@ -232,7 +242,7 @@ int MapUtils::genPosX(int absY)
 		else
 			x = 675 + CCRANDOM_MINUS1_1() * 500;
 	}
-	else if (absY > 240)//间隔较长，重新计算trend
+	else if (absY > 300)//间隔较长，重新计算trend
 	{
 		hand = CCRANDOM_0_1() * 3;
 		trend = CCRANDOM_0_1() * 3;
