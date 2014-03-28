@@ -5,6 +5,7 @@
 
 int selectMode;
 Node *LoadingNode;
+ListView* list;
 std::vector<FileInfo> fileinfo;
 float BPM;
 
@@ -41,7 +42,9 @@ bool SelectScene::init()
 	auto info = dynamic_cast<Text*>(bg->getChildByTag(SELECTSCENE_INFO));
 	auto labelDifficulty = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_DIFFICULTY));
 	auto buttonReturn = dynamic_cast<Button*>(UILayer->getChildByTag(SELECTSCENE_RETURN));
+	auto buttonStart = dynamic_cast<Button*>(UILayer->getChildByTag(SELECTSCENE_START));
 	//////////
+	buttonStart->addTouchEventListener(this, toucheventselector(SelectScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(SelectScene::touchEvent));
 	list->addEventListenerListView(this, listvieweventselector(SelectScene::listViewEvent));
 	list->setItemModel(bg);
@@ -75,21 +78,22 @@ void SelectScene::onEnterTransitionDidFinish()
 		currinfo.BPM = fileMap.at("BPM").asFloat();
 		currinfo.score = fileMap.at("score").asFloat();
 		fileinfo.push_back(currinfo);
+		std::string musicname = "music/" + currinfo.name + ".mp3";
+		std::string mapname = FileUtils::getInstance()->getWritablePath() + currinfo.name + ".gnm";
 		if (selectMode == 0)
 		{
-			std::string musicname = "music/" + currinfo.name + ".mp3";
 			if (FileUtils::getInstance()->isFileExist(musicname))
 			{
 				if (index > 0)
 					list->pushBackDefaultItem();
-				auto x = list->getItem(index);
 				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(currinfo.name);
+				if (!FileUtils::getInstance()->isFileExist(mapname))
+					((ImageView*)list->getItem(index - 1))->loadTexture("selectSceneUI/songinformationBG2.png");
 			}
 		}
 		else if (selectMode == 1)
 		{
-			std::string musicname = "music/" + currinfo.name + ".mp3";
-			std::string mapname = FileUtils::getInstance()->getWritablePath() + currinfo.name + ".gnm";
+
 			if (FileUtils::getInstance()->isFileExist(mapname) && FileUtils::getInstance()->isFileExist(musicname))
 			{
 				if (index > 0)
@@ -98,8 +102,10 @@ void SelectScene::onEnterTransitionDidFinish()
 			}
 		}
 	}
-	auto FileName = ((Text*)(list->getItem(0)->getChildByTag(SELECTSCENE_INFO)))->getStringValue();
-	if (selectMode == 1)
+	auto bg = (ImageView*)list->getItem(0);
+	bg->loadTexture("selectSceneUI/songinformationBG1.png");
+	auto FileName = ((Text*)(bg->getChildByTag(SELECTSCENE_INFO)))->getStringValue();
+	if (selectMode == 1 && FileName != "")
 	{
 		auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 		MusicInfo musicinfo = MapUtils::loadMap(FileName.c_str());
@@ -123,6 +129,7 @@ void SelectScene::onExitTransitionDidStart()
 {
 	Layer::onExitTransitionDidStart();
 	/////////////////////////////////////////////////////
+	fileinfo.clear();
 	MapUtils::closeMap();
 	AudioEngine::getInstance()->stop();
 }
@@ -143,6 +150,9 @@ void SelectScene::loadingEnd()
 	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_BG));
 	LoadingNode->setVisible(false);
 	bgLoading->setEnabled(false);
+	auto index = list->getCurSelectedIndex();
+	auto bg = (ImageView*)list->getItem(index);
+	bg->loadTexture("selectSceneUI/songinformationBG.png");
 }
 
 void SelectScene::touchEvent(Ref* obj, TouchEventType eventType)
@@ -204,20 +214,32 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 {
 	auto list = dynamic_cast<ListView*>(obj);
 	auto index = list->getCurSelectedIndex();
-	auto bg = list->getItem(index);
+	auto bg = (ImageView*)list->getItem(index);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
 	auto UILayer = UIComponent->getNode();
 	auto info = dynamic_cast<Text*>(bg->getChildByTag(SELECTSCENE_INFO));
 	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LEVEL));
 	auto labelScore = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_SCORE));
 	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
-	Scene* scene;
+
 	switch (eventType)
 	{
 	case ListViewEventType::LISTVIEW_ONSELECTEDITEM_END:
+		for (int i = 0; i < list->getItems().size(); i++)
+		{
+			auto currbg = (ImageView*)list->getItem(i);
+			auto currinfo = dynamic_cast<Text*>(currbg->getChildByTag(SELECTSCENE_INFO));
+			std::string mapname = FileUtils::getInstance()->getWritablePath() + currinfo->getStringValue() + ".gnm";
+			if (i == index)
+				currbg->loadTexture("selectSceneUI/songinformationBG1.png");
+			else if (FileUtils::getInstance()->isFileExist(mapname))
+				currbg->loadTexture("selectSceneUI/songinformationBG.png");
+			else
+				currbg->loadTexture("selectSceneUI/songinformationBG2.png");
+		}
 		MapUtils::closeMap();
 		auto FileName = info->getStringValue();
-		if (selectMode == 1)
+		if (selectMode == 1 && FileName != "")
 		{
 			auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 			MusicInfo musicinfo = MapUtils::loadMap(FileName.c_str());
