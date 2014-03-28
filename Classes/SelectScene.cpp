@@ -5,6 +5,8 @@
 
 int selectMode;
 Node *LoadingNode;
+std::vector<FileInfo> fileinfo;
+float BPM;
 
 Scene* SelectScene::createScene(int mode)
 {
@@ -28,18 +30,16 @@ bool SelectScene::init()
 	/////////////////////////////////////////////////////
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("selectScene.json");
 	addChild(sceneNode);
-	auto UINode = sceneNode->getChildByTag(10003);
-	LoadingNode = sceneNode->getChildByTag(10007);
+	UINode = sceneNode->getChildByTag(10003);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
-	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
 	auto UILayer = UIComponent->getNode();
+	LoadingNode = sceneNode->getChildByTag(10007);
+	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
 	auto LoadingLayer = (Layer*)LoadingComponent->getNode();
 	list = dynamic_cast<ListView*>(UILayer->getChildByTag(SELECTSCENE_LIST));
 	auto bg = dynamic_cast<ImageView*>(UILayer->getChildByTag(SELECTSCENE_LIST)->getChildByTag(SELECTSCENE_BG));
 	auto info = dynamic_cast<Text*>(bg->getChildByTag(SELECTSCENE_INFO));
-	auto level = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LEVEL));
-	auto difficulty = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_DIFFICULTY));
-	auto score = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_SCORE));
+	auto labelDifficulty = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_DIFFICULTY));
 	auto buttonReturn = dynamic_cast<Button*>(UILayer->getChildByTag(SELECTSCENE_RETURN));
 	//////////
 	buttonReturn->addTouchEventListener(this, toucheventselector(SelectScene::touchEvent));
@@ -58,45 +58,72 @@ bool SelectScene::init()
 void SelectScene::onEnterTransitionDidFinish()
 {
 	Layer::onEnterTransitionDidFinish();
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
+	auto UILayer = UIComponent->getNode();
+	auto labelDifficulty = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_DIFFICULTY));
+	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LEVEL));
+	auto labelScore = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_SCORE));
 	/////////////////////////////////////////////////////
 	auto files = FileUtils::getInstance()->getValueVectorFromFile("files.xml");
+
 	int index = 0;
 	for (auto& file : files)
 	{
-		auto fileInfo = file.asValueMap();
-		auto fileName = fileInfo.at("name").asString();
-		auto fileBPM = fileInfo.at("BPM").asFloat();
-		auto fileScore = fileInfo.at("score").asFloat();
+		auto fileMap = file.asValueMap();
+		FileInfo currinfo;
+		currinfo.name = fileMap.at("name").asString();
+		currinfo.BPM = fileMap.at("BPM").asFloat();
+		currinfo.score = fileMap.at("score").asFloat();
+		fileinfo.push_back(currinfo);
 		if (selectMode == 0)
 		{
-			std::string musicname = "music/" + fileName + ".mp3";
+			std::string musicname = "music/" + currinfo.name + ".mp3";
 			if (FileUtils::getInstance()->isFileExist(musicname))
 			{
 				if (index > 0)
 					list->pushBackDefaultItem();
 				auto x = list->getItem(index);
-				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(fileName);
+				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(currinfo.name);
 			}
 		}
 		else if (selectMode == 1)
 		{
-			std::string musicname = "music/" + fileName + ".mp3";
-			std::string mapname = FileUtils::getInstance()->getWritablePath() + fileName + ".gnm";
+			std::string musicname = "music/" + currinfo.name + ".mp3";
+			std::string mapname = FileUtils::getInstance()->getWritablePath() + currinfo.name + ".gnm";
 			if (FileUtils::getInstance()->isFileExist(mapname) && FileUtils::getInstance()->isFileExist(musicname))
 			{
 				if (index > 0)
 					list->pushBackDefaultItem();
-				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(fileName);
+				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(currinfo.name);
 			}
 		}
 	}
-	//AudioEngine::getInstance()->play();
+	auto FileName = ((Text*)(list->getItem(0)->getChildByTag(SELECTSCENE_INFO)))->getStringValue();
+	if (selectMode == 1)
+	{
+		auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
+		MusicInfo musicinfo = MapUtils::loadMap(FileName.c_str());
+		if (difficulty == 0)
+		{
+			labelDifficulty->setText("Easy");
+			labelLevel->setText("LV." + musicinfo.Level_Easy);
+		}
+		else if (difficulty == 1)
+		{
+			labelDifficulty->setText("Hard");
+			labelLevel->setText("LV." + musicinfo.Level_Hard);
+		}
+	}
+	std::string musicname = "music/" + FileName + ".mp3";
+	AudioEngine::getInstance()->createLoop(musicname.c_str());
+	AudioEngine::getInstance()->play();
 }
 
 void SelectScene::onExitTransitionDidStart()
 {
 	Layer::onExitTransitionDidStart();
 	/////////////////////////////////////////////////////
+	MapUtils::closeMap();
 	AudioEngine::getInstance()->stop();
 }
 
@@ -137,25 +164,46 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 	auto list = dynamic_cast<ListView*>(obj);
 	auto index = list->getCurSelectedIndex();
 	auto bg = list->getItem(index);
-	auto info = dynamic_cast<Text*>(bg->getChildByTag(SELECTSCENE_INFO));
+	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
+	auto UILayer = UIComponent->getNode();
 	auto LoadingComponent = (cocostudio::ComRender*) LoadingNode->getComponent("loadingUI");
 	auto LoadingLayer = (Layer*)LoadingComponent->getNode();
+	auto info = dynamic_cast<Text*>(bg->getChildByTag(SELECTSCENE_INFO));
+	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LEVEL));
+	auto labelScore = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_SCORE));
 	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_BG));
+	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	Scene* scene;
 	switch (eventType)
 	{
-
 	case ListViewEventType::LISTVIEW_ONSELECTEDITEM_END:
-		if (selectMode == 0 && info->getStringValue() != "")
+		if (selectMode == 0)
 		{
-			LoadingNode->setVisible(true);
-			bgLoading->setEnabled(true);
-			MapUtils::generateMap(info->getStringValue());
+			for (auto& currinfo : fileinfo)
+			{
+				if (currinfo.name == info->getStringValue())
+				{
+					LoadingNode->setVisible(true);
+					bgLoading->setEnabled(true);
+					BPM = currinfo.BPM;
+					MapUtils::generateMap(currinfo.name);
+					break;
+				}
+			}
 		}
-		else if (selectMode == 1 && info->getStringValue()!="")
+		else if (selectMode == 1)
 		{
-			scene = GameScene::createScene(info->getStringValue());
-			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
+			for (auto& currinfo : fileinfo)
+			{
+				if (currinfo.name == info->getStringValue())
+				{
+					BPM = currinfo.BPM;
+					scene = GameScene::createScene(currinfo.name);
+					Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
+					break;
+				}
+			}
+
 		}
 		break;
 	}

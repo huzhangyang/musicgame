@@ -31,14 +31,21 @@ struct BeatInfo
 	int lastHardTime = 0;
 	float maxPeak = 0;
 };
-//文件信息结构
+//曲谱信息结构
 struct MusicInfo
 {
 	int length = 0;
 	int NoteNumber_Easy = 0;
 	int NoteNumber_Hard = 0;
-	int Level_Easy = 0;
-	int Level_Hard = 0;
+	std::string Level_Easy = "";
+	std::string Level_Hard = "";
+};
+//文件信息结构
+struct FileInfo
+{
+	std::string name;
+	float BPM;
+	float score;
 };
 //开始界面Tag
 const int INTROSCENE_BG = 2;
@@ -102,6 +109,6 @@ const int SELECTSCENE_RETURN = 11;
 const int SELECTSCENE_LOADING_BG = 16;
 const int SELECTSCENE_LOADING_LIGHT = 18;
 const int SELECTSCENE_LOADING_WORDS = 19;
-//其它常数
-const float BPM = 120.00f;//歌曲速度
+//其它全局变量
+extern float BPM;
 #endif 

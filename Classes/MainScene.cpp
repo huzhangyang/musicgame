@@ -2,9 +2,6 @@
 #include "GameScene.h"
 #include "SelectScene.h"
 
-
-Node *DialogNode, *ExitNode, *OptionNode;
-
 Scene* MainScene::createScene()
 {
 	auto scene = Scene::create();

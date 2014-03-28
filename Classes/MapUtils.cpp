@@ -27,9 +27,9 @@ MusicInfo MapUtils::loadMap(std::string filename)
 	getline(fin, infostring);
 	musicinfo.length = AudioEngine::getInstance()->getLength();
 	musicinfo.NoteNumber_Easy = atoi(infostring.substr(0, 4).c_str());
-	musicinfo.NoteNumber_Hard = atoi(infostring.substr(5, 9).c_str());
-	musicinfo.Level_Easy = atoi(infostring.substr(10, 11).c_str());
-	musicinfo.Level_Hard = atoi(infostring.substr(12, 13).c_str());;
+	musicinfo.NoteNumber_Hard = atoi(infostring.substr(5, 4).c_str());
+	musicinfo.Level_Easy = infostring.substr(10, 1);
+	musicinfo.Level_Hard = infostring.substr(12, 1);
 	getNoteline();//读取第一行
 	return musicinfo;
 }
@@ -46,11 +46,11 @@ void MapUtils::getNoteline()
 	if (getline(fin, notestring))
 	{
 		noteline.time = atoi(notestring.substr(0, 5).c_str());
-		noteline.difficulty = atoi(notestring.substr(6, 7).c_str());
-		noteline.type = atoi(notestring.substr(8, 9).c_str());
-		noteline.length = atoi(notestring.substr(10, 13).c_str());
-		noteline.posX = atoi(notestring.substr(14, 18).c_str());
-		noteline.posY = atoi(notestring.substr(19, 22).c_str());
+		noteline.difficulty = atoi(notestring.substr(6, 1).c_str());
+		noteline.type = atoi(notestring.substr(8, 1).c_str());
+		noteline.length = atoi(notestring.substr(10, 3).c_str());
+		noteline.posX = atoi(notestring.substr(14, 4).c_str());
+		noteline.posY = atoi(notestring.substr(19, 4).c_str());
 		if (noteline.difficulty > difficulty)
 			getNoteline();
 	}
@@ -67,10 +67,11 @@ Point MapUtils::getNextPos()
 }
 
 void MapUtils::generateMap(std::string name)
-{	
+{
 	mapname = FileUtils::getInstance()->getWritablePath() + name + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
 	fprintf(fout, "//////////////\n");
+	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	std::thread workthread(generate, name);
 	workthread.detach();
 }
@@ -78,7 +79,6 @@ void MapUtils::generateMap(std::string name)
 void MapUtils::generate(std::string name)
 {
 	std::string musicname = "music/" + name + ".mp3";
-	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	musicinfo.NoteNumber_Easy = 0;
 	musicinfo.NoteNumber_Hard = 0;
 	beatinfo.beginTime = 0;
@@ -177,13 +177,21 @@ void MapUtils::generate(std::string name)
 	}
 	//////////////////扫描结束/////////////////////
 	rewind(fout);
-	musicinfo.Level_Easy = musicinfo.NoteNumber_Easy * BPM / musicinfo.length;
-	if (musicinfo.Level_Easy > 9)
-		musicinfo.Level_Easy = 9;
-	musicinfo.Level_Hard = musicinfo.NoteNumber_Hard * BPM / musicinfo.length;
-	if (musicinfo.Level_Hard > 9)
-		musicinfo.Level_Hard = 9;
-	fprintf(fout, "%4d %4d %1d %1d", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy, musicinfo.Level_Hard);
+	int easy, hard;
+	char temp[64];
+	easy = musicinfo.NoteNumber_Easy * BPM / musicinfo.length;
+	sprintf(temp, "%d", easy);
+	if (easy > 9)
+		musicinfo.Level_Easy = "X";
+	else
+		musicinfo.Level_Easy = temp;
+	hard = musicinfo.NoteNumber_Hard * BPM / musicinfo.length;
+	sprintf(temp, "%d", hard);
+	if (hard > 9)
+		musicinfo.Level_Hard = "X";
+	else
+		musicinfo.Level_Hard = temp;
+	fprintf(fout, "%4d %4d %1s %1s", musicinfo.NoteNumber_Easy, musicinfo.NoteNumber_Hard, musicinfo.Level_Easy.c_str(), musicinfo.Level_Hard.c_str());
 	Director::getInstance()->getScheduler()->performFunctionInCocosThread([]
 	{
 		SelectScene::loadingEnd();

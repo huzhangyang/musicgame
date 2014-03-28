@@ -25,6 +25,7 @@ private:
 	void touchEvent(Ref* obj, TouchEventType eventType);
 	void listViewEvent(Ref* obj, ListViewEventType eventType);
 	ListView* list;
+	Node *UINode;
 };
 
 #endif 

@@ -1,6 +1,6 @@
 #include "GameScene.h"
 #include "ClearScene.h"
-#include "MainScene.h"
+#include "SelectScene.h"
 #include "Note.h"
 #include "MapUtils.h"
 
@@ -84,30 +84,24 @@ void GameScene::onEnterTransitionDidFinish()
 	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_LEVEL));
 	auto labelDifficulty = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_DIFFICULTY));
 	/////////////////////////////////////////////////////	
-	std::string musicname = "music/" + FileName + ".mp3";
-	AudioEngine::getInstance()->create(musicname.c_str());
 	auto title = AudioEngine::getInstance()->getName();
 	if (title != "")
 		labelInfo->setText(title);//显示ID3 TITLE
 	else
 		labelInfo->setText(FileName);//没获取到则显示文件名
 	MusicInfo info = MapUtils::loadMap(FileName.c_str());
-	int level = 0;
 	if (setting_difficulty == 0)
 	{
 		notenumber = info.NoteNumber_Easy;
-		level = info.Level_Easy;
+		labelLevel->setText(info.Level_Easy);
 		labelDifficulty->setText("Easy");
 	}
 	else if (setting_difficulty == 1)
 	{
 		notenumber = info.NoteNumber_Hard;
-		level = info.Level_Hard;
+		labelLevel->setText(info.Level_Hard);
 		labelDifficulty->setText("Hard");
 	}
-	char temp[64];
-	sprintf(temp, "%d", level);
-	labelLevel->setText(temp);
 	labelCombo->setText("READY");
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
@@ -356,7 +350,7 @@ void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
 			buttonReturn->setEnabled(false);
 			buttonResume->setEnabled(false);
 			AudioEngine::getInstance()->stop();
-			scene = MainScene::createScene();
+			scene = SelectScene::createScene(1);
 			Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, false));
 			break;
 		}

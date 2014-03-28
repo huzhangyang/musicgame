@@ -25,6 +25,7 @@ private:
 	void checkboxEvent(Ref* obj, CheckBoxEventType eventType);
 	void sliderEvent(Ref* obj, SliderEventType eventType);
 	void createDialog(std::string key);
+	Node *DialogNode, *ExitNode, *OptionNode;
 };
 
 #endif 
