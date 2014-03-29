@@ -77,7 +77,7 @@ void SelectScene::onEnterTransitionDidFinish()
 		currinfo.BPM = fileMap.at("BPM").asFloat();
 		currinfo.score = fileMap.at("score").asFloat();
 		fileinfo.push_back(currinfo);
-		std::string musicname = "music/" + currinfo.name + ".mp3";
+		std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + currinfo.name + ".mp3");
 		std::string mapname = FileUtils::getInstance()->getWritablePath() + currinfo.name + ".gnm";
 		if (selectMode == 0)
 		{
@@ -123,7 +123,7 @@ void SelectScene::onEnterTransitionDidFinish()
 			labelDifficulty->setColor(Color3B(150, 15, 15));
 		}
 	}
-	std::string musicname = "music/" + FileName + ".mp3";
+	std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
 	AudioEngine::getInstance()->createLoop(musicname.c_str());
 	AudioEngine::getInstance()->play();
 }
@@ -255,7 +255,7 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 				labelLevel->setText("LV." + musicinfo.Level_Hard);
 			}
 		}
-		std::string musicname = "music/" + FileName + ".mp3";
+		std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
 		AudioEngine::getInstance()->createLoop(musicname.c_str());
 		AudioEngine::getInstance()->play();
 		break;

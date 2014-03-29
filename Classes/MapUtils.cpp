@@ -78,7 +78,7 @@ void MapUtils::generateMap(std::string name)
 
 void MapUtils::generate(std::string name)
 {
-	std::string musicname = "music/" + name + ".mp3";
+	std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + name + ".mp3");
 	musicinfo.NoteNumber_Easy = 0;
 	musicinfo.NoteNumber_Hard = 0;
 	beatinfo.beginTime = 0;

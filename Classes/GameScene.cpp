@@ -84,7 +84,7 @@ void GameScene::onEnterTransitionDidFinish()
 	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_LEVEL));
 	auto labelDifficulty = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_DIFFICULTY));
 	/////////////////////////////////////////////////////	
-	std::string musicname = "music/" + FileName + ".mp3";
+	std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
 	AudioEngine::getInstance()->create(musicname.c_str());
 	auto title = AudioEngine::getInstance()->getName();
 	if (title != "")
