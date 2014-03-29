@@ -21,20 +21,23 @@ bool MainScene::init()
 	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	/////////////////////////////////////////////////////
-	AudioEngine::getInstance()->createLoop("bgm/main.mp3");
+	AudioEngine::getInstance()->createLoop("bgm/main.ogg");
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("mainScene.json");
 	addChild(sceneNode);
 	auto UINode = sceneNode->getChildByTag(10005);
 	ExitNode = sceneNode->getChildByTag(10004);
 	DialogNode = sceneNode->getChildByTag(10006);
+	HelpNode = sceneNode->getChildByTag(10007);
 	OptionNode = sceneNode->getChildByTag(10008);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("mainSceneUI");
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
+	auto HelpComponent = (cocostudio::ComRender*) HelpNode->getComponent("helpUI");
 	auto OptionComponent = (cocostudio::ComRender*) OptionNode->getComponent("optionUI");
 	auto UILayer = (Layer*)UIComponent->getNode();
 	auto ExitLayer = (Layer*)ExitComponent->getNode();
 	auto DialogLayer = (Layer*)DialogComponent->getNode();
+	auto HelpLayer = (Layer*)HelpComponent->getNode();
 	auto OptionLayer = (Layer*)OptionComponent->getNode();
 	//////////
 	auto imageTable = dynamic_cast<ImageView*>(UILayer->getChildByTag(MAINSCENE_IMAGE_TABLE));
@@ -88,6 +91,14 @@ bool MainScene::init()
 	boxEasy->setEnabled(false);
 	boxHard->setEnabled(false);
 	boxScanline->setEnabled(false);
+	//////////
+	auto page = dynamic_cast<PageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_PAGE));
+	auto bgHelp = dynamic_cast<ImageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_BG));
+	auto helpP1 = dynamic_cast<Widget*>(((Node*)page)->getChildByTag(MAINSCENE_HELP_P1));
+	auto helpP2 = dynamic_cast<Widget*>(((Node*)page)->getChildByTag(MAINSCENE_HELP_P2));
+	bgHelp->setEnabled(false);
+	helpP1->setEnabled(false);
+	helpP2->setEnabled(false);
 	return true;
 }
 
@@ -131,10 +142,12 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto widget = dynamic_cast<Widget*>(obj);
 	int tag = widget->getTag();
 	auto ExitComponent = (cocostudio::ComRender*) ExitNode->getComponent("exitSelectUI");
-	auto ExitLayer = (Layer*)ExitComponent->getNode();
 	auto DialogComponent = (cocostudio::ComRender*) DialogNode->getComponent("dialogBoxUI");
-	auto DialogLayer = (Layer*)DialogComponent->getNode();
+	auto HelpComponent = (cocostudio::ComRender*) HelpNode->getComponent("helpUI");
 	auto OptionComponent = (cocostudio::ComRender*) OptionNode->getComponent("optionUI");
+	auto ExitLayer = (Layer*)ExitComponent->getNode();
+	auto DialogLayer = (Layer*)DialogComponent->getNode();
+	auto HelpLayer = (Layer*)HelpComponent->getNode();
 	auto OptionLayer = (Layer*)OptionComponent->getNode();
 	auto bgExit = dynamic_cast<ImageView*>(ExitLayer->getChildByTag(MAINSCENE_EXIT_BG));
 	auto bgDialog = dynamic_cast<ImageView*>(DialogLayer->getChildByTag(MAINSCENE_DIALOG_BG));
@@ -147,6 +160,7 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto buttonClose = dynamic_cast<Button*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_CLOSE));
 	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
 	auto bgSetting = dynamic_cast<ImageView*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_BG));
+	auto bgHelp = dynamic_cast<ImageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_BG));
 	Scene* scene;
 	char temp[64];
 	int lag = UserDefault::getInstance()->getIntegerForKey("lag");
@@ -190,6 +204,8 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			labelLag->setText(temp);
 			break;
 		case MAINSCENE_BUTTON_HELP:
+			HelpNode->setVisible(true);
+			bgHelp->setEnabled(true);
 			break;
 		case MAINSCENE_BUTTON_EXIT:
 			ExitNode->setVisible(true);

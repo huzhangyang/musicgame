@@ -42,7 +42,7 @@ bool ClearScene::init()
 	auto labelJudge = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_JUDGE));
 	buttonRetry->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
 	buttonReturn->addTouchEventListener(this, toucheventselector(ClearScene::touchEvent));
-	AudioEngine::getInstance()->createLoop("bgm/clear.mp3");
+	AudioEngine::getInstance()->createLoop("bgm/clear.ogg");
 	char temp[64];
 	sprintf(temp, "%d", counter.perfect);
 	labelPerfect->setText(temp);
