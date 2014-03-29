@@ -11,7 +11,7 @@ extern int TIME_PRELOAD;
 Counter counter;
 Node *MenuNode, *UINode;
 int setting_difficulty;
-float setting_lag;
+int setting_lag;
 bool setting_scanline;
 
 Scene* GameScene::createScene(std::string filename)
@@ -193,7 +193,7 @@ void GameScene::update(float dt)
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
-	setScanline(currPos);
+	setScanline(currPos + setting_lag);
 	while ((currPos + TIME_PRELOAD + setting_lag >= noteline.time))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出

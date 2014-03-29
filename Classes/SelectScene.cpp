@@ -215,7 +215,6 @@ void SelectScene::touchEvent(Ref* obj, TouchEventType eventType)
 
 void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 {
-	auto list = dynamic_cast<ListView*>(obj);
 	auto index = list->getCurSelectedIndex();
 	auto bg = (ImageView*)list->getItem(index);
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
@@ -244,7 +243,6 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 		auto FileName = info->getStringValue();
 		if (selectMode == 1 && FileName != "")
 		{
-			auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 			MusicInfo musicinfo = MapUtils::loadMap(FileName.c_str());
 			if (difficulty == 0)
 			{

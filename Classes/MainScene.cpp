@@ -94,12 +94,8 @@ bool MainScene::init()
 	//////////
 	auto page = dynamic_cast<PageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_PAGE));
 	auto bgHelp = dynamic_cast<ImageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_BG));
-	auto helpP1 = dynamic_cast<Widget*>(((Node*)page)->getChildByTag(MAINSCENE_HELP_P1));
-	auto helpP2 = dynamic_cast<Widget*>(((Node*)page)->getChildByTag(MAINSCENE_HELP_P2));
 	bgHelp->setEnabled(false);
 	page->setEnabled(false);
-	//helpP1->setEnabled(false);
-	//helpP2->setEnabled(false);
 	return true;
 }
 
@@ -299,20 +295,13 @@ void MainScene::sliderEvent(Ref* obj, SliderEventType eventType)
 	auto OptionComponent = (cocostudio::ComRender*) OptionNode->getComponent("optionUI");
 	auto OptionLayer = (Layer*)OptionComponent->getNode();
 	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
-	int tag = widget->getTag();
-	int percent = widget->getPercent();
 	char temp[64];
 	int lag;
 	if (eventType == SliderEventType::SLIDER_PERCENTCHANGED)
 	{
-		switch (tag)
-		{
-		case MAINSCENE_SETTING_SLIDER:
-			lag = widget->getPercent();
-			UserDefault::getInstance()->setIntegerForKey("lag", lag);
-			sprintf(temp, "%.2f", lag / 100.0);
-			labelLag->setText(temp);
-			break;
-		}
+		lag = widget->getPercent();
+		UserDefault::getInstance()->setIntegerForKey("lag", lag);
+		sprintf(temp, "%.2f", lag / 100.0);
+		labelLag->setText(temp);
 	}
 }

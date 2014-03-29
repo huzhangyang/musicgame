@@ -97,7 +97,7 @@ void Note::update(float dt)
 void Note::judge()
 {
 	float lifePercent;
-	int judgeResult;
+	int judgeResult = 0;
 
 	this->stopAllActions();//停止所有动作
 	this->isTouched = true;//不再接受新的触摸事件
@@ -197,9 +197,6 @@ void Note::createNoteListener()
 		{
 			target->slideAngle = atan2(touch->getLocation().x - touch->getStartLocation().x, touch->getLocation().y - touch->getStartLocation().y) * 180 / M_PI;
 			target->slideDistance = touch->getLocation().getDistance(touch->getStartLocation());
-			/*auto disX = touch->getLocation().x - touch->getPreviousLocation().x;
-			auto disY = touch->getLocation().y - touch->getPreviousLocation().y;
-			target->setPosition(target->getPosition().x + disX, target->getPosition().y + disY);*/
 		}
 	};
 	noteListener->onTouchEnded = [](Touch *touch, Event  *event)
