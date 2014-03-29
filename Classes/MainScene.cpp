@@ -97,8 +97,9 @@ bool MainScene::init()
 	auto helpP1 = dynamic_cast<Widget*>(((Node*)page)->getChildByTag(MAINSCENE_HELP_P1));
 	auto helpP2 = dynamic_cast<Widget*>(((Node*)page)->getChildByTag(MAINSCENE_HELP_P2));
 	bgHelp->setEnabled(false);
-	helpP1->setEnabled(false);
-	helpP2->setEnabled(false);
+	page->setEnabled(false);
+	//helpP1->setEnabled(false);
+	//helpP2->setEnabled(false);
 	return true;
 }
 
@@ -161,6 +162,7 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
 	auto bgSetting = dynamic_cast<ImageView*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_BG));
 	auto bgHelp = dynamic_cast<ImageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_BG));
+	auto page = dynamic_cast<PageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_PAGE));
 	Scene* scene;
 	char temp[64];
 	int lag = UserDefault::getInstance()->getIntegerForKey("lag");
@@ -206,6 +208,7 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 		case MAINSCENE_BUTTON_HELP:
 			HelpNode->setVisible(true);
 			bgHelp->setEnabled(true);
+			page->setEnabled(true);
 			break;
 		case MAINSCENE_BUTTON_EXIT:
 			ExitNode->setVisible(true);
