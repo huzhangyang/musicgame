@@ -94,6 +94,7 @@ bool MainScene::init()
 	//////////
 	auto page = dynamic_cast<PageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_PAGE));
 	auto bgHelp = dynamic_cast<ImageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_BG));
+	bgHelp->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	bgHelp->setEnabled(false);
 	page->setEnabled(false);
 	return true;
@@ -205,6 +206,11 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			HelpNode->setVisible(true);
 			bgHelp->setEnabled(true);
 			page->setEnabled(true);
+			break;
+		case MAINSCENE_HELP_BG:
+			HelpNode->setVisible(false);
+			bgHelp->setEnabled(false);
+			page->setEnabled(false);
 			break;
 		case MAINSCENE_BUTTON_EXIT:
 			ExitNode->setVisible(true);
