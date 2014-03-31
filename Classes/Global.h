@@ -76,7 +76,6 @@ const int MAINSCENE_SETTING_SNO = 26;
 const int MAINSCENE_HELP_BG = 27;
 const int MAINSCENE_HELP_PAGE = 28;
 const int MAINSCENE_HELP_CLOSE = 29;
-
 //”Œœ∑ΩÁ√ÊTag
 const int GAMESCENE_BUTTON_PAUSE = 5;
 const int GAMESCENE_LOADINGBAR = 9;

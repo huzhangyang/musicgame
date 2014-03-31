@@ -92,11 +92,14 @@ bool MainScene::init()
 	boxHard->setEnabled(false);
 	boxScanline->setEnabled(false);
 	//////////
-	auto page = dynamic_cast<PageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_PAGE));
+	auto pageHelp = dynamic_cast<PageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_PAGE));
 	auto bgHelp = dynamic_cast<ImageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_BG));
+	auto closeHelp = dynamic_cast<Button*>(HelpLayer->getChildByTag(MAINSCENE_HELP_CLOSE));
 	bgHelp->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
+	closeHelp->addTouchEventListener(this, toucheventselector(MainScene::touchEvent));
 	bgHelp->setEnabled(false);
-	page->setEnabled(false);
+	closeHelp->setEnabled(false);
+	pageHelp->setEnabled(false);
 	return true;
 }
 
@@ -158,8 +161,9 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 	auto buttonClose = dynamic_cast<Button*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_CLOSE));
 	auto labelLag = dynamic_cast<Text*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_SNO));
 	auto bgSetting = dynamic_cast<ImageView*>(OptionLayer->getChildByTag(MAINSCENE_SETTING_BG));
+	auto pageHelp = dynamic_cast<PageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_PAGE));
 	auto bgHelp = dynamic_cast<ImageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_BG));
-	auto page = dynamic_cast<PageView*>(HelpLayer->getChildByTag(MAINSCENE_HELP_PAGE));
+	auto closeHelp = dynamic_cast<Button*>(HelpLayer->getChildByTag(MAINSCENE_HELP_CLOSE));
 	Scene* scene;
 	char temp[64];
 	int lag = UserDefault::getInstance()->getIntegerForKey("lag");
@@ -205,12 +209,14 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 		case MAINSCENE_BUTTON_HELP:
 			HelpNode->setVisible(true);
 			bgHelp->setEnabled(true);
-			page->setEnabled(true);
+			closeHelp->setEnabled(true);
+			pageHelp->setEnabled(true);
 			break;
-		case MAINSCENE_HELP_BG:
+		case MAINSCENE_HELP_CLOSE:
 			HelpNode->setVisible(false);
 			bgHelp->setEnabled(false);
-			page->setEnabled(false);
+			closeHelp->setEnabled(false);
+			pageHelp->setEnabled(false);
 			break;
 		case MAINSCENE_BUTTON_EXIT:
 			ExitNode->setVisible(true);
