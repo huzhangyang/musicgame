@@ -33,7 +33,7 @@
           "file": null,
           "fileData": {
             "path": "gameSceneUI/gameSceneUI.json",
-            "plistFile": null,
+            "plistFile": "",
             "resourceType": 0
           }
         }
@@ -61,7 +61,7 @@
           "file": null,
           "fileData": {
             "path": "gameSceneUI/pauseSelectUI/pauseSelectUI.json",
-            "plistFile": null,
+            "plistFile": "",
             "resourceType": 0
           }
         }
@@ -73,7 +73,7 @@
     "_width": 1280
   },
   "Triggers": null,
-  "Version": "1.2.0.1",
+  "Version": "1.3.0.1",
   "components": [
     {
       "__type": "ComSceneSurrogate:#EditorCommon.JsonModel.Component",

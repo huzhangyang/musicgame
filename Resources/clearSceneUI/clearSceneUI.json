@@ -10,7 +10,7 @@
   "designHeight": 720,
   "designWidth": 1280,
   "textures": [],
-  "version": "1.3.0.0",
+  "version": "1.3.0.1",
   "widgetTree": {
     "classname": "Panel",
     "name": null,
