@@ -10,19 +10,12 @@
 
     <uses-feature android:glEsVersion="0x00020000" />
 
-    <supports-screens
-        android:anyDensity="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:smallScreens="true"
-        android:xlargeScreens="true" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name" >
         <activity
-            android:name="org.cocos2dx.cpp.Cocos2dxActivity"
+            android:name="org.cocos2dx.cpp.AppActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
@@ -40,5 +33,12 @@
             </intent-filter>
         </activity>
     </application>
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
 
 </manifest>
