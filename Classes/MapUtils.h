@@ -13,8 +13,6 @@ public:
 	static void generateMap(std::string name);//Éú³ÉÆ×Ãæ
 private:
 	static void generate(std::string name);
-	static void analyzeBeat();
-	static void analyzeBeatV2();
 	static void writeNoteline();
 	static int genPosX(int absY);
 	static int genPosY(int time);

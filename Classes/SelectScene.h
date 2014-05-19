@@ -1,10 +1,17 @@
 #ifndef __SELECT_SCENE_H__
 #define __SELECT_SCENE_H__
 
+#ifdef _WIN32
+	#include <io.h>
+#else
+	#include <unistd.h>
+	#include <stdio.h>
+	#include <dirent.h>
+	#include <sys/stat.h>
+#endif
 #include "cocos2d.h" 
 #include "ui/CocosGUI.h"
 #include "cocostudio/CocoStudio.h"   
-
 #include "Global.h"
 #include "AudioEngine.h" 
 
@@ -24,6 +31,7 @@ public:
 private:
 	void touchEvent(Ref* obj, TouchEventType eventType);
 	void listViewEvent(Ref* obj, ListViewEventType eventType);
+	void scan_dir(std::string path);
 	Node *UINode;
 };
 

@@ -8,6 +8,7 @@ Node *LoadingNode;
 ListView* list;
 std::vector<FileInfo> fileinfo;
 float BPM;
+FILE *file;
 
 Scene* SelectScene::createScene(int mode)
 {
@@ -16,6 +17,7 @@ Scene* SelectScene::createScene(int mode)
 	scene->addChild(layer);
 	selectMode = mode;
 	return scene;
+	
 }
 
 bool SelectScene::init()
@@ -60,6 +62,11 @@ bool SelectScene::init()
 
 void SelectScene::onEnterTransitionDidFinish()
 {
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	scan_dir("/mnt/sdcard/Android/obb/com.hzy.musicgame/");//设置搜索路径
+#else
+	scan_dir("../music/");//设置搜索路径
+#endif
 	Layer::onEnterTransitionDidFinish();
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
 	auto UILayer = UIComponent->getNode();
@@ -77,6 +84,7 @@ void SelectScene::onEnterTransitionDidFinish()
 		currinfo.BPM = fileMap.at("BPM").asFloat();
 		currinfo.score = fileMap.at("score").asFloat();
 		fileinfo.push_back(currinfo);
+
 		std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + currinfo.name + ".mp3");
 		std::string mapname = FileUtils::getInstance()->getWritablePath() + currinfo.name + ".gnm";
 		if (selectMode == 0)
@@ -258,4 +266,80 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 		AudioEngine::getInstance()->play();
 		break;
 	}
+}
+
+void SelectScene::scan_dir(std::string path)
+{
+#ifdef WIN32
+		_finddata_t FileInfo;
+		std::string strfind = path + "\\*";
+		long Handle = _findfirst(strfind.c_str(), &FileInfo);
+
+		if (Handle == -1L)
+		{
+			log("open error!");
+			return;
+		}
+		do{
+			if (FileInfo.attrib & _A_SUBDIR)
+			{
+				if ((strcmp(FileInfo.name, ".") != 0) && (strcmp(FileInfo.name, "..") != 0))
+				{
+					std::string newPath = path + FileInfo.name;
+					log("%s\n", newPath.c_str());
+					scan_dir(newPath);//递归遍历子目录
+				}
+			}
+			else
+			{
+				std::string filename = (path + FileInfo.name);//得到文件名
+				log("%s\n", filename.c_str());
+			}
+		} while (_findnext(Handle, &FileInfo) == 0);
+
+		_findclose(Handle);
+#else
+	DIR *dp;  
+	struct dirent *entry;  
+	struct stat statbuf;  
+
+	if((dp = opendir(path.c_str())) == NULL)  
+	{  
+		log("open error!");  
+		return;  
+	}  
+	chdir(path.c_str());  
+	while ((entry = readdir(dp)) != NULL) {  
+		stat(entry->d_name, &statbuf);  
+		if (S_ISDIR(statbuf.st_mode)) {  
+			if ((strcmp(entry->d_name, ".") != 0)  
+				&& (strcmp(entry->d_name, "..") != 0)  
+				&& (entry->d_name[0] != '.')) {  
+				scan_dir(entry->d_name);  
+			}  
+		} else {  
+			int size = strlen(entry->d_name);  
+			if (entry->d_name[0] != '.'&& strcmp(entry->d_name + (size - 4), ".mp3") == 0){  
+				log("scan_dir(),file st_size = %d \n\n",(statbuf.st_size/1024));  
+				char* parentPath = (char*)malloc(1024);
+				char* absolutePath = (char*)malloc(1024);
+				//首先获取工作路径  
+				getcwd(parentPath, 1024);
+				log("parentPath = %s \n", parentPath);  
+				strcpy(absolutePath, parentPath);
+				char *p = "/";
+				absolutePath = strcat(absolutePath, p);
+				absolutePath = strcat(absolutePath, entry->d_name);
+				//statbuf.st_size,  
+				log("scan_dir(),file absolutePath = %s \n", absolutePath);
+				free(parentPath);
+				parentPath = NULL;
+				free(absolutePath);
+				absolutePath = NULL;
+			}
+		}
+	}
+	chdir("..");
+	closedir(dp);
+#endif
 }
