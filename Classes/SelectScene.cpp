@@ -7,7 +7,7 @@ int selectMode;//0为制谱，1为游戏
 Node *LoadingNode;
 ListView* list;
 std::vector<std::string> filepaths;
-float BPM=120.00;
+float BPM = 120.00;
 
 Scene* SelectScene::createScene(int mode)
 {
@@ -49,6 +49,7 @@ bool SelectScene::init()
 	buttonReturn->addTouchEventListener(this, toucheventselector(SelectScene::touchEvent));
 	list->addEventListenerListView(this, listvieweventselector(SelectScene::listViewEvent));
 	list->setItemModel(bg);
+	list->setEnabled(false);
 	//////////
 	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_BG));
 	auto imageWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_WORDS));
@@ -75,12 +76,11 @@ void SelectScene::onEnterTransitionDidFinish()
 	scan_dir("../music/");//设置搜索路径
 #endif
 	int index = 0;
-	//没有歌曲的时候不显示listview
 	/*加载歌曲list*/
 	for (auto& filepath : filepaths)
 	{
-		auto filename = filepath.substr(filepath.find_last_of('/') + 1, filepath.find_last_of('.') - filepath.find_last_of('/')-1);
-		std::string mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
+		auto filename = filepath.substr(filepath.find_last_of('/') + 1, filepath.find_last_of('.') - filepath.find_last_of('/') - 1);
+		auto mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
 		if (selectMode == 0)
 		{
 			if (index > 0)
@@ -119,9 +119,14 @@ void SelectScene::onEnterTransitionDidFinish()
 			labelDifficulty->setColor(Color3B(150, 15, 15));
 		}
 	}
-	std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
-	AudioEngine::getInstance()->createLoop(musicname.c_str());
-	AudioEngine::getInstance()->play();
+	if (FileName != "")
+	{
+		list->setEnabled(true);
+		auto musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
+		AudioEngine::getInstance()->create(musicname.c_str());
+		AudioEngine::getInstance()->play();
+		AudioEngine::getInstance()->setPosition(AudioEngine::getInstance()->getLength() / 2);
+	}
 }
 
 void SelectScene::onExitTransitionDidStart()
@@ -175,11 +180,11 @@ void SelectScene::touchEvent(Ref* obj, TouchEventType eventType)
 			Director::getInstance()->replaceScene(TransitionFade::create(2, scene));
 			break;
 		case SELECTSCENE_START:
-			if (selectMode == 0)
+			if (selectMode == 0 && list->isEnabled())
 			{
 				MapUtils::generateMap(info->getStringValue());
 			}
-			else if (selectMode == 1)
+			else if (selectMode == 1 && list->isEnabled())
 			{
 				scene = GameScene::createScene(info->getStringValue());
 				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
@@ -208,7 +213,7 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 		{
 			auto currbg = (ImageView*)list->getItem(i);
 			auto currinfo = dynamic_cast<Text*>(currbg->getChildByTag(SELECTSCENE_INFO));
-			std::string mapname = FileUtils::getInstance()->getWritablePath() + currinfo->getStringValue() + ".gnm";
+			auto mapname = FileUtils::getInstance()->getWritablePath() + currinfo->getStringValue() + ".gnm";
 			if (i == index)
 				currbg->loadTexture("selectSceneUI/songinformationBG1.png");
 			else if (FileUtils::getInstance()->isFileExist(mapname))
@@ -230,9 +235,10 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 				labelLevel->setText("LV." + musicinfo.Level_Hard);
 			}
 		}
-		std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
-		AudioEngine::getInstance()->createLoop(musicname.c_str());
+		auto musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
+		AudioEngine::getInstance()->create(musicname.c_str());
 		AudioEngine::getInstance()->play();
+		AudioEngine::getInstance()->setPosition(AudioEngine::getInstance()->getLength() *0.3);
 		break;
 	}
 }

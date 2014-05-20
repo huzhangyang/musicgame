@@ -193,6 +193,13 @@ void AudioEngine::resume()
 	result = channel->setPaused(false);
 }
 
+void AudioEngine::setPosition(unsigned int position)
+{
+	position = position * 1000 / 60;//»»Ëã³ÉºÁÃë
+	result = channel->setPosition(position, FMOD_TIMEUNIT_MS);
+	return;
+}
+
 void AudioEngine::stop()
 {
 	result = channel->stop();

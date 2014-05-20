@@ -26,6 +26,7 @@ public:
 	void pause();
 	void release();
 	void resume();
+	void setPosition(unsigned int position);
 	void stop();
 	void update();
 private:
