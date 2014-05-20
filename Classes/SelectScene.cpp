@@ -8,7 +8,6 @@ Node *LoadingNode;
 ListView* list;
 std::vector<FileInfo> fileinfo;
 float BPM;
-FILE *file;
 
 Scene* SelectScene::createScene(int mode)
 {
@@ -63,7 +62,7 @@ bool SelectScene::init()
 void SelectScene::onEnterTransitionDidFinish()
 {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-	scan_dir("/mnt/sdcard/Android/obb/com.hzy.musicgame/");//设置搜索路径
+	scan_dir("/mnt/sdcard/Echo/");//设置搜索路径
 #else
 	scan_dir("../music/");//设置搜索路径
 #endif
@@ -320,17 +319,12 @@ void SelectScene::scan_dir(std::string path)
 		} else {  
 			int size = strlen(entry->d_name);  
 			if (entry->d_name[0] != '.'&& strcmp(entry->d_name + (size - 4), ".mp3") == 0){  
-				log("scan_dir(),file st_size = %d \n\n",(statbuf.st_size/1024));  
 				char* parentPath = (char*)malloc(1024);
 				char* absolutePath = (char*)malloc(1024);
-				//首先获取工作路径  
 				getcwd(parentPath, 1024);
-				log("parentPath = %s \n", parentPath);  
 				strcpy(absolutePath, parentPath);
-				char *p = "/";
-				absolutePath = strcat(absolutePath, p);
+				absolutePath = strcat(absolutePath, "/");
 				absolutePath = strcat(absolutePath, entry->d_name);
-				//statbuf.st_size,  
 				log("scan_dir(),file absolutePath = %s \n", absolutePath);
 				free(parentPath);
 				parentPath = NULL;

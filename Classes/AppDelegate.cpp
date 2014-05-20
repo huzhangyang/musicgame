@@ -22,7 +22,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	auto scene = IntroScene::createScene();
 	director->runWithScene(scene);//运行场景
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-	FileUtils::getInstance()->addSearchPath("/mnt/sdcard/Android/obb/com.hzy.musicgame/");//设置搜索路径
+	FileUtils::getInstance()->addSearchPath("/mnt/sdcard/Echo/");//设置搜索路径
 #else
 	FileUtils::getInstance()->addSearchPath("../");//设置搜索路径
 #endif
