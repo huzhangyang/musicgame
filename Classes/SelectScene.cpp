@@ -3,11 +3,11 @@
 #include "GameScene.h"
 #include "MapUtils.h"
 
-int selectMode;
+int selectMode;//0为制谱，1为游戏
 Node *LoadingNode;
 ListView* list;
-std::vector<FileInfo> fileinfo;
-float BPM;
+std::vector<std::string> filepaths;
+float BPM=120.00;
 
 Scene* SelectScene::createScene(int mode)
 {
@@ -16,7 +16,7 @@ Scene* SelectScene::createScene(int mode)
 	scene->addChild(layer);
 	selectMode = mode;
 	return scene;
-	
+
 }
 
 bool SelectScene::init()
@@ -61,11 +61,7 @@ bool SelectScene::init()
 
 void SelectScene::onEnterTransitionDidFinish()
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-	scan_dir("/mnt/sdcard/Echo/");//设置搜索路径
-#else
-	scan_dir("../music/");//设置搜索路径
-#endif
+
 	Layer::onEnterTransitionDidFinish();
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("selectScene");
 	auto UILayer = UIComponent->getNode();
@@ -73,41 +69,34 @@ void SelectScene::onEnterTransitionDidFinish()
 	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_LEVEL));
 	auto labelScore = dynamic_cast<Text*>(UILayer->getChildByTag(SELECTSCENE_SCORE));
 	/////////////////////////////////////////////////////
-	auto files = FileUtils::getInstance()->getValueVectorFromFile("files.xml");
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	scan_dir("/mnt/sdcard/Echo/music/");//设置搜索路径
+#else
+	scan_dir("../music/");//设置搜索路径
+#endif
 	int index = 0;
-	for (auto& file : files)
+	//没有歌曲的时候不显示listview
+	/*加载歌曲list*/
+	for (auto& filepath : filepaths)
 	{
-		auto fileMap = file.asValueMap();
-		FileInfo currinfo;
-		currinfo.name = fileMap.at("name").asString();
-		currinfo.BPM = fileMap.at("BPM").asFloat();
-		currinfo.score = fileMap.at("score").asFloat();
-		fileinfo.push_back(currinfo);
-
-		std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + currinfo.name + ".mp3");
-		std::string mapname = FileUtils::getInstance()->getWritablePath() + currinfo.name + ".gnm";
+		auto filename = filepath.substr(filepath.find_last_of('/') + 1, filepath.find_last_of('.') - filepath.find_last_of('/')-1);
+		std::string mapname = FileUtils::getInstance()->getWritablePath() + filename + ".gnm";
 		if (selectMode == 0)
 		{
-			if (FileUtils::getInstance()->isFileExist(musicname))
-			{
-				if (index > 0)
-					list->pushBackDefaultItem();
-				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(currinfo.name);
-				if (!FileUtils::getInstance()->isFileExist(mapname))
-					((ImageView*)list->getItem(index - 1))->loadTexture("selectSceneUI/songinformationBG2.png");
-			}
+			if (index > 0)
+				list->pushBackDefaultItem();
+			((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(filename);
+			if (!FileUtils::getInstance()->isFileExist(mapname))
+				((ImageView*)list->getItem(index - 1))->loadTexture("selectSceneUI/songinformationBG2.png");
 		}
-		else if (selectMode == 1)
+		else if (selectMode == 1 && FileUtils::getInstance()->isFileExist(mapname))
 		{
-
-			if (FileUtils::getInstance()->isFileExist(mapname) && FileUtils::getInstance()->isFileExist(musicname))
-			{
-				if (index > 0)
-					list->pushBackDefaultItem();
-				((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(currinfo.name);
-			}
+			if (index > 0)
+				list->pushBackDefaultItem();
+			((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(filename);
 		}
 	}
+	/*获取选中歌曲的难度，以及播放歌曲预览*/
 	auto bg = (ImageView*)list->getItem(0);
 	bg->loadTexture("selectSceneUI/songinformationBG1.png");
 	auto FileName = ((Text*)(bg->getChildByTag(SELECTSCENE_INFO)))->getStringValue();
@@ -139,7 +128,7 @@ void SelectScene::onExitTransitionDidStart()
 {
 	Layer::onExitTransitionDidStart();
 	/////////////////////////////////////////////////////
-	fileinfo.clear();
+	filepaths.clear();
 	MapUtils::closeMap();
 	AudioEngine::getInstance()->stop();
 }
@@ -188,34 +177,15 @@ void SelectScene::touchEvent(Ref* obj, TouchEventType eventType)
 		case SELECTSCENE_START:
 			if (selectMode == 0)
 			{
-				for (auto& currinfo : fileinfo)
-				{
-					if (currinfo.name == info->getStringValue())
-					{
-						LoadingNode->setVisible(true);
-						bgLoading->setEnabled(true);
-						BPM = currinfo.BPM;
-						MapUtils::generateMap(currinfo.name);
-						break;
-					}
-				}
+				MapUtils::generateMap(info->getStringValue());
 			}
 			else if (selectMode == 1)
 			{
-				for (auto& currinfo : fileinfo)
-				{
-					if (currinfo.name == info->getStringValue())
-					{
-						BPM = currinfo.BPM;
-						scene = GameScene::createScene(currinfo.name);
-						Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
-						break;
-					}
-				}
+				scene = GameScene::createScene(info->getStringValue());
+				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			}
 			break;
 		}
-
 		break;
 	}
 }
@@ -270,33 +240,34 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 void SelectScene::scan_dir(std::string path)
 {
 #ifdef WIN32
-		_finddata_t FileInfo;
-		std::string strfind = path + "\\*";
-		long Handle = _findfirst(strfind.c_str(), &FileInfo);
+	_finddata_t FileInfo;
+	std::string strfind = path + "\\*";
+	long Handle = _findfirst(strfind.c_str(), &FileInfo);
 
-		if (Handle == -1L)
+	if (Handle == -1L)
+	{
+		log("open error!");
+		return;
+	}
+	do{
+		if (FileInfo.attrib & _A_SUBDIR)
 		{
-			log("open error!");
-			return;
+			if ((strcmp(FileInfo.name, ".") != 0) && (strcmp(FileInfo.name, "..") != 0))
+			{
+				std::string newPath = path + FileInfo.name;
+				log("%s\n", newPath.c_str());
+				scan_dir(newPath);//递归遍历子目录
+			}
 		}
-		do{
-			if (FileInfo.attrib & _A_SUBDIR)
-			{
-				if ((strcmp(FileInfo.name, ".") != 0) && (strcmp(FileInfo.name, "..") != 0))
-				{
-					std::string newPath = path + FileInfo.name;
-					log("%s\n", newPath.c_str());
-					scan_dir(newPath);//递归遍历子目录
-				}
-			}
-			else
-			{
-				std::string filename = (path + FileInfo.name);//得到文件名
-				log("%s\n", filename.c_str());
-			}
-		} while (_findnext(Handle, &FileInfo) == 0);
+		else
+		{
+			std::string filename = (path + FileInfo.name);//得到文件名
+			filepaths.push_back(filename);
+			log("%s\n", filename.c_str());
+		}
+	} while (_findnext(Handle, &FileInfo) == 0);
 
-		_findclose(Handle);
+	_findclose(Handle);
 #else
 	DIR *dp;  
 	struct dirent *entry;  
@@ -325,7 +296,8 @@ void SelectScene::scan_dir(std::string path)
 				strcpy(absolutePath, parentPath);
 				absolutePath = strcat(absolutePath, "/");
 				absolutePath = strcat(absolutePath, entry->d_name);
-				log("scan_dir(),file absolutePath = %s \n", absolutePath);
+				log("%s\n", absolutePath);
+				filepaths.push_back(absolutePath);
 				free(parentPath);
 				parentPath = NULL;
 				free(absolutePath);
