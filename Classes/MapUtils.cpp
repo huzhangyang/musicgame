@@ -17,7 +17,7 @@ MusicInfo musicinfo;
 std::ifstream fin;//输入流
 FILE* fout;//输出文件
 std::string mapname;
-float FramePerBeat;
+float FramePerBeat = 60;
 
 MusicInfo MapUtils::loadMap(std::string filename)
 {
@@ -71,7 +71,6 @@ void MapUtils::generateMap(std::string name)
 	mapname = FileUtils::getInstance()->getWritablePath() + name + ".gnm";
 	fout = fopen(mapname.c_str(), "w");//打开测试谱面
 	fprintf(fout, "//////////////\n");
-	FramePerBeat = 3600 / BPM;//最小节奏持续帧数
 	std::thread workthread(generate, name);
 	workthread.detach();
 }
@@ -179,13 +178,13 @@ void MapUtils::generate(std::string name)
 	rewind(fout);
 	int easy, hard;
 	char temp[64];
-	easy = musicinfo.NoteNumber_Easy * BPM / musicinfo.length;
+	easy = musicinfo.NoteNumber_Easy * 120 / musicinfo.length;
 	sprintf(temp, "%d", easy);
 	if (easy > 9)
 		musicinfo.Level_Easy = "X";
 	else
 		musicinfo.Level_Easy = temp;
-	hard = musicinfo.NoteNumber_Hard * BPM / musicinfo.length;
+	hard = musicinfo.NoteNumber_Hard * 120 / musicinfo.length;
 	sprintf(temp, "%d", hard);
 	if (hard > 9)
 		musicinfo.Level_Hard = "X";

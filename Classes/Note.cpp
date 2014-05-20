@@ -4,7 +4,8 @@
 
 EventListenerTouchOneByOne *noteListener;
 int notenumber;
-int TIME_PRELOAD;
+int preloadTime;
+
 
 Note::Note()
 {
@@ -31,7 +32,7 @@ Note* Note::createNote(int type, int length, int posX, int posY)
 void Note::initNote(int type, int length, int posX, int posY)
 {
 	this->type = (NoteType)type;
-	this->life = TIME_PRELOAD;
+	this->life = preloadTime;
 	this->lifeTouchBegan = 0;
 	this->isActivated = false;
 	this->isTouched = false;
@@ -44,7 +45,7 @@ void Note::initNote(int type, int length, int posX, int posY)
 	{
 	case CLICK:
 		this->initWithFile("game/note0.png");
-		this->length = TIME_PRELOAD;
+		this->length = preloadTime;
 		break;
 	case LONGPRESS:
 		this->initWithFile("game/note1.png");
@@ -52,7 +53,7 @@ void Note::initNote(int type, int length, int posX, int posY)
 		break;
 	case SLIDE:
 		this->initWithFile("game/note2.png");
-		this->length = TIME_PRELOAD;
+		this->length = preloadTime;
 		this->setRotation(atan2(MapUtils::getNextPos().x - getPositionX(), MapUtils::getNextPos().y - getPositionY()) * 180 / M_PI);
 		break;
 	}
@@ -108,9 +109,9 @@ void Note::judge()
 	{
 	case CLICK:
 		if (isActivated)
-			lifePercent = (float)(TIME_PRELOAD - life) / TIME_PRELOAD;
+			lifePercent = (float)(preloadTime - life) / preloadTime;
 		else
-			lifePercent = (float)life / TIME_PRELOAD;
+			lifePercent = (float)life / preloadTime;
 		if (lifePercent >= 0.8)//太早或太晚都是miss
 			judgeResult = 0;
 		else if (lifePercent >= 0.2)//正中点前后40%开外只能是good

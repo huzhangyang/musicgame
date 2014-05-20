@@ -7,7 +7,6 @@ int selectMode;//0为制谱，1为游戏
 Node *LoadingNode;
 ListView* list;
 std::vector<std::string> filepaths;
-float BPM = 120.00;
 
 Scene* SelectScene::createScene(int mode)
 {

@@ -6,24 +6,20 @@
 
 extern int notenumber;//总note数
 extern std::string FileName;//音乐文件名称
-extern int TIME_PRELOAD;
+extern int preloadTime;//预加载时间
 
 Counter counter;
 Node *MenuNode, *UINode;
 int setting_difficulty;
 int setting_lag;
-bool setting_scanline;
 
 Scene* GameScene::createScene(std::string filename)
 {
 	auto scene = Scene::create();
 	auto layer = GameScene::create();
 	scene->addChild(layer);
-
 	FileName = filename;
-	TIME_PRELOAD = 7200 / BPM;
 	setting_difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
-	setting_scanline = UserDefault::getInstance()->getBoolForKey("scanline");
 	setting_lag = UserDefault::getInstance()->getIntegerForKey("lag") * 60 / 100;
 	counter.total = 0;//音符总数
 	counter.perfect = 0;//完美数
@@ -79,6 +75,7 @@ void GameScene::onEnterTransitionDidFinish()
 	Layer::onEnterTransitionDidFinish();
 	auto UIComponent = (cocostudio::ComRender*) UINode->getComponent("gameSceneUI");
 	auto UILayer = (Layer*)UIComponent->getNode();
+	auto loadingBar = dynamic_cast<LoadingBar*>(UILayer->getChildByTag(GAMESCENE_LOADINGBAR));
 	auto labelCombo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_COMBO));
 	auto labelInfo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_INFO));
 	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_LEVEL));
@@ -99,6 +96,7 @@ void GameScene::onEnterTransitionDidFinish()
 		labelDifficulty->setText("Easy");
 		labelLevel->setColor(Color3B(45, 65, 30));
 		labelDifficulty->setColor(Color3B(45, 65, 30));
+		preloadTime = 60;
 	}
 	else if (setting_difficulty == 1)
 	{
@@ -107,8 +105,10 @@ void GameScene::onEnterTransitionDidFinish()
 		labelDifficulty->setText("Hard");
 		labelLevel->setColor(Color3B(150, 15, 15));
 		labelDifficulty->setColor(Color3B(150, 15, 15));
+		preloadTime = 40;
 	}
 	labelCombo->setText("READY");
+	loadingBar->setPercent(0);
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
 
@@ -146,7 +146,6 @@ void GameScene::startGame(float dt)
 		labelCombo->setOpacity(100);
 		AudioEngine::getInstance()->play();
 		this->scheduleUpdate();
-		addScanline();
 		buttonPause->setTouchEnabled(true);
 	}
 }
@@ -193,8 +192,7 @@ void GameScene::update(float dt)
 	int currPos = AudioEngine::getInstance()->getPosition();
 	int percent = currPos * 100 / AudioEngine::getInstance()->getLength();
 	loadingBar->setPercent(percent);
-	setScanline(currPos + setting_lag);
-	while ((currPos + TIME_PRELOAD + setting_lag >= noteline.time))//提前一些生成
+	while ((currPos + preloadTime + setting_lag >= noteline.time))//提前一些生成
 	{
 		if (noteline.time == 0)break;//读到最后跳出
 		int arg1 = noteline.type;
@@ -216,43 +214,6 @@ void GameScene::addNewNote(int type, int length, int posX, int posY)
 {
 	auto note = Note::createNote(type, length, posX, posY);
 	UINode->addChild(note);
-}
-
-void GameScene::addScanline()
-{
-	if (setting_scanline)
-	{
-		scanline = Sprite::create("game/scanline.png");
-		scanline->setOpacity(200);
-		scanline->setPosition(655, 305);
-		UINode->addChild(scanline);
-	}
-}
-
-void GameScene::setScanline(int time)
-{
-	if (setting_scanline)
-	{
-		float FramePerBeat = 3600 / BPM;
-		int y = time % (int)(FramePerBeat * 4);
-		if (y < FramePerBeat)
-		{
-			y = 305 - 240 * y / FramePerBeat;
-		}
-		else if (y < FramePerBeat * 2)
-		{
-			y = 65 + 240 * (y - FramePerBeat) / FramePerBeat;
-		}
-		else if (y < FramePerBeat * 3)
-		{
-			y = 305 + 240 * (y - FramePerBeat * 2) / FramePerBeat;
-		}
-		else if (y < FramePerBeat * 4)
-		{
-			y = 545 - 240 * (y - FramePerBeat * 3) / FramePerBeat;
-		}
-		scanline->setPositionY(y);
-	}
 }
 
 void GameScene::judgeNote(int judgeResult)

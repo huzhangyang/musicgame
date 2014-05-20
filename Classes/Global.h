@@ -40,13 +40,6 @@ struct MusicInfo
 	std::string Level_Easy = "";
 	std::string Level_Hard = "";
 };
-//文件信息结构
-struct FileInfo
-{
-	std::string name;
-	float BPM;
-	float score;
-};
 //开始界面Tag
 const int INTROSCENE_BG = 2;
 const int INTROSCENE_START = 3;
@@ -113,6 +106,4 @@ const int SELECTSCENE_START= 12;
 const int SELECTSCENE_LOADING_BG = 16;
 const int SELECTSCENE_LOADING_LIGHT = 18;
 const int SELECTSCENE_LOADING_WORDS = 19;
-//其它全局变量
-extern float BPM;
 #endif 
