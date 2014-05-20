@@ -181,6 +181,8 @@ void SelectScene::touchEvent(Ref* obj, TouchEventType eventType)
 		case SELECTSCENE_START:
 			if (selectMode == 0 && list->isEnabled())
 			{
+				LoadingNode->setVisible(true);
+				bgLoading->setEnabled(true);
 				MapUtils::generateMap(info->getStringValue());
 			}
 			else if (selectMode == 1 && list->isEnabled())
