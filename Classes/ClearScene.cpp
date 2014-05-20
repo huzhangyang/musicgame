@@ -119,7 +119,7 @@ void ClearScene::onEnterTransitionDidFinish()
 	labelGood->runAction(Sequence::create(DelayTime::create(2), FadeIn::create(1), NULL));
 	labelMiss->runAction(Sequence::create(DelayTime::create(3), FadeIn::create(1), NULL));
 	labelComplete->runAction(Sequence::create(DelayTime::create(4), FadeIn::create(1), NULL));
-	labelJudge->runAction(Sequence::create(DelayTime::create(4.5), FadeIn::create(0.2f), EaseElasticOut::create(ScaleTo::create(0.8f, 1.5)), NULL));
+	labelJudge->runAction(Sequence::create(DelayTime::create(4.3f), FadeIn::create(0.2f), EaseElasticOut::create(ScaleTo::create(1.5f, 1.5f)), NULL));
 }
 
 void ClearScene::onExitTransitionDidStart()
