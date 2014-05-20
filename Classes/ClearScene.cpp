@@ -24,7 +24,6 @@ bool ClearScene::init()
 	}
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Point origin = Director::getInstance()->getVisibleOrigin();
-
 	/////////////////////////////////////////////////////
 	auto sceneNode = cocostudio::SceneReader::getInstance()->createNodeWithSceneFile("clearScene.json");
 	addChild(sceneNode);
@@ -69,6 +68,13 @@ bool ClearScene::init()
 		background->loadTexture("clearSceneUI/QAQ.png");
 		labelJudge->loadTexture("clearSceneUI/F.png");
 	}
+	labelPerfect->setOpacity(0);
+	labelGood->setOpacity(0);
+	labelMiss->setOpacity(0);
+	labelTotal->setOpacity(0);
+	labelComplete->setOpacity(0);
+	labelJudge->setOpacity(0);
+	labelJudge->setScale(3);
 	auto emitter = ParticleRain::createWithTotalParticles(1000);
 	emitter->setGravity(Point(0, -20));
 	emitter->setAutoRemoveOnFinish(true);
@@ -86,6 +92,12 @@ void ClearScene::onEnterTransitionDidFinish()
 	auto labelInfo = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_INFO));
 	auto labelLevel = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_LEVEL));
 	auto labelDifficulty = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_DIFFICULTY));
+	auto labelPerfect = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_PNO));
+	auto labelGood = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_GNO));
+	auto labelMiss = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_MNO));
+	auto labelTotal = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_TNO));
+	auto labelComplete = dynamic_cast<Text*>(UIlayer->getChildByTag(CLEARSCENE_CNO));
+	auto labelJudge = dynamic_cast<ImageView*>(UIlayer->getChildByTag(CLEARSCENE_JUDGE));
 	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
 	{
@@ -99,8 +111,15 @@ void ClearScene::onEnterTransitionDidFinish()
 		labelDifficulty->setColor(Color3B(150, 15, 15));
 		labelLevel->setColor(Color3B(150, 15, 15));
 	}
-	labelLevel->setText("LV."+Level);
+	labelLevel->setText("LV." + Level);
 	labelInfo->setText(FileName);//没获取到则显示文件名
+	//////////
+	labelTotal->runAction(FadeIn::create(1));
+	labelPerfect->runAction(Sequence::create(DelayTime::create(1), FadeIn::create(1), NULL));
+	labelGood->runAction(Sequence::create(DelayTime::create(2), FadeIn::create(1), NULL));
+	labelMiss->runAction(Sequence::create(DelayTime::create(3), FadeIn::create(1), NULL));
+	labelComplete->runAction(Sequence::create(DelayTime::create(4), FadeIn::create(1), NULL));
+	labelJudge->runAction(Sequence::create(DelayTime::create(4.5), FadeIn::create(0.2f), EaseElasticOut::create(ScaleTo::create(0.8f, 1.5)), NULL));
 }
 
 void ClearScene::onExitTransitionDidStart()
