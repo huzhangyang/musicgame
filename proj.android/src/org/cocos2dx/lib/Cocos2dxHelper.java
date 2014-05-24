@@ -26,6 +26,8 @@ package org.cocos2dx.lib;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.lang.Runnable;
 
 import android.app.Activity;
@@ -36,6 +38,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Build;
+import android.preference.PreferenceManager.OnActivityResultListener;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -56,18 +59,13 @@ public class Cocos2dxHelper {
 	private static AssetManager sAssetManager;
 	private static Cocos2dxAccelerometer sCocos2dxAccelerometer;
 	private static boolean sAccelerometerEnabled;
+	private static boolean sActivityVisible;
 	private static String sPackageName;
 	private static String sFileDirectory;
 	private static Activity sActivity = null;
 	private static Cocos2dxHelperListener sCocos2dxHelperListener;
+	private static Set<OnActivityResultListener> onActivityResultListeners = new LinkedHashSet<OnActivityResultListener>();
 
-    /**
-     * Optional meta-that can be in the manifest for this component, specifying
-     * the name of the native shared library to load.  If not specified,
-     * "main" is used.
-     */
-    private static final String META_DATA_LIB_NAME = "android.app.lib_name";
-    private static final String DEFAULT_LIB_NAME = "main";
 
 	// ===========================================================
 	// Constructors
@@ -83,23 +81,7 @@ public class Cocos2dxHelper {
     		final ApplicationInfo applicationInfo = activity.getApplicationInfo();
     		
             Cocos2dxHelper.sCocos2dxHelperListener = (Cocos2dxHelperListener)activity;
-                
-            try {
-            // Get the lib_name from AndroidManifest.xml metadata
-                ActivityInfo ai =
-                    activity.getPackageManager().getActivityInfo(activity.getIntent().getComponent(), PackageManager.GET_META_DATA);
-                if (null != ai.metaData) {
-                    String lib_name = ai.metaData.getString(META_DATA_LIB_NAME);
-                    if (null != lib_name) {
-                        System.loadLibrary(lib_name);
-                    } else {
-                        System.loadLibrary(DEFAULT_LIB_NAME);
-                    }
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                throw new RuntimeException("Error getting activity info", e);
-            }
-    
+                    
     		Cocos2dxHelper.sPackageName = applicationInfo.packageName;
     		Cocos2dxHelper.sFileDirectory = activity.getFilesDir().getAbsolutePath();
             Cocos2dxHelper.nativeSetApkPath(applicationInfo.sourceDir);
@@ -121,6 +103,18 @@ public class Cocos2dxHelper {
 	
     public static Activity getActivity() {
         return sActivity;
+    }
+    
+    public static void addOnActivityResultListener(OnActivityResultListener listener) {
+        onActivityResultListeners.add(listener);
+    }
+    
+    public static Set<OnActivityResultListener> getOnActivityResultListeners() {
+        return onActivityResultListeners;
+    }
+    
+    public static boolean isActivityVisible(){
+    	return sActivityVisible;
     }
 
 	// ===========================================================
@@ -262,17 +256,29 @@ public class Cocos2dxHelper {
 	}
 
 	public static void onResume() {
+		sActivityVisible = true;
 		if (Cocos2dxHelper.sAccelerometerEnabled) {
 			Cocos2dxHelper.sCocos2dxAccelerometer.enable();
 		}
 	}
 
 	public static void onPause() {
+		sActivityVisible = false;
 		if (Cocos2dxHelper.sAccelerometerEnabled) {
 			Cocos2dxHelper.sCocos2dxAccelerometer.disable();
 		}
 	}
 
+	public static void onEnterBackground() {
+		sCocos2dSound.onEnterBackground();
+		sCocos2dMusic.onEnterBackground();
+	}
+	
+	public static void onEnterForeground() {
+		sCocos2dSound.onEnterForeground();
+		sCocos2dMusic.onEnterForeground();
+	}
+	
 	public static void terminateProcess() {
 		android.os.Process.killProcess(android.os.Process.myPid());
 	}
