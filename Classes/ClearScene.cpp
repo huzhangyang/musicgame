@@ -44,15 +44,15 @@ bool ClearScene::init()
 	AudioEngine::getInstance()->createLoop("bgm/clear.ogg");
 	char temp[64];
 	sprintf(temp, "%d", counter.perfect);
-	labelPerfect->setText(temp);
+	labelPerfect->setString(temp);
 	sprintf(temp, "%d", counter.good);
-	labelGood->setText(temp);
+	labelGood->setString(temp);
 	sprintf(temp, "%d", counter.miss);
-	labelMiss->setText(temp);
+	labelMiss->setString(temp);
 	sprintf(temp, "%d", counter.total);
-	labelTotal->setText(temp);
+	labelTotal->setString(temp);
 	sprintf(temp, "%.2f", counter.percent);
-	labelComplete->setText(strcat(temp, "%"));
+	labelComplete->setString(strcat(temp, "%"));
 	if (counter.combo == counter.total&&counter.percent > 95)
 		labelJudge->loadTexture("clearSceneUI/S.png");
 	else if (counter.percent >= 90)
@@ -101,18 +101,18 @@ void ClearScene::onEnterTransitionDidFinish()
 	auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 	if (difficulty == 0)
 	{
-		labelDifficulty->setText("Easy");
+		labelDifficulty->setString("Easy");
 		labelDifficulty->setColor(Color3B(45, 65, 30));
 		labelLevel->setColor(Color3B(45, 65, 30));
 	}
 	else if (difficulty == 1)
 	{
-		labelDifficulty->setText("Hard");
+		labelDifficulty->setString("Hard");
 		labelDifficulty->setColor(Color3B(150, 15, 15));
 		labelLevel->setColor(Color3B(150, 15, 15));
 	}
-	labelLevel->setText("LV." + Level);
-	labelInfo->setText(FileName);//没获取到则显示文件名
+	labelLevel->setString("LV." + Level);
+	labelInfo->setString(FileName);//没获取到则显示文件名
 	//////////
 	labelTotal->runAction(FadeIn::create(1));
 	labelPerfect->runAction(Sequence::create(DelayTime::create(1), FadeIn::create(1), NULL));

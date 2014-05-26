@@ -569,7 +569,7 @@
           "ignoreSize": false,
           "layoutParameter": null,
           "opacity": 255,
-          "positionPercentX": 0.209375,
+          "positionPercentX": 0.197656244,
           "positionPercentY": 0.17638889,
           "positionType": 0,
           "rotation": 0,
@@ -583,7 +583,7 @@
           "useMergedTexture": false,
           "visible": true,
           "width": 775,
-          "x": 268,
+          "x": 253,
           "y": 127,
           "backGroundImage": null,
           "backGroundImageData": null,
@@ -603,7 +603,7 @@
           "capInsetsX": 0,
           "capInsetsY": 0,
           "clipAble": true,
-          "colorType": 1,
+          "colorType": 0,
           "vectorX": 0,
           "vectorY": -0.5
         }

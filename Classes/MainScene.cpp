@@ -135,7 +135,7 @@ void MainScene::createDialog(std::string key)
 	ValueMap strings = FileUtils::getInstance()->getValueMapFromFile("strings.xml");
 	DialogNode->setVisible(true);
 	bgDialog->setEnabled(true);
-	labelWord->setText(strings.at(key).asString());
+	labelWord->setString(strings.at(key).asString());
 }
 
 void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
@@ -197,14 +197,14 @@ void MainScene::touchEvent(Ref* obj, TouchEventType eventType)
 			boxHard->setEnabled(true);
 			boxScanline->setEnabled(true);
 			buttonClose->setEnabled(true);
-			if (UserDefault::getInstance()->getBoolForKey("scanline"))
+			if (UserDefault::getInstance()->getBoolForKey("scanall"))
 				boxScanline->setSelectedState(true);
 			if (UserDefault::getInstance()->getIntegerForKey("difficulty") == 0)
 				boxEasy->setSelectedState(true);
 			else
 				boxHard->setSelectedState(true);
 			sliderLag->setPercent(lag);
-			labelLag->setText(temp);
+			labelLag->setString(temp);
 			break;
 		case MAINSCENE_BUTTON_HELP:
 			HelpNode->setVisible(true);
@@ -276,7 +276,7 @@ void MainScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
 			UserDefault::getInstance()->setIntegerForKey("difficulty", 1);
 			break;
 		case MAINSCENE_SETTING_SCANLINE:
-			UserDefault::getInstance()->setBoolForKey("scanline", true);
+			UserDefault::getInstance()->setBoolForKey("scanall", true);
 			break;
 		}
 	}
@@ -295,7 +295,7 @@ void MainScene::checkboxEvent(Ref* obj, CheckBoxEventType eventType)
 			UserDefault::getInstance()->setIntegerForKey("difficulty", 0);
 			break;
 		case MAINSCENE_SETTING_SCANLINE:
-			UserDefault::getInstance()->setBoolForKey("scanline", false);
+			UserDefault::getInstance()->setBoolForKey("scanall", false);
 			break;
 		}
 	}
@@ -314,6 +314,6 @@ void MainScene::sliderEvent(Ref* obj, SliderEventType eventType)
 		lag = widget->getPercent();
 		UserDefault::getInstance()->setIntegerForKey("lag", lag);
 		sprintf(temp, "%.2f", lag / 100.0);
-		labelLag->setText(temp);
+		labelLag->setString(temp);
 	}
 }

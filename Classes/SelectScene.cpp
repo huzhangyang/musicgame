@@ -84,7 +84,7 @@ void SelectScene::onEnterTransitionDidFinish()
 		{
 			if (index > 0)
 				list->pushBackDefaultItem();
-			((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(filename);
+			((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setString(filename);
 			if (!FileUtils::getInstance()->isFileExist(mapname))
 				((ImageView*)list->getItem(index - 1))->loadTexture("selectSceneUI/songinformationBG2.png");
 		}
@@ -92,28 +92,28 @@ void SelectScene::onEnterTransitionDidFinish()
 		{
 			if (index > 0)
 				list->pushBackDefaultItem();
-			((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setText(filename);
+			((Text*)(list->getItem(index++)->getChildByTag(SELECTSCENE_INFO)))->setString(filename);
 		}
 	}
 	/*获取选中歌曲的难度，以及播放歌曲预览*/
 	auto bg = (ImageView*)list->getItem(0);
 	bg->loadTexture("selectSceneUI/songinformationBG1.png");
-	auto FileName = ((Text*)(bg->getChildByTag(SELECTSCENE_INFO)))->getStringValue();
+	auto FileName = ((Text*)(bg->getChildByTag(SELECTSCENE_INFO)))->getString();
 	if (selectMode == 1 && FileName != "")
 	{
 		auto difficulty = UserDefault::getInstance()->getIntegerForKey("difficulty");//获取当前难度
 		MusicInfo musicinfo = MapUtils::loadMap(FileName.c_str());
 		if (difficulty == 0)
 		{
-			labelDifficulty->setText("Easy");
-			labelLevel->setText("LV." + musicinfo.Level_Easy);
+			labelDifficulty->setString("Easy");
+			labelLevel->setString("LV." + musicinfo.Level_Easy);
 			labelLevel->setColor(Color3B(45, 65, 30));
 			labelDifficulty->setColor(Color3B(45, 65, 30));
 		}
 		else if (difficulty == 1)
 		{
-			labelDifficulty->setText("Hard");
-			labelLevel->setText("LV." + musicinfo.Level_Hard);
+			labelDifficulty->setString("Hard");
+			labelLevel->setString("LV." + musicinfo.Level_Hard);
 			labelLevel->setColor(Color3B(150, 15, 15));
 			labelDifficulty->setColor(Color3B(150, 15, 15));
 		}
@@ -183,11 +183,11 @@ void SelectScene::touchEvent(Ref* obj, TouchEventType eventType)
 			{
 				LoadingNode->setVisible(true);
 				bgLoading->setEnabled(true);
-				MapUtils::generateMap(info->getStringValue());
+				MapUtils::generateMap(info->getString());
 			}
 			else if (selectMode == 1 && list->isEnabled())
 			{
-				scene = GameScene::createScene(info->getStringValue());
+				scene = GameScene::createScene(info->getString());
 				Director::getInstance()->replaceScene(TransitionPageTurn::create(2, scene, true));
 			}
 			break;
@@ -214,7 +214,7 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 		{
 			auto currbg = (ImageView*)list->getItem(i);
 			auto currinfo = dynamic_cast<Text*>(currbg->getChildByTag(SELECTSCENE_INFO));
-			auto mapname = FileUtils::getInstance()->getWritablePath() + currinfo->getStringValue() + ".gnm";
+			auto mapname = FileUtils::getInstance()->getWritablePath() + currinfo->getString() + ".gnm";
 			if (i == index)
 				currbg->loadTexture("selectSceneUI/songinformationBG1.png");
 			else if (FileUtils::getInstance()->isFileExist(mapname))
@@ -223,17 +223,17 @@ void SelectScene::listViewEvent(Ref* obj, ListViewEventType eventType)
 				currbg->loadTexture("selectSceneUI/songinformationBG2.png");
 		}
 		MapUtils::closeMap();
-		auto FileName = info->getStringValue();
+		auto FileName = info->getString();
 		if (selectMode == 1 && FileName != "")
 		{
 			MusicInfo musicinfo = MapUtils::loadMap(FileName.c_str());
 			if (difficulty == 0)
 			{
-				labelLevel->setText("LV." + musicinfo.Level_Easy);
+				labelLevel->setString("LV." + musicinfo.Level_Easy);
 			}
 			else if (difficulty == 1)
 			{
-				labelLevel->setText("LV." + musicinfo.Level_Hard);
+				labelLevel->setString("LV." + musicinfo.Level_Hard);
 			}
 		}
 		auto musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
