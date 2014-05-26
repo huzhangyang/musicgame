@@ -48,7 +48,7 @@ bool SelectScene::init()
 	buttonReturn->addTouchEventListener(this, toucheventselector(SelectScene::touchEvent));
 	list->addEventListenerListView(this, listvieweventselector(SelectScene::listViewEvent));
 	list->setItemModel(bg);
-	list->setEnabled(false);
+	list->setVisible(false);
 	//////////
 	auto bgLoading = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_BG));
 	auto imageWords = dynamic_cast<ImageView*>(LoadingLayer->getChildByTag(SELECTSCENE_LOADING_WORDS));
@@ -120,7 +120,7 @@ void SelectScene::onEnterTransitionDidFinish()
 	}
 	if (FileName != "")
 	{
-		list->setEnabled(true);
+		list->setVisible(true);
 		auto musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
 		AudioEngine::getInstance()->create(musicname.c_str());
 		AudioEngine::getInstance()->play();
