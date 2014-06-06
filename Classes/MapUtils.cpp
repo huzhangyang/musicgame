@@ -17,7 +17,7 @@ MusicInfo musicinfo;
 std::ifstream fin;//输入流
 FILE* fout;//输出文件
 std::string mapname;
-float FramePerBeat = 60;
+float FramePerBeat = 30;
 
 MusicInfo MapUtils::loadMap(std::string filename)
 {
@@ -178,13 +178,13 @@ void MapUtils::generate(std::string name)
 	rewind(fout);
 	int easy, hard;
 	char temp[64];
-	easy = musicinfo.NoteNumber_Easy * 120 / musicinfo.length;
+	easy = musicinfo.NoteNumber_Easy * 180 / musicinfo.length;
 	sprintf(temp, "%d", easy);
 	if (easy > 9)
 		musicinfo.Level_Easy = "X";
 	else
 		musicinfo.Level_Easy = temp;
-	hard = musicinfo.NoteNumber_Hard * 120 / musicinfo.length;
+	hard = musicinfo.NoteNumber_Hard * 180 / musicinfo.length;
 	sprintf(temp, "%d", hard);
 	if (hard > 9)
 		musicinfo.Level_Hard = "X";

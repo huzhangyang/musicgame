@@ -124,7 +124,7 @@ void SelectScene::onEnterTransitionDidFinish()
 		auto musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
 		AudioEngine::getInstance()->create(musicname.c_str());
 		AudioEngine::getInstance()->play();
-		AudioEngine::getInstance()->setPosition(AudioEngine::getInstance()->getLength() / 2);
+		AudioEngine::getInstance()->setPosition(AudioEngine::getInstance()->getLength() *0.3);
 	}
 }
 
