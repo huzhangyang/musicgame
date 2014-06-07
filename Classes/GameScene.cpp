@@ -85,15 +85,15 @@ void GameScene::onEnterTransitionDidFinish()
 	AudioEngine::getInstance()->create(musicname.c_str());
 	auto title = AudioEngine::getInstance()->getName();
 	if (title != "")
-		labelInfo->setText(title);//显示ID3 TITLE
+		labelInfo->setString(title);//显示ID3 TITLE
 	else
-		labelInfo->setText(FileName);//没获取到则显示文件名
+		labelInfo->setString(FileName);//没获取到则显示文件名
 	MusicInfo info = MapUtils::loadMap(FileName.c_str());
 	if (setting_difficulty == 0)
 	{
 		notenumber = info.NoteNumber_Easy;
-		labelLevel->setText(info.Level_Easy);
-		labelDifficulty->setText("Easy");
+		labelLevel->setString(info.Level_Easy);
+		labelDifficulty->setString("Easy");
 		labelLevel->setColor(Color3B(45, 65, 30));
 		labelDifficulty->setColor(Color3B(45, 65, 30));
 		preloadTime = 60;
@@ -101,13 +101,13 @@ void GameScene::onEnterTransitionDidFinish()
 	else if (setting_difficulty == 1)
 	{
 		notenumber = info.NoteNumber_Hard;
-		labelLevel->setText(info.Level_Hard);
-		labelDifficulty->setText("Hard");
+		labelLevel->setString(info.Level_Hard);
+		labelDifficulty->setString("Hard");
 		labelLevel->setColor(Color3B(150, 15, 15));
 		labelDifficulty->setColor(Color3B(150, 15, 15));
 		preloadTime = 40;
 	}
-	labelCombo->setText("READY");
+	labelCombo->setString("READY");
 	loadingBar->setPercent(0);
 	this->schedule(schedule_selector(GameScene::startGame), 0.02f);
 }
@@ -142,7 +142,7 @@ void GameScene::startGame(float dt)
 	if (loadingBar->getPercent() == 100)
 	{
 		this->unscheduleAllSelectors();
-		labelCombo->setText("");
+		labelCombo->setString("");
 		labelCombo->setOpacity(100);
 		AudioEngine::getInstance()->play();
 		this->scheduleUpdate();
@@ -160,7 +160,7 @@ void GameScene::resumeGame(float dt)
 	loadingBar->setPercent(calledtime++);
 	if (loadingBar->getPercent() == 1)
 	{
-		labelCombo->setText("READY");
+		labelCombo->setString("READY");
 		labelCombo->setOpacity(255);
 	}
 	if (loadingBar->getPercent() == 50)
@@ -169,7 +169,7 @@ void GameScene::resumeGame(float dt)
 	{
 		this->unscheduleAllSelectors();
 		calledtime = 0;
-		labelCombo->setText("");
+		labelCombo->setString("");
 		labelCombo->setOpacity(100);
 		for (auto&i : UINode->getChildren())
 		{
@@ -205,7 +205,7 @@ void GameScene::update(float dt)
 	if (!AudioEngine::getInstance()->isPlaying())//一首歌结束则切换到结算界面
 	{
 		this->unscheduleUpdate();
-		auto scene = ClearScene::createScene(labelInfo->getStringValue(), labelLevel->getStringValue());
+		auto scene = ClearScene::createScene(labelInfo->getString(), labelLevel->getString());
 		Director::getInstance()->replaceScene(TransitionCrossFade::create(2, scene));
 	}
 }
@@ -228,7 +228,7 @@ void GameScene::judgeNote(int judgeResult)
 	case 0:
 		counter.combo = 0;
 		counter.miss++;
-		labelCombo->setText("");
+		labelCombo->setString("");
 		break;
 	case 1:
 		counter.combo++;
@@ -236,7 +236,7 @@ void GameScene::judgeNote(int judgeResult)
 		counter.percent += 20 * counter.combo / counter.total / (float)notenumber;
 		counter.percent += 40 / (float)notenumber;
 		sprintf(temp, "%d", counter.combo);
-		labelCombo->setText(temp);
+		labelCombo->setString(temp);
 		break;
 	case 2:
 		counter.combo++;
@@ -244,21 +244,21 @@ void GameScene::judgeNote(int judgeResult)
 		counter.percent += 20 * counter.combo / counter.total / (float)notenumber;
 		counter.percent += 80 / (float)notenumber;
 		sprintf(temp, "%d", counter.combo);
-		labelCombo->setText(temp);
+		labelCombo->setString(temp);
 		break;
 	}
 	if (counter.combo == (int)(notenumber *0.5))
-		labelCombo->setText("Sensational!!!!!");
+		labelCombo->setString("Sensational!!!!!");
 	else if (counter.combo == (int)(notenumber *0.4))
-		labelCombo->setText("Awesome!!!!");
+		labelCombo->setString("Awesome!!!!");
 	else if (counter.combo == (int)(notenumber *0.3))
-		labelCombo->setText("Beautiful!!!");
+		labelCombo->setString("Beautiful!!!");
 	else if (counter.combo == (int)(notenumber *0.2))
-		labelCombo->setText("Charming!!");
+		labelCombo->setString("Charming!!");
 	else if (counter.combo == (int)(notenumber *0.1))
-		labelCombo->setText("Decent!");
+		labelCombo->setString("Decent!");
 	sprintf(temp, "%.2f", counter.percent);
-	labelScore->setText(strcat(temp, "%"));
+	labelScore->setString(strcat(temp, "%"));
 	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//Combo特效
 }
 
