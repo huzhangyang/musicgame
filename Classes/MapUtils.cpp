@@ -178,13 +178,13 @@ void MapUtils::generate(std::string name)
 	rewind(fout);
 	int easy, hard;
 	char temp[64];
-	easy = musicinfo.NoteNumber_Easy * 180 / musicinfo.length;
+	easy = musicinfo.NoteNumber_Easy * 150 / musicinfo.length;
 	sprintf(temp, "%d", easy);
 	if (easy > 9)
 		musicinfo.Level_Easy = "X";
 	else
 		musicinfo.Level_Easy = temp;
-	hard = musicinfo.NoteNumber_Hard * 180 / musicinfo.length;
+	hard = musicinfo.NoteNumber_Hard * 150 / musicinfo.length;
 	sprintf(temp, "%d", hard);
 	if (hard > 9)
 		musicinfo.Level_Hard = "X";
