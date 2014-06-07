@@ -120,7 +120,11 @@
                   "areaWidth": 0,
                   "fontFile": null,
                   "fontName": "trends.ttf",
+<<<<<<< HEAD
+                  "fontSize": 50,
+=======
                   "fontSize": 45,
+>>>>>>> origin/master
                   "hAlignment": 1,
                   "text": "",
                   "touchScaleEnable": false,
@@ -303,8 +307,8 @@
           "areaWidth": 0,
           "fontFile": null,
           "fontName": "dc_s.ttf",
-          "fontSize": 55,
-          "hAlignment": 0,
+          "fontSize": 60,
+          "hAlignment": 1,
           "text": "",
           "touchScaleEnable": false,
           "vAlignment": 0
@@ -353,8 +357,8 @@
           "areaWidth": 0,
           "fontFile": null,
           "fontName": "dc_s.ttf",
-          "fontSize": 55,
-          "hAlignment": 0,
+          "fontSize": 60,
+          "hAlignment": 1,
           "text": "",
           "touchScaleEnable": false,
           "vAlignment": 0
