@@ -112,7 +112,11 @@
           "areaWidth": 0,
           "fontFile": null,
           "fontName": "trends.ttf",
+<<<<<<< HEAD
+          "fontSize": 60,
+=======
           "fontSize": 55,
+>>>>>>> origin/master
           "hAlignment": 0,
           "text": "",
           "touchScaleEnable": false,
