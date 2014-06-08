@@ -80,6 +80,7 @@ void GameScene::onEnterTransitionDidFinish()
 	auto labelInfo = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_INFO));
 	auto labelLevel = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_LEVEL));
 	auto labelDifficulty = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_DIFFICULTY));
+	auto labelScore = dynamic_cast<Text*>(UILayer->getChildByTag(GAMESCENE_LABEL_PERCENT));
 	/////////////////////////////////////////////////////	
 	std::string musicname = FileUtils::getInstance()->fullPathForFilename("music/" + FileName + ".mp3");
 	AudioEngine::getInstance()->create(musicname.c_str());
@@ -88,6 +89,7 @@ void GameScene::onEnterTransitionDidFinish()
 		labelInfo->setString(title);//显示ID3 TITLE
 	else
 		labelInfo->setString(FileName);//没获取到则显示文件名
+	labelInfo->setColor(Color3B(64, 68, 72));
 	MusicInfo info = MapUtils::loadMap(FileName.c_str());
 	if (setting_difficulty == 0)
 	{
@@ -96,6 +98,7 @@ void GameScene::onEnterTransitionDidFinish()
 		labelDifficulty->setString("Easy");
 		labelLevel->setColor(Color3B(45, 65, 30));
 		labelDifficulty->setColor(Color3B(45, 65, 30));
+		labelScore->setColor(Color3B(45, 65, 30));
 		preloadTime = 60;
 	}
 	else if (setting_difficulty == 1)
@@ -105,6 +108,7 @@ void GameScene::onEnterTransitionDidFinish()
 		labelDifficulty->setString("Hard");
 		labelLevel->setColor(Color3B(150, 15, 15));
 		labelDifficulty->setColor(Color3B(150, 15, 15));
+		labelScore->setColor(Color3B(150, 15, 15));
 		preloadTime = 40;
 	}
 	labelCombo->setString("READY");
@@ -259,7 +263,7 @@ void GameScene::judgeNote(int judgeResult)
 		labelCombo->setString("Decent!");
 	sprintf(temp, "%.2f", counter.percent);
 	labelScore->setString(strcat(temp, "%"));
-	labelCombo->runAction(Sequence::create(ScaleTo::create(0.2f, 1.25), ScaleTo::create(0.2f, 1), NULL));//Combo特效
+	labelCombo->runAction(Sequence::create(ScaleTo::create(0.1f, 1.25), ScaleTo::create(0.1f, 1), NULL));//Combo特效
 }
 
 void GameScene::touchEvent(Ref* obj, TouchEventType eventType)
