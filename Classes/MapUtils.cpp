@@ -226,8 +226,9 @@ int MapUtils::genPosX(int absY)
 	static int hand = 0;//0为中间，1为左手，2为右手
 	static int x = 675;
 	static int trend = CCRANDOM_0_1() * 3;//0为不变，1为向左，2为向右
-	if (absY < 150 || noteline.type == 1)//间隔较短，换手操作
+	if (absY < 75 || noteline.type == 1)//间隔较短，换手操作
 	{
+		int lastx = x;
 		if (hand == 1)
 		{
 			hand = 2;
@@ -240,8 +241,10 @@ int MapUtils::genPosX(int absY)
 		}
 		else
 			x = 675 + CCRANDOM_MINUS1_1() * 500;
+		if (absY == 0)
+			x = 1175 - lastx;
 	}
-	else if (absY > 300)//间隔较长，重新计算trend
+	else if (absY > 150)//间隔较长，重新计算trend
 	{
 		hand = CCRANDOM_0_1() * 3;
 		trend = CCRANDOM_0_1() * 3;
